@@ -30,8 +30,7 @@ def jacocoreport() {
     step([$class: 'JacocoPublisher', execPattern: 'build/jacoco/jacocoTest.exec', pattern: 'build/jacoco/classpathdumps/net/codingrodent/**/*.class'])
 }
 
-
-stage 'execute Z80 build'
+stage 'execute In Memory Record Store build'
 
 node {
   checkoutCode()
