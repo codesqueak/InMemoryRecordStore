@@ -1,5 +1,7 @@
 # In Memory Record Storage
 
+*** PARTIAL UPLOAD ONLY - DO NOT USE (Yet!) ***
+
 In Memory Record Storage is a library to allow class data defined as records to be efficiently stored into memory
 
 ## Build
