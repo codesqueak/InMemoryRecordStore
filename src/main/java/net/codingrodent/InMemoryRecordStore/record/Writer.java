@@ -24,6 +24,7 @@
 package net.codingrodent.InMemoryRecordStore.record;
 
 import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
+import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
 
 /**
  *
@@ -31,16 +32,19 @@ import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 public class Writer {
     private RecordDescriptor recordDescriptor;
     private IMemoryStore memoryStore;
+    private AlignmentMode mode;
 
     /**
      * Create a new record writer
      *
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
+     * @param mode             Alignment mode
      */
-    public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor) {
+    public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
+        this.mode = mode;
     }
 
     /**
@@ -50,6 +54,17 @@ public class Writer {
      * @param record Record
      */
     public void putRecord(final int loc, final Object record) {
+        if (!record.getClass().equals(recordDescriptor.getClazz())) {
+            throw new IllegalArgumentException("Type supplied to writer is of the wrong type");
+        }
+        Class<?> c = record.getClass();
+        for (String fieldName : recordDescriptor.getFieldNames()) {
+            try {
+                System.out.println(c.getDeclaredField(fieldName).get(record));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

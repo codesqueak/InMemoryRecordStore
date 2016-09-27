@@ -28,17 +28,17 @@ import net.codingrodent.InMemoryRecordStore.annotations.*;
 /**
  * Test data record
  */
-@PackRecord(recordAligned = false, fieldAligned = false)
+@PackRecord(recordByteAligned = true, fieldByteAligned = true)
 public class Record {
 
     @PackField(order = 0, length = 24)
-    public Integer a = null;
+    public Integer a = 0;
 
     @PackField(order = 7, length = 16)
-    public int b = 0;
+    public int b = 7;
 
     @PackField(order = 3, length = 16)
-    public int c = 0;
+    public int c = 3;
 
     @PackField(order = 121, length = 1)
     public boolean d = true;

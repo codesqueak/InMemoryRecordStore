@@ -33,7 +33,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PackRecord {
-    boolean recordAligned() default true;
+    boolean recordByteAligned() default true;
 
-    boolean fieldAligned() default true;
+    boolean fieldByteAligned() default true;
 }

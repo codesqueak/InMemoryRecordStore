@@ -24,6 +24,7 @@
 package net.codingrodent.InMemoryRecordStore.record;
 
 import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
+import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
 
 /**
  *
@@ -31,6 +32,7 @@ import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 public class Reader {
     private RecordDescriptor recordDescriptor;
     private IMemoryStore memoryStore;
+    private AlignmentMode mode;
 
     /**
      * Create a new record reader
@@ -38,9 +40,10 @@ public class Reader {
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
      */
-    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor) {
+    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
+        this.mode = mode;
     }
 
     /**

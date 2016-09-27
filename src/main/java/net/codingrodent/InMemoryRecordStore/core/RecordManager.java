@@ -23,12 +23,15 @@
 */
 package net.codingrodent.InMemoryRecordStore.core;
 
+import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
 import net.codingrodent.InMemoryRecordStore.record.*;
 
 /**
  *
  */
 public class RecordManager {
+
+    private AlignmentMode mode;
     private int sizeInBits = 0;
     private int sizeInBytes = 0;
     private int sizeInWords = 0;
@@ -50,18 +53,30 @@ public class RecordManager {
         this.recordDescriptor = recordDescriptor;
         // Determine size based on the four possible alignment strategies
         if (recordDescriptor.isFieldByteAligned()) {
-            sizeInBytes = recordDescriptor.getSizeInBytes() * size;
+            if (recordDescriptor.isRecordByteAligned()) {
+                sizeInBytes = recordDescriptor.getSizeInBytes() * size;
+                mode = AlignmentMode.BYTE_BYTE;
+            } else {
+                sizeInBytes = recordDescriptor.getSizeInBytes() * size;
+                mode = AlignmentMode.BYTE_BIT;
+            }
         } else {
             if (recordDescriptor.isRecordByteAligned()) {
                 sizeInBytes = recordDescriptor.getSizeInBytes() * size;
+                mode = AlignmentMode.BIT_BYTE;
             } else {
                 sizeInBytes = (((recordDescriptor.getSizeInBits() * size) - 1) >> 3) + 1;
+                mode = AlignmentMode.BIT_BIT;
             }
         }
+        if (AlignmentMode.BYTE_BYTE != mode) {
+            throw new UnsupportedOperationException("Alignment mode selected not supported at present (" + mode + ")");
+        }
+        //
         sizeInWords = ((sizeInBytes - 1) >> 2) + 1;
         memoryStore.build(sizeInWords);
-        this.reader = new Reader(memoryStore, recordDescriptor);
-        this.writer = new Writer(memoryStore, recordDescriptor);
+        this.reader = new Reader(memoryStore, recordDescriptor, mode);
+        this.writer = new Writer(memoryStore, recordDescriptor, mode);
     }
 
     /**

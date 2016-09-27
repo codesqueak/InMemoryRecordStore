@@ -33,13 +33,13 @@ import java.util.*;
  * This class holds the basic type information for an in memory allocation record.
  */
 public class RecordDescriptor {
-
-    private Class<?> clazz;
-    private Map<Integer, FieldDetails> fieldMap;
-    private boolean recordByteAligned;
-    private boolean fieldByteAligned;
-    private int sizeInBits;
-    private int sizeInBytes;
+    private final Class<?> clazz;
+    private final boolean recordByteAligned;
+    private final boolean fieldByteAligned;
+    private final int sizeInBits;
+    private final int sizeInBytes;
+    private final FieldDetails[] fieldDetails;
+    private final List<String> fieldNames;
 
     /**
      * Default constructor. Defines the record characteristics
@@ -54,8 +54,8 @@ public class RecordDescriptor {
         if (null == annotation) {
             throw new IllegalArgumentException("The record must contain a PackRecord annotation");
         }
-        this.fieldByteAligned = annotation.fieldAligned();
-        this.recordByteAligned = annotation.recordAligned();
+        this.fieldByteAligned = annotation.fieldByteAligned();
+        this.recordByteAligned = annotation.recordByteAligned();
         //
         // Recover any field annotations
         List<FieldDetails> fieldList = new LinkedList<>();
@@ -78,32 +78,31 @@ public class RecordDescriptor {
         }
         //
         // Pull out annotation data and sort into layout order
-        FieldDetails[] details = fieldList.toArray(new FieldDetails[0]);
-        if (0 == details.length) {
+        FieldDetails[] fieldDetails = fieldList.toArray(new FieldDetails[0]);
+        if (0 == fieldDetails.length) {
             throw new IllegalArgumentException("At least one field must be annotated with @PackField");
         }
         // Sort
-        Map<Integer, FieldDetails> fieldMap = new LinkedHashMap<>();
-        Arrays.stream(details).sorted((l, r) -> l.getOrder().compareTo(r.getOrder())).forEach(e -> {
-            if (null != fieldMap.put(e.getOrder(), e)) {
-                throw new IllegalArgumentException("Two (or more) fields at the same ordered position");
-            }
-        });
-        this.fieldMap = fieldMap;
+        Arrays.sort(fieldDetails, (x, y) -> x.getOrder().compareTo(y.getOrder()));
+        List<String> fieldNames = new ArrayList<>(fieldDetails.length);
         //
         // Calculate storage requirements
-        sizeInBits = 0;
-        sizeInBytes = 0;
-        fieldMap.entrySet().stream().forEach(f -> {
+        int sizeInBits = 0;
+        int i = 0;
+        for (FieldDetails field : fieldDetails) {
+            fieldNames.add(field.getFieldName());
             if (fieldByteAligned) {
                 // Pack at byte level
-                sizeInBits = sizeInBits + f.getValue().getByteLength() * 8;
+                sizeInBits = sizeInBits + field.getByteLength() * 8;
             } else {
                 // pack at bit level
-                sizeInBits = sizeInBits + f.getValue().getBitLength();
+                sizeInBits = sizeInBits + field.getBitLength();
             }
-        });
-        sizeInBytes = ((sizeInBits - 1) >> 3) + 1;
+        }
+        this.sizeInBits = sizeInBits;
+        this.sizeInBytes = ((sizeInBits - 1) >> 3) + 1;
+        this.fieldDetails = fieldDetails;
+        this.fieldNames = Collections.unmodifiableList(fieldNames);
     }
 
     public boolean isFieldByteAligned() {
@@ -126,7 +125,11 @@ public class RecordDescriptor {
         return clazz;
     }
 
-    private static class FieldDetails {
+    public List<String> getFieldNames() {
+        return fieldNames;
+    }
+
+    public static class FieldDetails {
 
         private IMemoryStore.Type type;
         private String fieldName;
