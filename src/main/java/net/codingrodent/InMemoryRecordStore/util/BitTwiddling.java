@@ -43,6 +43,7 @@ public class BitTwiddling {
     }
 
     private BitTwiddling() {
+        // Stop creation
     }
 
     public static byte extend(final byte val, final int bits) {
