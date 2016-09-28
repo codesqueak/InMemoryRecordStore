@@ -21,7 +21,7 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore;
+package net.codingrodent.InMemoryRecordStore.record;
 
 import net.codingrodent.InMemoryRecordStore.annotations.*;
 
@@ -29,7 +29,7 @@ import net.codingrodent.InMemoryRecordStore.annotations.*;
  * Test data record
  */
 @PackRecord(recordByteAligned = true, fieldByteAligned = true)
-public class Record {
+public class Record1 {
 
     @PackField(order = 0, length = 24)
     public Integer a = 0;
