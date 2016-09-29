@@ -50,7 +50,7 @@ public class RecordDescriptor {
         //
         // Process the class annotation
         this.clazz = clazz;
-        PackRecord annotation = (PackRecord) clazz.getAnnotation(PackRecord.class);
+        PackRecord annotation = clazz.getAnnotation(PackRecord.class);
         if (null == annotation) {
             throw new IllegalArgumentException("The record must contain a PackRecord annotation");
         }
@@ -61,11 +61,11 @@ public class RecordDescriptor {
         List<FieldDetails> fieldList = new LinkedList<>();
         Field[] fields = clazz.getFields();
         for (Field field : fields) {
-            PackField packFieldAnnotation = (PackField) field.getAnnotation(PackField.class);
+            PackField packFieldAnnotation = field.getAnnotation(PackField.class);
             if (null != packFieldAnnotation) {
                 fieldList.add(new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.length(), false));
             } else {
-                Padding paddingFieldAnnotation = (Padding) field.getAnnotation(Padding.class);
+                Padding paddingFieldAnnotation = field.getAnnotation(Padding.class);
                 if (null != paddingFieldAnnotation) {
                     Class paddingClass = field.getType();
                     if (paddingClass.getTypeName().equals(Void.class.getTypeName())) {
@@ -88,7 +88,6 @@ public class RecordDescriptor {
         //
         // Calculate storage requirements
         int sizeInBits = 0;
-        int i = 0;
         for (FieldDetails field : fieldDetails) {
             fieldNames.add(field.getFieldName());
             if (fieldByteAligned) {
@@ -129,7 +128,7 @@ public class RecordDescriptor {
         return fieldNames;
     }
 
-    public static class FieldDetails {
+    private static class FieldDetails {
 
         private IMemoryStore.Type type;
         private String fieldName;
@@ -174,6 +173,7 @@ public class RecordDescriptor {
             this.order = order;
             this.bitLength = length;
             this.byteLength = ((length - 1) >> 3) + 1;
+            this.padding = padding;
         }
 
         IMemoryStore.Type getType() {

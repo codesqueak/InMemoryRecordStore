@@ -30,9 +30,9 @@ import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
  *
  */
 public class Reader {
-    private RecordDescriptor recordDescriptor;
-    private IMemoryStore memoryStore;
-    private AlignmentMode mode;
+    private final RecordDescriptor recordDescriptor;
+    private final IMemoryStore memoryStore;
+    private final AlignmentMode mode;
 
     /**
      * Create a new record reader
