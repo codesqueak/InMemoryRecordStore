@@ -15,26 +15,27 @@ apply plugin: 'findbugs'
 sourceCompatibility = javaVersion
 targetCompatibility = javaVersion
 
-
 task setVersion {
-	if(System.env.BUILD_NUMBER){
-  	version =  projectVersionMajor+'.'+projectVersionMinor+'.'+System.env.BUILD_NUMBER
-  }
-  else
-  {
-  	version =  projectVersionMajor+'.'+projectVersionMinor+'.'+projectVersionBuild
-  }
+    if (System.env.BUILD_NUMBER) {
+        version = projectVersionMajor + '.' + projectVersionMinor + '.' + System.env.BUILD_NUMBER
+    } else {
+        version = projectVersionMajor + '.' + projectVersionMinor + '.' + projectVersionBuild
+    }
 }
 
 
-task toJar (dependsOn: setVersion, type: Jar) {
-		println version
-		baseName = projectName
-        manifest
-        {
-        attributes 'Implementation-Title': projectName,
-                   'Implementation-Version': version
-   	 }
+compileJava {
+    options.fork = true
+    options.incremental = false
+}
+
+jar {
+    manifest
+            {
+                attributes 'Implementation-Title': projectName,
+                        'Implementation-Version': version
+            }
+    baseName = projectName
 }
 
 
@@ -48,18 +49,18 @@ jacoco {
 }
 
 test
-{
- 	maxParallelForks = 1
-	filter
-	{
-	     includeTestsMatching "net.codingrodent.InMemoryRecordStore.*"
-	}
-    jacoco {
-        append = false
-        destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-        classDumpFile = file("$buildDir/jacoco/classpathdumps")
-    }
-}
+        {
+            maxParallelForks = 1
+            filter
+                    {
+                        includeTestsMatching "net.codingrodent.InMemoryRecordStore.*"
+                    }
+            jacoco {
+                append = false
+                destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
+                classDumpFile = file("$buildDir/jacoco/classpathdumps")
+            }
+        }
 
 jacocoTestReport {
     reports {
@@ -68,13 +69,13 @@ jacocoTestReport {
         html.destination "${buildDir}/jacocoHtml"
     }
 }
-    
+
 findbugs {
     toolVersion = "3.+"
     sourceSets = [sourceSets.main]
     effort = "max"
     reportLevel = "high"
-    findbugsTest.enabled=false
+    findbugsTest.enabled = false
     ignoreFailures = true
 }
 
@@ -84,11 +85,10 @@ tasks.withType(FindBugs) {
         html.enabled = false
     }
 }
-    
+
 check.dependsOn jacocoTestReport
 test.dependsOn javadoc
-toJar.dependsOn setVersion
-
+compileJava.dependsOn setVersion
 
 dependencies {
     testCompile("junit:junit:4.12")
