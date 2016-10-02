@@ -21,7 +21,7 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record;
 
 import org.junit.*;
 

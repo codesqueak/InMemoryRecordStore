@@ -21,10 +21,10 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record;
 
-import net.codingrodent.InMemoryRecordStore.annotations.*;
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
+import com.codingrodent.InMemoryRecordStore.annotations.*;
+import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 
 import java.lang.reflect.Field;
 import java.util.*;

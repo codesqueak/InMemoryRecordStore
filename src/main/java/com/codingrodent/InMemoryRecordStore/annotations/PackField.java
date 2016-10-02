@@ -21,39 +21,19 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.annotations;
 
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
+import java.lang.annotation.*;
 
 /**
- *
+ * Annotation to mark a field as packable
  */
-public class Reader {
-    private final RecordDescriptor recordDescriptor;
-    private final IMemoryStore memoryStore;
-    private final AlignmentMode mode;
+@Target({ElementType.FIELD})
+@Inherited
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PackField {
+    int order();
 
-    /**
-     * Create a new record reader
-     *
-     * @param memoryStore      Data storage structure
-     * @param recordDescriptor Field type information
-     */
-    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
-        this.recordDescriptor = recordDescriptor;
-        this.memoryStore = memoryStore;
-        this.mode = mode;
-    }
-
-    /**
-     * Read a record at the specified location
-     *
-     * @param loc Location
-     * @return Record
-     */
-    public Object getRecord(final int loc) {
-        return null;
-    }
-
+    int length() default 0;
 }

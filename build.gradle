@@ -53,7 +53,7 @@ test
             maxParallelForks = 1
             filter
                     {
-                        includeTestsMatching "net.codingrodent.InMemoryRecordStore.*"
+                        includeTestsMatching "com.codingrodent.InMemoryRecordStore.*"
                     }
             jacoco {
                 append = false

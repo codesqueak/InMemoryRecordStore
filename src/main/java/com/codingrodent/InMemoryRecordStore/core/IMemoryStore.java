@@ -21,7 +21,7 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.core;
+package com.codingrodent.InMemoryRecordStore.core;
 
 /**
  * This interface defines facilities  to read and write the 'RAM' via methods using all supported types

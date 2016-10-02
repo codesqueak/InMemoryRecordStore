@@ -21,10 +21,10 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.core;
+package com.codingrodent.InMemoryRecordStore.core;
 
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
-import net.codingrodent.InMemoryRecordStore.record.*;
+import com.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
+import com.codingrodent.InMemoryRecordStore.record.*;
 
 /**
  *

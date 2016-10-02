@@ -21,12 +21,12 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.util;
+package com.codingrodent.InMemoryRecordStore.util;
 
 import org.junit.*;
 
-import static net.codingrodent.InMemoryRecordStore.util.BitTwiddling.extend;
-import static net.codingrodent.InMemoryRecordStore.util.BitTwiddling.shrink;
+import static com.codingrodent.InMemoryRecordStore.util.BitTwiddling.extend;
+import static com.codingrodent.InMemoryRecordStore.util.BitTwiddling.shrink;
 import static org.junit.Assert.assertEquals;
 
 /**

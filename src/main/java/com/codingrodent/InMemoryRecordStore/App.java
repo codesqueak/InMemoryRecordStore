@@ -1,4 +1,4 @@
-package net.codingrodent.InMemoryRecordStore;
+package com.codingrodent.InMemoryRecordStore;
 
 /**
  * Test twiddling

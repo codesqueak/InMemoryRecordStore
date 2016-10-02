@@ -21,7 +21,7 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.utility;
+package com.codingrodent.InMemoryRecordStore.utility;
 
 public class Utilities {
     private final static String hexChar = "0123456789ABCDEF";
