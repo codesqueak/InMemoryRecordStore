@@ -21,9 +21,9 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.core;
+package com.codingrodent.InMemoryRecordStore.core;
 
-import net.codingrodent.InMemoryRecordStore.utility.Utilities;
+import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 
 /**
  * This class simulates a block of RAM via the use of an array of int's. Facilities are supplied to

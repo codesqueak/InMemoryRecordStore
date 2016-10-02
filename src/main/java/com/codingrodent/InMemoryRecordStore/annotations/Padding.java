@@ -21,19 +21,19 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.annotations;
+package com.codingrodent.InMemoryRecordStore.annotations;
 
 import java.lang.annotation.*;
 
 /**
- * Annotation to mark a class as a packable record
+ * Annotation to identify unused space for padding
  */
-@Target({ElementType.TYPE})
+@Target({ElementType.FIELD})
 @Inherited
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PackRecord {
-    boolean recordByteAligned() default true;
+public @interface Padding {
+    int length();
 
-    boolean fieldByteAligned() default true;
+    int order();
 }

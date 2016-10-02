@@ -21,28 +21,19 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore;
+package com.codingrodent.InMemoryRecordStore.annotations;
 
-import net.codingrodent.InMemoryRecordStore.annotations.*;
+import java.lang.annotation.*;
 
 /**
- * Test data record
+ * Annotation to mark a class as a packable record
  */
-@PackRecord(recordByteAligned = true, fieldByteAligned = true)
-public class Record {
+@Target({ElementType.TYPE})
+@Inherited
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PackRecord {
+    boolean recordByteAligned() default true;
 
-    @PackField(order = 0, length = 24)
-    public Integer a = 0;
-
-    @PackField(order = 7, length = 16)
-    public int b = 7;
-
-    @PackField(order = 3, length = 16)
-    public int c = 3;
-
-    @PackField(order = 121, length = 1)
-    public boolean d = true;
-
-    @Padding(order = 4, length = 8)
-    public Void v1;
+    boolean fieldByteAligned() default true;
 }

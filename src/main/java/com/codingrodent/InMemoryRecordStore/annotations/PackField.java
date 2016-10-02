@@ -21,7 +21,7 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.annotations;
+package com.codingrodent.InMemoryRecordStore.annotations;
 
 import java.lang.annotation.*;
 

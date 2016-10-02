@@ -21,23 +21,23 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.core;
+package com.codingrodent.InMemoryRecordStore.core;
 
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
-import net.codingrodent.InMemoryRecordStore.record.*;
+import com.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
+import com.codingrodent.InMemoryRecordStore.record.*;
 
 /**
  *
  */
 public class RecordManager {
 
-    private AlignmentMode mode;
-    private int sizeInBits = 0;
-    private int sizeInBytes = 0;
-    private int sizeInWords = 0;
+    private final AlignmentMode mode;
+    private final int sizeInBits;
+    private final int sizeInBytes;
+    private final int sizeInWords;
     private RecordDescriptor recordDescriptor;
-    private Reader reader;
-    private Writer writer;
+    private final Reader reader;
+    private final Writer writer;
 
     /**
      * Create a new In Memory component descriptor
@@ -52,20 +52,27 @@ public class RecordManager {
         }
         this.recordDescriptor = recordDescriptor;
         // Determine size based on the four possible alignment strategies
+        int sizeInBits = 0;
+        int sizeInBytes = 0;
+        int sizeInWords = 0;
         if (recordDescriptor.isFieldByteAligned()) {
             if (recordDescriptor.isRecordByteAligned()) {
                 sizeInBytes = recordDescriptor.getSizeInBytes() * size;
+                sizeInBits = sizeInBytes * 8;
                 mode = AlignmentMode.BYTE_BYTE;
             } else {
                 sizeInBytes = recordDescriptor.getSizeInBytes() * size;
                 mode = AlignmentMode.BYTE_BIT;
+                sizeInBits = sizeInBytes * 8;
             }
         } else {
             if (recordDescriptor.isRecordByteAligned()) {
                 sizeInBytes = recordDescriptor.getSizeInBytes() * size;
+                sizeInBits = sizeInBytes * 8;
                 mode = AlignmentMode.BIT_BYTE;
             } else {
-                sizeInBytes = (((recordDescriptor.getSizeInBits() * size) - 1) >> 3) + 1;
+                sizeInBits = recordDescriptor.getSizeInBits() * size;
+                sizeInBytes = (sizeInBits + 7) >> 3;
                 mode = AlignmentMode.BIT_BIT;
             }
         }
@@ -73,10 +80,12 @@ public class RecordManager {
             throw new UnsupportedOperationException("Alignment mode selected not supported at present (" + mode + ")");
         }
         //
-        sizeInWords = ((sizeInBytes - 1) >> 2) + 1;
-        memoryStore.build(sizeInWords);
+        this.sizeInWords = ((sizeInBytes - 1) >> 2) + 1;
+        this.sizeInBytes = sizeInBytes;
+        this.sizeInBits = sizeInBits;
         this.reader = new Reader(memoryStore, recordDescriptor, mode);
         this.writer = new Writer(memoryStore, recordDescriptor, mode);
+        memoryStore.build(sizeInWords);
     }
 
     /**

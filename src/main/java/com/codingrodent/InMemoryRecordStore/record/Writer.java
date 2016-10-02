@@ -21,39 +21,49 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record;
 
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
+import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 
 /**
  *
  */
-public class Reader {
+public class Writer {
     private RecordDescriptor recordDescriptor;
     private IMemoryStore memoryStore;
-    private AlignmentMode mode;
+    private IMemoryStore.AlignmentMode mode;
 
     /**
-     * Create a new record reader
+     * Create a new record writer
      *
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
+     * @param mode             Alignment mode
      */
-    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
+    public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final IMemoryStore.AlignmentMode mode) {
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
         this.mode = mode;
     }
 
     /**
-     * Read a record at the specified location
+     * Write a record at the specified location
      *
-     * @param loc Location
-     * @return Record
+     * @param loc    Location
+     * @param record Record
      */
-    public Object getRecord(final int loc) {
-        return null;
+    public void putRecord(final int loc, final Object record) {
+        if (!record.getClass().equals(recordDescriptor.getClazz())) {
+            throw new IllegalArgumentException("Type supplied to writer is of the wrong type");
+        }
+        Class<?> c = record.getClass();
+        for (String fieldName : recordDescriptor.getFieldNames()) {
+            try {
+                System.out.println(c.getDeclaredField(fieldName).get(record));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

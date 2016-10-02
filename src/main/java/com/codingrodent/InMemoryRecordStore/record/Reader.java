@@ -21,50 +21,39 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package net.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record;
 
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore;
-import net.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
+import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
+import com.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
 
 /**
  *
  */
-public class Writer {
-    private RecordDescriptor recordDescriptor;
-    private IMemoryStore memoryStore;
-    private AlignmentMode mode;
+public class Reader {
+    private final RecordDescriptor recordDescriptor;
+    private final IMemoryStore memoryStore;
+    private final AlignmentMode mode;
 
     /**
-     * Create a new record writer
+     * Create a new record reader
      *
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
-     * @param mode             Alignment mode
      */
-    public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
+    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
         this.mode = mode;
     }
 
     /**
-     * Write a record at the specified location
+     * Read a record at the specified location
      *
-     * @param loc    Location
-     * @param record Record
+     * @param loc Location
+     * @return Record
      */
-    public void putRecord(final int loc, final Object record) {
-        if (!record.getClass().equals(recordDescriptor.getClazz())) {
-            throw new IllegalArgumentException("Type supplied to writer is of the wrong type");
-        }
-        Class<?> c = record.getClass();
-        for (String fieldName : recordDescriptor.getFieldNames()) {
-            try {
-                System.out.println(c.getDeclaredField(fieldName).get(record));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    public Object getRecord(final int loc) {
+        return null;
     }
 
 }
