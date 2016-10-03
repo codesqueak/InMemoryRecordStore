@@ -52,9 +52,8 @@ public class RecordManager {
         }
         this.recordDescriptor = recordDescriptor;
         // Determine size based on the four possible alignment strategies
-        int sizeInBits = 0;
-        int sizeInBytes = 0;
-        int sizeInWords = 0;
+        int sizeInBits;
+        int sizeInBytes;
         if (recordDescriptor.isFieldByteAligned()) {
             if (recordDescriptor.isRecordByteAligned()) {
                 sizeInBytes = recordDescriptor.getSizeInBytes() * size;
@@ -80,9 +79,9 @@ public class RecordManager {
             throw new UnsupportedOperationException("Alignment mode selected not supported at present (" + mode + ")");
         }
         //
-        this.sizeInWords = ((sizeInBytes - 1) >> 2) + 1;
         this.sizeInBytes = sizeInBytes;
         this.sizeInBits = sizeInBits;
+        this.sizeInWords = ((sizeInBytes - 1) >> 2) + 1;
         this.reader = new Reader(memoryStore, recordDescriptor, mode);
         this.writer = new Writer(memoryStore, recordDescriptor, mode);
         memoryStore.build(sizeInWords);

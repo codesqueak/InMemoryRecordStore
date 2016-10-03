@@ -29,6 +29,10 @@ import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
  *
  */
 public class Writer {
+
+    private byte ZERO = (byte) 0;
+    private byte ONE = (byte) 1;
+
     private RecordDescriptor recordDescriptor;
     private IMemoryStore memoryStore;
     private IMemoryStore.AlignmentMode mode;
@@ -54,16 +58,73 @@ public class Writer {
      */
     public void putRecord(final int loc, final Object record) {
         if (!record.getClass().equals(recordDescriptor.getClazz())) {
-            throw new IllegalArgumentException("Type supplied to writer is of the wrong type");
+            throw new IllegalArgumentException("Object supplied to writer is of the wrong type");
         }
         Class<?> c = record.getClass();
+        int pos = 0;
         for (String fieldName : recordDescriptor.getFieldNames()) {
             try {
                 System.out.println(c.getDeclaredField(fieldName).get(record));
+                //
+                RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(pos);
+                byte[] packed = packBytes(c.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
         }
+    }
+
+    //
+    //
+    //
+
+    private byte[] packBytes(Object value, int length, IMemoryStore.Type type) {
+        byte[] data = new byte[length];
+        //
+        // Don't forget - you can't make things longer !
+        switch (type) {
+            case Bit:
+                data[0] = (Boolean) value ? ONE : ZERO;
+                break;
+            case Word64: {
+                long v = (Long) value;
+                for (int i = 7; i >= 0; i--) {
+                    data[i] = (byte) (v & 0xFF);
+                    v = v >> 8;
+                }
+            }
+            break;
+            case Byte8:
+                data[0] = (Byte) value;
+                break;
+            case Short16: {
+                short v = (short) value;
+                data[1] = (byte) (v & 0xFF);
+                data[0] = (byte) (v >>> 8);
+                break;
+            }
+            case Word32: {
+                int v = (int) value;
+                data[3] = (byte) (v & 0xFF);
+                data[2] = (byte) ((v >>> 8) & 0xFF);
+                data[1] = (byte) ((v >>> 8) & 0xFF);
+                data[0] = (byte) (v >>> 8);
+                break;
+            }
+            case Char16: {
+                char v = (char) value;
+                data[1] = (byte) (v & 0xFF);
+                data[0] = (byte) (v >>> 8);
+                break;
+            }
+            case Void:
+                break;
+        }
+        //
+        return data;
+
     }
 
 }

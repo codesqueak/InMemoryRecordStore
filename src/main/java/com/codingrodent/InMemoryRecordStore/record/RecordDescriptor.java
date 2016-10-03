@@ -128,7 +128,11 @@ public class RecordDescriptor {
         return fieldNames;
     }
 
-    private static class FieldDetails {
+    public FieldDetails getFieldDetails(final int field) {
+        return fieldDetails[field];
+    }
+
+    static class FieldDetails {
 
         private IMemoryStore.Type type;
         private String fieldName;
@@ -137,34 +141,41 @@ public class RecordDescriptor {
         private int byteLength;
         private boolean padding;
 
-        FieldDetails(Class<?> clazz, String fieldName, Integer order, Integer length, boolean padding) {
+        FieldDetails(Class<?> clazz, String fieldName, int order, int length, boolean padding) {
             switch (clazz.getName()) {
                 case "boolean":
                 case "java.lang.Boolean":
                     type = IMemoryStore.Type.Bit;
+                    length = length > 8 ? 8 : length;
                     break;
                 case "byte":
                 case "java.lang.Byte":
                     type = IMemoryStore.Type.Byte8;
+                    length = length > 8 ? 8 : length;
                     break;
                 case "short":
                 case "java.lang.Short":
                     type = IMemoryStore.Type.Short16;
+                    length = length > 16 ? 16 : length;
                     break;
                 case "int":
                 case "java.lang.Integer":
                     type = IMemoryStore.Type.Word32;
+                    length = length > 32 ? 32 : length;
                     break;
                 case "long":
                 case "java.lang.Long":
                     type = IMemoryStore.Type.Word64;
+                    length = length > 64 ? 64 : length;
                     break;
                 case "char":
                 case "java.lang.Character":
                     type = IMemoryStore.Type.Char16;
+                    length = length > 16 ? 16 : length;
                     break;
                 case "java.lang.Void":
                     type = IMemoryStore.Type.Void;
+                    length = length > 64 ? 64 : length;
                     break;
                 default:
                     throw new IllegalArgumentException("Unsupported packing type. " + clazz.getName());
