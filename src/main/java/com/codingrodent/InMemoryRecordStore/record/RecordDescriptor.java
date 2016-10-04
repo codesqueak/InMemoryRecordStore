@@ -38,7 +38,7 @@ public class RecordDescriptor {
     private final boolean fieldByteAligned;
     private final int sizeInBits;
     private final int sizeInBytes;
-    private final FieldDetails[] fieldDetails;
+    private final HashMap<String, FieldDetails> fieldDetailsMap;
     private final List<String> fieldNames;
 
     /**
@@ -88,6 +88,7 @@ public class RecordDescriptor {
         //
         // Calculate storage requirements
         int sizeInBits = 0;
+        HashMap<String, FieldDetails> fieldDetailsMap = new HashMap<>();
         for (FieldDetails field : fieldDetails) {
             fieldNames.add(field.getFieldName());
             if (fieldByteAligned) {
@@ -97,10 +98,11 @@ public class RecordDescriptor {
                 // pack at bit level
                 sizeInBits = sizeInBits + field.getBitLength();
             }
+            fieldDetailsMap.put(field.getFieldName(), field);
         }
         this.sizeInBits = sizeInBits;
         this.sizeInBytes = ((sizeInBits - 1) >> 3) + 1;
-        this.fieldDetails = fieldDetails;
+        this.fieldDetailsMap = fieldDetailsMap;
         this.fieldNames = Collections.unmodifiableList(fieldNames);
     }
 
@@ -128,8 +130,8 @@ public class RecordDescriptor {
         return fieldNames;
     }
 
-    public FieldDetails getFieldDetails(final int field) {
-        return fieldDetails[field];
+    public FieldDetails getFieldDetails(final String fieldName) {
+        return fieldDetailsMap.get(fieldName);
     }
 
     static class FieldDetails {

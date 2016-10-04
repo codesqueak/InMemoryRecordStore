@@ -24,14 +24,16 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
+import com.codingrodent.InMemoryRecordStore.util.BitTwiddling;
+import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 
 /**
  *
  */
 public class Writer {
 
-    private byte ZERO = (byte) 0;
-    private byte ONE = (byte) 1;
+    private final static byte ZERO = (byte) 0;
+    private final static byte ONE = (byte) 1;
 
     private RecordDescriptor recordDescriptor;
     private IMemoryStore memoryStore;
@@ -62,68 +64,83 @@ public class Writer {
         }
         Class<?> c = record.getClass();
         int pos = 0;
+        byte[] data = new byte[recordDescriptor.getSizeInBytes()];
         for (String fieldName : recordDescriptor.getFieldNames()) {
             try {
                 System.out.println(c.getDeclaredField(fieldName).get(record));
                 //
-                RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(pos);
-                byte[] packed = packBytes(c.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+                RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
+                pos = packBytes(pos, data, c.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-
         }
+        for (byte b : data) {
+            System.out.print(Utilities.getByte(b) + " ");
+        }
+        System.out.println();
     }
 
     //
     //
     //
 
-    private byte[] packBytes(Object value, int length, IMemoryStore.Type type) {
-        byte[] data = new byte[length];
+    private int packBytes(int pos, byte[] data, Object value, int length, IMemoryStore.Type type) {
+
         //
         // Don't forget - you can't make things longer !
         switch (type) {
             case Bit:
-                data[0] = (Boolean) value ? ONE : ZERO;
+                data[pos++] = (Boolean) value ? ONE : ZERO;
                 break;
             case Word64: {
                 long v = (Long) value;
-                for (int i = 7; i >= 0; i--) {
-                    data[i] = (byte) (v & 0xFF);
-                    v = v >> 8;
+                if (length < 8)
+                    v = BitTwiddling.shrink(v, 8 * length);
+                for (int i = length - 1; i >= 0; i--) {
+                    data[pos + i] = (byte) (v & 0xFF);
+                    v = v >>> 8;
                 }
+                pos = pos + length;
             }
             break;
             case Byte8:
-                data[0] = (Byte) value;
+                data[pos++] = (Byte) value;
                 break;
             case Short16: {
                 short v = (short) value;
-                data[1] = (byte) (v & 0xFF);
-                data[0] = (byte) (v >>> 8);
+                if (1 == length)
+                    v = BitTwiddling.shrink(v, 8);
+                data[pos + 1] = (byte) (v & 0xFF);
+                data[pos++] = (byte) (v >>> 8);
+                pos++;
                 break;
             }
             case Word32: {
                 int v = (int) value;
-                data[3] = (byte) (v & 0xFF);
-                data[2] = (byte) ((v >>> 8) & 0xFF);
-                data[1] = (byte) ((v >>> 8) & 0xFF);
-                data[0] = (byte) (v >>> 8);
+                if (length < 4)
+                    v = BitTwiddling.shrink(v, 8 * length);
+                for (int i = length - 1; i >= 0; i--) {
+                    data[pos + i] = (byte) (v & 0xFF);
+                    v = v >>> 8;
+                }
+                pos = pos + length;
                 break;
             }
             case Char16: {
                 char v = (char) value;
-                data[1] = (byte) (v & 0xFF);
-                data[0] = (byte) (v >>> 8);
+                data[pos + 1] = (byte) (v & 0xFF);
+                data[pos++] = (byte) (v >>> 8);
+                pos++;
                 break;
             }
             case Void:
+                pos = pos + length;
                 break;
         }
         //
-        return data;
+        return pos;
 
     }
 

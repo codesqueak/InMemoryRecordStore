@@ -28,7 +28,8 @@ package com.codingrodent.InMemoryRecordStore.util;
  */
 public class BitTwiddling {
     private final static int[] EXTEND = new int[33];
-    private final static int[] SHRINK = new int[33];
+    private final static int[] SHRINK32 = new int[33];
+    private final static long[] SHRINK64 = new long[65];
 
     // Predefined bit masks
     static {
@@ -36,9 +37,13 @@ public class BitTwiddling {
         for (int i = 2; i <= 32; i++) {
             EXTEND[i] = EXTEND[i - 1] << 1;
         }
-        SHRINK[32] = 0xFFFF_FFFF;
+        SHRINK32[32] = 0xFFFF_FFFF;
         for (int i = 31; i >= 0; i--) {
-            SHRINK[i] = SHRINK[i + 1] >>> 1;
+            SHRINK32[i] = SHRINK32[i + 1] >>> 1;
+        }
+        SHRINK64[64] = 0xFFFF_FFFF_FFFF_FFFFL;
+        for (int i = 31; i >= 0; i--) {
+            SHRINK64[i] = SHRINK64[i + 1] >>> 1;
         }
     }
 
@@ -52,7 +57,7 @@ public class BitTwiddling {
     }
 
     public static byte shrink(final byte val, final int bits) {
-        return (byte) (val & SHRINK[bits]);
+        return (byte) (val & SHRINK32[bits]);
     }
 
     public static short extend(final short val, final int bits) {
@@ -61,7 +66,7 @@ public class BitTwiddling {
     }
 
     public static short shrink(final short val, final int bits) {
-        return (short) (val & SHRINK[bits]);
+        return (short) (val & SHRINK32[bits]);
     }
 
     public static int extend(final int val, final int bits) {
@@ -70,6 +75,10 @@ public class BitTwiddling {
     }
 
     public static int shrink(final int val, final int bits) {
-        return val & SHRINK[bits];
+        return val & SHRINK32[bits];
+    }
+
+    public static long shrink(final long val, final int bits) {
+        return val & SHRINK64[bits];
     }
 }
