@@ -70,7 +70,7 @@ public class Writer {
                 System.out.println(c.getDeclaredField(fieldName).get(record));
                 //
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-                pos = packBytes(pos, data, c.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+                pos = PackFieldIntoBytes(pos, data, c.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -80,14 +80,15 @@ public class Writer {
             System.out.print(Utilities.getByte(b) + " ");
         }
         System.out.println();
+
+        memoryStore.setByteArray(loc * recordDescriptor.getSizeInBytes(), data);
     }
 
     //
     //
     //
 
-    private int packBytes(int pos, byte[] data, Object value, int length, IMemoryStore.Type type) {
-
+    private int PackFieldIntoBytes(int pos, byte[] data, Object value, int length, IMemoryStore.Type type) {
         //
         // Don't forget - you can't make things longer !
         switch (type) {
@@ -139,9 +140,7 @@ public class Writer {
                 pos = pos + length;
                 break;
         }
-        //
         return pos;
-
     }
 
 }

@@ -112,6 +112,22 @@ public class TestArrayMemoryStore {
     }
 
     @Test
+    public void testGetLongWord() {
+        try {
+            core.setLongWord(0, 0x00112233_44556677L);
+            core.setLongWord(8, 0x8899AABB_CCDDEEFFL);
+            //
+            assertEquals(core.getLongWord(0), 0x00112233_44556677L);
+            assertEquals(core.getLongWord(1), 0x11223344_55667788L);
+            assertEquals(core.getLongWord(2), 0x22334455_66778899L);
+            assertEquals(core.getLongWord(3), 0x33445566_778899AAL);
+            //
+        } catch (final Exception e) {
+            fail("Unexpected exception: " + e.getMessage());
+        }
+    }
+
+    @Test
     public void testGetWord24() {
         try {
             core.setWord(0, 0x00112233);
@@ -305,6 +321,16 @@ public class TestArrayMemoryStore {
             assertEquals(core.getWord(3), 0x00000000);
         } catch (final Exception e) {
             fail("Unexpected exception: " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void testGetByteArray() {
+        byte[] data = {0x00, 0x01, (byte) 0xFF, (byte) 0xFE, (byte) 0x80, 0x7F};
+        core.setByteArray(0, data);
+        byte[] result = core.getByteArray(0, data.length);
+        for (int i = 0; i < data.length; i++) {
+            assertEquals(data[i], result[i]);
         }
     }
 

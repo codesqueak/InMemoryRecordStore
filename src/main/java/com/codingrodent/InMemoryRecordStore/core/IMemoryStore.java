@@ -32,6 +32,13 @@ public interface IMemoryStore {
     int MAX_WORDS = MAX_BYTES / 4;
     long LSLW = 0x00000000FFFFFFFFL;
 
+    enum AlignmentMode {BIT_BIT, BIT_BYTE, BYTE_BIT, BYTE_BYTE}
+
+    enum Type {
+        Bit, Byte8, Short16, Word32, Word64, Char16, Void
+    }
+
+
     /**
      * Build the storage
      *
@@ -102,6 +109,14 @@ public interface IMemoryStore {
     byte getByte(final int address);
 
     /**
+     * Write a byte of memory to a any address. This operation is always treated as unaligned
+     *
+     * @param address   Address to be written to (Will wrap if too large)
+     * @param size Bytes to be read from memory
+     */
+    byte[] getByteArray(int address, final int size);
+
+    /**
      * Write a word of memory to a any address. his operation is always treated as unaligned
      *
      * @param address Address to be written to (Will wrap if too large)
@@ -144,6 +159,14 @@ public interface IMemoryStore {
     void setByte(final int address, final byte byteValue);
 
     /**
+     * Write a byte of memory to a any address. This operation is always treated as unaligned
+     *
+     * @param address   Address to be written to (Will wrap if too large)
+     * @param byteValues Bytes to be written to memory
+     */
+    void setByteArray(int address, final byte[] byteValues);
+
+    /**
      * Validate an address, and if OK wrap on the size of the memory allocated
      *
      * @param address Address to be checked
@@ -155,12 +178,6 @@ public interface IMemoryStore {
             throw new IllegalArgumentException("Address out of range");
         }
         return (address % getBytes()) >> 2;
-    }
-
-    enum AlignmentMode {BIT_BIT, BIT_BYTE, BYTE_BIT, BYTE_BYTE}
-
-    enum Type {
-        Bit, Byte8, Short16, Word32, Word64, Char16, Void
     }
 
 }

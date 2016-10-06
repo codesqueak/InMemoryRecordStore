@@ -235,6 +235,20 @@ public class ArrayMemoryStore implements IMemoryStore {
     }
 
     /**
+     * Write a byte of memory to a any address. This operation is always treated as unaligned
+     *
+     * @param address Address to be written to (Will wrap if too large)
+     * @param size    Bytes to be read from memory
+     */
+    public byte[] getByteArray(int address, final int size) {
+        byte[] data = new byte[size];
+        for (int i = 0; i < size; i++) {
+            data[i] = getByte(address++);
+        }
+        return data;
+    }
+
+    /**
      * Write a word of memory to a any address. his operation is always treated as unaligned
      *
      * @param address Address to be written to (Will wrap if too large)
@@ -401,6 +415,19 @@ public class ArrayMemoryStore implements IMemoryStore {
         core[validAddress1] = word1;
     }
 
+    /**
+     * Write a byte of memory to a any address. This operation is always treated as unaligned
+     *
+     * @param address    Address to be written to (Will wrap if too large)
+     * @param byteValues Bytes to be written to memory
+     */
+    @Override
+    public void setByteArray(int address, final byte[] byteValues) {
+        for (int i = 0; i < byteValues.length; i++) {
+            setByte(address++, byteValues[i]);
+        }
+    }
+
     // ******************************************************************************
     // ******************************************************************************
     // ******************************************************************************
@@ -411,10 +438,6 @@ public class ArrayMemoryStore implements IMemoryStore {
      * @param length Number of words of memory to dump from the core store
      */
     public void dump(int length) {
-        //		if (length > core.length)
-        //		{
-        //			length = core.length;
-        //		}
         for (int i = 0; i < length; i++) {
             if (0 == (i % 4)) {
                 System.out.println();
