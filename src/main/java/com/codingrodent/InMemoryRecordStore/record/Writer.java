@@ -96,11 +96,11 @@ public class Writer {
      * @param pos       Write position
      * @param buffer    Byte buffer
      * @param value     Object to be written. Actual type from record.
-     * @param bitLength Write length in bits
+     * @param byteLength Write length in bytes
      * @param type      Object type
      * @return Next free byte in the buffer
      */
-    private int PackFieldIntoBytes(int pos, byte[] buffer, Object value, int bitLength, IMemoryStore.Type type) {
+    private int PackFieldIntoBytes(int pos, byte[] buffer, Object value, int byteLength, IMemoryStore.Type type) {
         //
         // Don't forget - you can't make things longer !
         switch (type) {
@@ -109,13 +109,13 @@ public class Writer {
                 break;
             case Word64: {
                 long v = (Long) value;
-                if (bitLength < 8)
-                    v = BitTwiddling.shrink(v, 8 * bitLength);
-                for (int i = bitLength - 1; i >= 0; i--) {
+                if (byteLength < 8)
+                    v = BitTwiddling.shrink(v, 8 * byteLength);
+                for (int i = byteLength - 1; i >= 0; i--) {
                     buffer[pos + i] = (byte) (v & 0xFF);
                     v = v >>> 8;
                 }
-                pos = pos + bitLength;
+                pos = pos + byteLength;
             }
             break;
             case Byte8:
@@ -123,7 +123,7 @@ public class Writer {
                 break;
             case Short16: {
                 short v = (Short) value;
-                if (1 == bitLength)
+                if (1 == byteLength)
                     v = BitTwiddling.shrink(v, 8);
                 buffer[pos + 1] = (byte) (v & 0xFF);
                 buffer[pos++] = (byte) (v >>> 8);
@@ -132,13 +132,13 @@ public class Writer {
             }
             case Word32: {
                 int v = (Integer) value;
-                if (bitLength < 4)
-                    v = BitTwiddling.shrink(v, 8 * bitLength);
-                for (int i = bitLength - 1; i >= 0; i--) {
+                if (byteLength < 4)
+                    v = BitTwiddling.shrink(v, 8 * byteLength);
+                for (int i = byteLength - 1; i >= 0; i--) {
                     buffer[pos + i] = (byte) (v & 0xFF);
                     v = v >>> 8;
                 }
-                pos = pos + bitLength;
+                pos = pos + byteLength;
                 break;
             }
             case Char16: {
@@ -149,7 +149,7 @@ public class Writer {
                 break;
             }
             case Void:
-                pos = pos + bitLength;
+                pos = pos + byteLength;
                 break;
         }
         return pos;
