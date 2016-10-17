@@ -49,11 +49,27 @@ public class Reader {
     /**
      * Read a record at the specified location
      *
-     * @param loc Location
+     * @param location Location
      * @return Record
      */
-    public Object getRecord(final int loc) {
+    public Object getRecord(final int location) {
+        int address = location * recordDescriptor.getSizeInBytes();
+        //
+        for (String fieldName : recordDescriptor.getFieldNames()) {
+            RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
+            unpackFieldIntoObject(address, fieldDetails);
+            address = address + fieldDetails.getByteLength();
+        }
+        //
         return null;
     }
 
+    //
+    //
+    //
+
+    private Object unpackFieldIntoObject(int address, RecordDescriptor.FieldDetails fieldDetails) {
+        System.out.println(address + " : " + fieldDetails.getType() + " : " + fieldDetails.getFieldName() + " : " + fieldDetails.getByteLength());
+        return null;
+    }
 }

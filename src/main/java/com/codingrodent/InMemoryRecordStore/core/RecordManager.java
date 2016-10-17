@@ -35,9 +35,9 @@ public class RecordManager {
     private final int sizeInBits;
     private final int sizeInBytes;
     private final int sizeInWords;
-    private RecordDescriptor recordDescriptor;
     private final Reader reader;
     private final Writer writer;
+    private RecordDescriptor recordDescriptor;
 
     /**
      * Create a new In Memory component descriptor
@@ -90,22 +90,22 @@ public class RecordManager {
     /**
      * Read a record at the specified location
      *
-     * @param loc Location
+     * @param location Location
      * @return Record
      */
-    public Object getRecord(final int loc) {
-        Object record = reader.getRecord(loc);
+    public Object getRecord(final int location) {
+        Object record = reader.getRecord(location);
         return recordDescriptor.getClazz().cast(record);
     }
 
     /**
      * Write a record at the specified location
      *
-     * @param loc    Location
+     * @param location    Location
      * @param record Record
      */
-    public void putRecord(final int loc, final Object record) {
-        writer.putRecord(loc, record);
+    public void putRecord(final int location, final Object record) {
+        writer.putRecord(location, record);
     }
 
     // ******************************************************************************

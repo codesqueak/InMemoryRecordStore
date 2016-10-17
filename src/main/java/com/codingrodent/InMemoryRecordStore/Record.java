@@ -28,7 +28,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 /**
  * Test data record
  */
-@PackRecord(recordByteAligned = true, fieldByteAligned = true)
+@PackRecord()
 public class Record {
 
     @PackField(order = 0, length = 24)

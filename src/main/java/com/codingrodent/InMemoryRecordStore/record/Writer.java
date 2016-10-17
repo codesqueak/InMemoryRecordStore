@@ -31,13 +31,11 @@ import com.codingrodent.InMemoryRecordStore.utility.Utilities;
  *
  */
 public class Writer {
-
     private final static byte ZERO = (byte) 0;
     private final static byte ONE = (byte) 1;
-
-    private RecordDescriptor recordDescriptor;
-    private IMemoryStore memoryStore;
-    private IMemoryStore.AlignmentMode mode;
+    private final RecordDescriptor recordDescriptor;
+    private final IMemoryStore memoryStore;
+    private final IMemoryStore.AlignmentMode mode;
 
     /**
      * Create a new record writer
@@ -62,15 +60,15 @@ public class Writer {
         if (!record.getClass().equals(recordDescriptor.getClazz())) {
             throw new IllegalArgumentException("Object supplied to writer is of the wrong type");
         }
-        Class<?> c = record.getClass();
+        Class<?> clazz = record.getClass();
         int pos = 0;
         byte[] data = new byte[recordDescriptor.getSizeInBytes()];
         for (String fieldName : recordDescriptor.getFieldNames()) {
             try {
-                System.out.println(c.getDeclaredField(fieldName).get(record));
+                System.out.println(clazz.getDeclaredField(fieldName).get(record));
                 //
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-                pos = PackFieldIntoBytes(pos, data, c.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+                pos = PackFieldIntoBytes(pos, data, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -80,64 +78,78 @@ public class Writer {
             System.out.print(Utilities.getByte(b) + " ");
         }
         System.out.println();
-
-        memoryStore.setByteArray(loc * recordDescriptor.getSizeInBytes(), data);
+        int byteSize = recordDescriptor.getSizeInBytes();
+        int writeLocation = loc * byteSize;
+        if ((memoryStore.getBytes() - writeLocation) < byteSize) {
+            throw new IndexOutOfBoundsException("Write location beyond end of storage");
+        }
+        memoryStore.setByteArray(writeLocation, data);
     }
 
     //
     //
     //
 
-    private int PackFieldIntoBytes(int pos, byte[] data, Object value, int length, IMemoryStore.Type type) {
+    /**
+     * Pack an annotated field into the byte storage for a record
+     *
+     * @param pos       Write position
+     * @param buffer    Byte buffer
+     * @param value     Object to be written. Actual type from record.
+     * @param bitLength Write length in bits
+     * @param type      Object type
+     * @return Next free byte in the buffer
+     */
+    private int PackFieldIntoBytes(int pos, byte[] buffer, Object value, int bitLength, IMemoryStore.Type type) {
         //
         // Don't forget - you can't make things longer !
         switch (type) {
             case Bit:
-                data[pos++] = (Boolean) value ? ONE : ZERO;
+                buffer[pos++] = (Boolean) value ? ONE : ZERO;
                 break;
             case Word64: {
                 long v = (Long) value;
-                if (length < 8)
-                    v = BitTwiddling.shrink(v, 8 * length);
-                for (int i = length - 1; i >= 0; i--) {
-                    data[pos + i] = (byte) (v & 0xFF);
+                if (bitLength < 8)
+                    v = BitTwiddling.shrink(v, 8 * bitLength);
+                for (int i = bitLength - 1; i >= 0; i--) {
+                    buffer[pos + i] = (byte) (v & 0xFF);
                     v = v >>> 8;
                 }
-                pos = pos + length;
+                pos = pos + bitLength;
             }
             break;
             case Byte8:
-                data[pos++] = (Byte) value;
+                buffer[pos++] = (Byte) value;
                 break;
             case Short16: {
-                short v = (short) value;
-                if (1 == length)
+                short v = (Short) value;
+                if (1 == bitLength)
                     v = BitTwiddling.shrink(v, 8);
-                data[pos + 1] = (byte) (v & 0xFF);
-                data[pos++] = (byte) (v >>> 8);
+                buffer[pos + 1] = (byte) (v & 0xFF);
+                buffer[pos++] = (byte) (v >>> 8);
                 pos++;
                 break;
             }
             case Word32: {
-                int v = (int) value;
-                if (length < 4)
-                    v = BitTwiddling.shrink(v, 8 * length);
-                for (int i = length - 1; i >= 0; i--) {
-                    data[pos + i] = (byte) (v & 0xFF);
+                int v = (Integer) value;
+                if (bitLength < 4)
+                    v = BitTwiddling.shrink(v, 8 * bitLength);
+                for (int i = bitLength - 1; i >= 0; i--) {
+                    buffer[pos + i] = (byte) (v & 0xFF);
                     v = v >>> 8;
                 }
-                pos = pos + length;
+                pos = pos + bitLength;
                 break;
             }
             case Char16: {
-                char v = (char) value;
-                data[pos + 1] = (byte) (v & 0xFF);
-                data[pos++] = (byte) (v >>> 8);
+                char v = (Character) value;
+                buffer[pos + 1] = (byte) (v & 0xFF);
+                buffer[pos++] = (byte) (v >>> 8);
                 pos++;
                 break;
             }
             case Void:
-                pos = pos + length;
+                pos = pos + bitLength;
                 break;
         }
         return pos;

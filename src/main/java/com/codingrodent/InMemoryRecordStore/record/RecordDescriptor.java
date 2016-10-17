@@ -63,13 +63,13 @@ public class RecordDescriptor {
         for (Field field : fields) {
             PackField packFieldAnnotation = field.getAnnotation(PackField.class);
             if (null != packFieldAnnotation) {
-                fieldList.add(new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.length(), false));
+                fieldList.add(new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.length()));
             } else {
                 Padding paddingFieldAnnotation = field.getAnnotation(Padding.class);
                 if (null != paddingFieldAnnotation) {
                     Class paddingClass = field.getType();
                     if (paddingClass.getTypeName().equals(Void.class.getTypeName())) {
-                        fieldList.add(new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.length(), true));
+                        fieldList.add(new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.length()));
                     } else {
                         throw new IllegalArgumentException("@Padding can only be used on Void fields");
                     }
@@ -143,7 +143,15 @@ public class RecordDescriptor {
         private int byteLength;
         private boolean padding;
 
-        FieldDetails(Class<?> clazz, String fieldName, int order, int length, boolean padding) {
+        /**
+         * Create details for one annotated field
+         *
+         * @param clazz     Class of field
+         * @param fieldName Name of field
+         * @param order     Posotion in packing order
+         * @param length    Length in bits
+         */
+        FieldDetails(Class<?> clazz, String fieldName, int order, int length) {
             switch (clazz.getName()) {
                 case "boolean":
                 case "java.lang.Boolean":
@@ -186,7 +194,6 @@ public class RecordDescriptor {
             this.order = order;
             this.bitLength = length;
             this.byteLength = ((length - 1) >> 3) + 1;
-            this.padding = padding;
         }
 
         IMemoryStore.Type getType() {

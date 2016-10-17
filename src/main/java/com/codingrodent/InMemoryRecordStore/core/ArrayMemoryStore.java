@@ -423,8 +423,8 @@ public class ArrayMemoryStore implements IMemoryStore {
      */
     @Override
     public void setByteArray(int address, final byte[] byteValues) {
-        for (int i = 0; i < byteValues.length; i++) {
-            setByte(address++, byteValues[i]);
+        for (byte byteValue : byteValues) {
+            setByte(address++, byteValue);
         }
     }
 
