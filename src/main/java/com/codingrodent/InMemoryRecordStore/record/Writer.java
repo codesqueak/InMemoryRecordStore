@@ -93,11 +93,11 @@ public class Writer {
     /**
      * Pack an annotated field into the byte storage for a record
      *
-     * @param pos       Write position
-     * @param buffer    Byte buffer
-     * @param value     Object to be written. Actual type from record.
+     * @param pos        Write position
+     * @param buffer     Byte buffer
+     * @param value      Object to be written. Actual type from record.
      * @param byteLength Write length in bytes
-     * @param type      Object type
+     * @param type       Object type
      * @return Next free byte in the buffer
      */
     private int PackFieldIntoBytes(int pos, byte[] buffer, Object value, int byteLength, IMemoryStore.Type type) {
@@ -123,11 +123,14 @@ public class Writer {
                 break;
             case Short16: {
                 short v = (Short) value;
-                if (1 == byteLength)
+                if (1 == byteLength) {
                     v = BitTwiddling.shrink(v, 8);
-                buffer[pos + 1] = (byte) (v & 0xFF);
-                buffer[pos++] = (byte) (v >>> 8);
-                pos++;
+                    buffer[pos++] = (byte) (v & 0xFF);
+                } else {
+                    buffer[pos + 1] = (byte) (v & 0xFF);
+                    buffer[pos++] = (byte) (v >>> 8);
+                    pos++;
+                }
                 break;
             }
             case Word32: {
@@ -143,9 +146,13 @@ public class Writer {
             }
             case Char16: {
                 char v = (Character) value;
-                buffer[pos + 1] = (byte) (v & 0xFF);
-                buffer[pos++] = (byte) (v >>> 8);
-                pos++;
+                if (1 == byteLength) {
+                    buffer[pos++] = (byte) (byte) (v & 0xFF);
+                } else {
+                    buffer[pos + 1] = (byte) (v & 0xFF);
+                    buffer[pos++] = (byte) (v >>> 8);
+                    pos++;
+                }
                 break;
             }
             case Void:
@@ -154,5 +161,4 @@ public class Writer {
         }
         return pos;
     }
-
 }
