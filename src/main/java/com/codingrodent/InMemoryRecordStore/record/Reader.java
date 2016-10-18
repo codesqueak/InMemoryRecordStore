@@ -53,12 +53,15 @@ public class Reader {
      * @return Record
      */
     public Object getRecord(final int location) {
-        int address = location * recordDescriptor.getSizeInBytes();
+        int pos = 0;
+        int byteSize = recordDescriptor.getSizeInBytes();
+        int address = location * byteSize;
+        byte[] buffer = memoryStore.getByteArray(address, byteSize);
         //
         for (String fieldName : recordDescriptor.getFieldNames()) {
             RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-            unpackFieldIntoObject(address, fieldDetails);
-            address = address + fieldDetails.getByteLength();
+            unpackFieldIntoObject(pos, buffer, recordDescriptor, fieldName);
+            pos = pos + fieldDetails.getByteLength();
         }
         //
         return null;
@@ -68,8 +71,39 @@ public class Reader {
     //
     //
 
-    private Object unpackFieldIntoObject(int address, RecordDescriptor.FieldDetails fieldDetails) {
-        System.out.println(address + " : " + fieldDetails.getType() + " : " + fieldDetails.getFieldName() + " : " + fieldDetails.getByteLength());
+    private Object unpackFieldIntoObject(int pos, byte[] buffer, RecordDescriptor recordDescriptor, String fieldName) {
+        RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
+        IMemoryStore.Type type = fieldDetails.getType();
+        int byteSize = fieldDetails.getByteLength();
+        Object o = null;
+        try {
+            o = recordDescriptor.getClazz().newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        //
+        System.out.println(pos + " : " + type + " : " + fieldName + " : " + byteSize + " : " + o);
+
+        //
+        switch (fieldDetails.getType()) {
+            case Bit:
+                break;
+            case Byte8:
+                break;
+            case Char16:
+                break;
+            case Short16:
+                break;
+            case Word32:
+                break;
+            case Word64:
+                break;
+            case Void:
+                break;
+        }
+        //
         return null;
     }
 }
