@@ -25,6 +25,9 @@ package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 import com.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
+import com.codingrodent.InMemoryRecordStore.util.BitTwiddling;
+
+import java.lang.reflect.Field;
 
 /**
  *
@@ -58,52 +61,88 @@ public class Reader {
         int address = location * byteSize;
         byte[] buffer = memoryStore.getByteArray(address, byteSize);
         //
-        for (String fieldName : recordDescriptor.getFieldNames()) {
-            RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-            unpackFieldIntoObject(pos, buffer, recordDescriptor, fieldName);
-            pos = pos + fieldDetails.getByteLength();
+        Object target = null;
+        Class clazz = recordDescriptor.getClazz();
+        try {
+            target = clazz.newInstance();
+            for (String fieldName : recordDescriptor.getFieldNames()) {
+                RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
+                pos = unpackFieldIntoObject(target, target.getClass().getDeclaredField(fieldName), pos, buffer, fieldDetails);
+            }
+        } catch (IllegalAccessException | InstantiationException | NoSuchFieldException e) {
+            e.printStackTrace();
         }
-        //
-        return null;
+        return target;
     }
 
     //
     //
     //
 
-    private Object unpackFieldIntoObject(int pos, byte[] buffer, RecordDescriptor recordDescriptor, String fieldName) {
-        RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
+    private int unpackFieldIntoObject(Object target, Field field, int pos, byte[] buffer, RecordDescriptor.FieldDetails fieldDetails) {
         IMemoryStore.Type type = fieldDetails.getType();
         int byteSize = fieldDetails.getByteLength();
-        Object o = null;
+        //
+        System.out.println(pos + " : " + type + " : " + fieldDetails.getFieldName() + " : " + byteSize + " : " + target);
         try {
-            o = recordDescriptor.getClazz().newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
+            switch (fieldDetails.getType()) {
+                case Bit: {
+                    field.set(target, 0x01 == buffer[pos++]);
+                    break;
+                }
+                case Byte8: {
+                    field.set(target, buffer[pos++]);
+                    break;
+                }
+                case Char16: {
+                    char c;
+                    if (1 == byteSize) {
+                        c = (char) buffer[pos];
+                    } else {
+                        c = (char) (((buffer[pos++] << 8) & 0x00FF) | buffer[pos++]);
+                    }
+                    field.set(target, c);
+                    break;
+                }
+                case Short16: {
+                    if (1 == byteSize) {
+                        field.set(target, buffer[pos++]);
+                    } else {
+                        field.set(target, (short) (((buffer[pos++] << 8) & 0x00FF) | buffer[pos++]));
+                    }
+                    break;
+                }
+                case Word32: {
+                    int v = 0;
+                    for (int i = 0; i < byteSize; i++) {
+                        v = (v << 8) | (buffer[pos++] & 0x00FF);
+                    }
+                    if (byteSize < 4) {
+                        v = BitTwiddling.extend(v, 8 * byteSize);
+                    }
+                    field.set(target, v);
+                    break;
+                }
+                case Word64: {
+                    long v = 0;
+                    for (int i = 0; i < byteSize; i++) {
+                        v = (v << 8) | (buffer[pos++] & 0x00FF);
+                    }
+                    if (byteSize < 8) {
+                        v = BitTwiddling.extend(v, 8 * byteSize);
+                    }
+                    field.set(target, v);
+                    break;
+                }
+                case Void: {
+                    pos = pos + byteSize;
+                    break;
+                }
+            }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
         //
-        System.out.println(pos + " : " + type + " : " + fieldName + " : " + byteSize + " : " + o);
-
-        //
-        switch (fieldDetails.getType()) {
-            case Bit:
-                break;
-            case Byte8:
-                break;
-            case Char16:
-                break;
-            case Short16:
-                break;
-            case Word32:
-                break;
-            case Word64:
-                break;
-            case Void:
-                break;
-        }
-        //
-        return null;
+        return pos;
     }
 }

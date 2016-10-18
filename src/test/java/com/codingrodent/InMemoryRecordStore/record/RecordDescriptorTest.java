@@ -38,7 +38,7 @@ public class RecordDescriptorTest {
 
     @Before
     public void setUp() throws Exception {
-        recordDescriptor = new RecordDescriptor(Record1.class);
+        recordDescriptor = new RecordDescriptor(TestRecord.class);
     }
 
     @After
@@ -58,17 +58,17 @@ public class RecordDescriptorTest {
 
     @Test
     public void getSizeInBytes() throws Exception {
-        assertEquals(recordDescriptor.getSizeInBytes(), 9);
+        assertEquals(recordDescriptor.getSizeInBytes(), 15);
     }
 
     @Test
     public void getSizeInBits() throws Exception {
-        assertEquals(recordDescriptor.getSizeInBits(), 9 * 8);
+        assertEquals(recordDescriptor.getSizeInBits(), 15 * 8);
     }
 
     @Test
     public void getClazz() throws Exception {
-        assertEquals(recordDescriptor.getClazz(), Record1.class);
+        assertEquals(recordDescriptor.getClazz(), TestRecord.class);
     }
 
     @Test
@@ -79,6 +79,7 @@ public class RecordDescriptorTest {
         assertEquals(names.next(), "v1");
         assertEquals(names.next(), "b");
         assertEquals(names.next(), "d");
+        assertEquals(names.next(), "e");
         assertFalse(names.hasNext());
     }
 

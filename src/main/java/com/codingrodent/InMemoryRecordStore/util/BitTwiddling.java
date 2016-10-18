@@ -27,22 +27,27 @@ package com.codingrodent.InMemoryRecordStore.util;
  *
  */
 public class BitTwiddling {
-    private final static int[] EXTEND = new int[33];
+    private final static int[] EXTEND32 = new int[33];
+    private final static int[] EXTEND64 = new int[65];
     private final static int[] SHRINK32 = new int[33];
     private final static long[] SHRINK64 = new long[65];
 
     // Predefined bit masks
     static {
-        EXTEND[1] = 1;
+        EXTEND32[1] = 1;
         for (int i = 2; i <= 32; i++) {
-            EXTEND[i] = EXTEND[i - 1] << 1;
+            EXTEND32[i] = EXTEND32[i - 1] << 1;
         }
         SHRINK32[32] = 0xFFFF_FFFF;
         for (int i = 31; i >= 0; i--) {
             SHRINK32[i] = SHRINK32[i + 1] >>> 1;
         }
+        EXTEND64[1] = 1;
+        for (int i = 2; i <= 64; i++) {
+            EXTEND64[i] = EXTEND64[i - 1] << 1;
+        }
         SHRINK64[64] = 0xFFFF_FFFF_FFFF_FFFFL;
-        for (int i = 31; i >= 0; i--) {
+        for (int i = 63; i >= 0; i--) {
             SHRINK64[i] = SHRINK64[i + 1] >>> 1;
         }
     }
@@ -52,7 +57,7 @@ public class BitTwiddling {
     }
 
     public static byte extend(final byte val, final int bits) {
-        final int m = EXTEND[bits];
+        final int m = EXTEND32[bits];
         return (byte) ((val ^ m) - m);
     }
 
@@ -61,7 +66,7 @@ public class BitTwiddling {
     }
 
     public static short extend(final short val, final int bits) {
-        final int m = EXTEND[bits];
+        final int m = EXTEND32[bits];
         return (short) ((val ^ m) - m);
     }
 
@@ -70,12 +75,17 @@ public class BitTwiddling {
     }
 
     public static int extend(final int val, final int bits) {
-        final int m = EXTEND[bits];
+        final int m = EXTEND32[bits];
         return (val ^ m) - m;
     }
 
     public static int shrink(final int val, final int bits) {
         return val & SHRINK32[bits];
+    }
+
+    public static long extend(final long val, final int bits) {
+        final long m = EXTEND64[bits];
+        return (val ^ m) - m;
     }
 
     public static long shrink(final long val, final int bits) {

@@ -101,8 +101,8 @@ public class RecordManager {
     /**
      * Write a record at the specified location
      *
-     * @param location    Location
-     * @param record Record
+     * @param location Location
+     * @param record   Record
      */
     public void putRecord(final int location, final Object record) {
         writer.putRecord(location, record);

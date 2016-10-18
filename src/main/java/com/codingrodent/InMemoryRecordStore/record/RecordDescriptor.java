@@ -33,7 +33,7 @@ import java.util.*;
  * This class holds the basic type information for an in memory allocation record.
  */
 public class RecordDescriptor {
-    private final Class<?> clazz;
+    private final Class clazz;
     private final boolean recordByteAligned;
     private final boolean fieldByteAligned;
     private final int sizeInBits;
@@ -63,13 +63,13 @@ public class RecordDescriptor {
         for (Field field : fields) {
             PackField packFieldAnnotation = field.getAnnotation(PackField.class);
             if (null != packFieldAnnotation) {
-                fieldList.add(new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.length()));
+                fieldList.add(new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits()));
             } else {
                 Padding paddingFieldAnnotation = field.getAnnotation(Padding.class);
                 if (null != paddingFieldAnnotation) {
                     Class paddingClass = field.getType();
                     if (paddingClass.getTypeName().equals(Void.class.getTypeName())) {
-                        fieldList.add(new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.length()));
+                        fieldList.add(new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits()));
                     } else {
                         throw new IllegalArgumentException("@Padding can only be used on Void fields");
                     }
@@ -122,7 +122,7 @@ public class RecordDescriptor {
         return sizeInBits;
     }
 
-    public Class<?> getClazz() {
+    public Class getClazz() {
         return clazz;
     }
 

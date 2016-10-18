@@ -31,8 +31,6 @@ import com.codingrodent.InMemoryRecordStore.utility.Utilities;
  *
  */
 public class Writer {
-    private final static byte ZERO = (byte) 0;
-    private final static byte ONE = (byte) 1;
     private final RecordDescriptor recordDescriptor;
     private final IMemoryStore memoryStore;
     private final IMemoryStore.AlignmentMode mode;
@@ -60,7 +58,7 @@ public class Writer {
         if (!record.getClass().equals(recordDescriptor.getClazz())) {
             throw new IllegalArgumentException("Object supplied to writer is of the wrong type");
         }
-        Class<?> clazz = record.getClass();
+        Class clazz = record.getClass();
         int pos = 0;
         byte[] data = new byte[recordDescriptor.getSizeInBytes()];
         for (String fieldName : recordDescriptor.getFieldNames()) {
@@ -96,7 +94,7 @@ public class Writer {
      * @param pos        Write position
      * @param buffer     Byte buffer
      * @param value      Object to be written. Actual type from record.
-     * @param byteLength Write length in bytes
+     * @param byteLength Write bits in bytes
      * @param type       Object type
      * @return Next free byte in the buffer
      */
@@ -105,19 +103,8 @@ public class Writer {
         // Don't forget - you can't make things longer !
         switch (type) {
             case Bit:
-                buffer[pos++] = (Boolean) value ? ONE : ZERO;
+                buffer[pos++] = (byte) ((Boolean) value ? 0x01 : 0x00);
                 break;
-            case Word64: {
-                long v = (Long) value;
-                if (byteLength < 8)
-                    v = BitTwiddling.shrink(v, 8 * byteLength);
-                for (int i = byteLength - 1; i >= 0; i--) {
-                    buffer[pos + i] = (byte) (v & 0xFF);
-                    v = v >>> 8;
-                }
-                pos = pos + byteLength;
-            }
-            break;
             case Byte8:
                 buffer[pos++] = (Byte) value;
                 break;
@@ -126,6 +113,17 @@ public class Writer {
                 if (1 == byteLength) {
                     v = BitTwiddling.shrink(v, 8);
                     buffer[pos++] = (byte) (v & 0xFF);
+                } else {
+                    buffer[pos + 1] = (byte) (v & 0xFF);
+                    buffer[pos++] = (byte) (v >>> 8);
+                    pos++;
+                }
+                break;
+            }
+            case Char16: {
+                char v = (Character) value;
+                if (1 == byteLength) {
+                    buffer[pos++] = (byte) (byte) (v & 0xFF);
                 } else {
                     buffer[pos + 1] = (byte) (v & 0xFF);
                     buffer[pos++] = (byte) (v >>> 8);
@@ -144,17 +142,17 @@ public class Writer {
                 pos = pos + byteLength;
                 break;
             }
-            case Char16: {
-                char v = (Character) value;
-                if (1 == byteLength) {
-                    buffer[pos++] = (byte) (byte) (v & 0xFF);
-                } else {
-                    buffer[pos + 1] = (byte) (v & 0xFF);
-                    buffer[pos++] = (byte) (v >>> 8);
-                    pos++;
+            case Word64: {
+                long v = (Long) value;
+                if (byteLength < 8)
+                    v = BitTwiddling.shrink(v, 8 * byteLength);
+                for (int i = byteLength - 1; i >= 0; i--) {
+                    buffer[pos + i] = (byte) (v & 0xFF);
+                    v = v >>> 8;
                 }
-                break;
+                pos = pos + byteLength;
             }
+            break;
             case Void:
                 pos = pos + byteLength;
                 break;

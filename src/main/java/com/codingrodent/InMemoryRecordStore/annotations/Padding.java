@@ -33,7 +33,7 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Padding {
-    int length();
+    int bits();
 
     int order();
 }
