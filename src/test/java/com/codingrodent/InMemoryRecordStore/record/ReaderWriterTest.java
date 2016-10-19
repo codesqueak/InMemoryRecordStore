@@ -38,11 +38,8 @@ public class ReaderWriterTest {
 
     @Before
     public void setUp() throws Exception {
-
         memory = new ArrayMemoryStore(1024);
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+
     }
 
     @After
@@ -51,6 +48,10 @@ public class ReaderWriterTest {
 
     @Test
     public void writeReadRecord() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
         TestRecord write = new TestRecord(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x01, // a
@@ -72,6 +73,58 @@ public class ReaderWriterTest {
         assertEquals(read.c, write.c);
         assertEquals(read.d, write.d);
         assertEquals(read.e, write.e);
+    }
+
+    @Test
+    public void writeReadRecordLongPos() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
+        TestRecordLong write = new TestRecordLong(1, 0x00_FFL, 0x0000_FFFFL, 0x1122_3344_5566_7700L);
+        writer.putRecord(0, write);
+        byte[] packed = {0x01, // a
+                0x00, -1, // b
+                0x00, 0x00, -1, -1, // c
+                0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x00 // d
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
+        }
+        //
+        // Ok, see if we can get it back
+        TestRecordLong read = (TestRecordLong) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+        assertEquals(read.c, write.c);
+        assertEquals(read.d, write.d);
+    }
+
+    @Test
+    public void writeReadRecordLongNeg() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
+        TestRecordLong write = new TestRecordLong(-1, -2, -3, -4);
+        writer.putRecord(0, write);
+        byte[] packed = {-1, // a
+                -1, -2, // b
+                -1, -1, -1, -3, // c
+                -1, -1, -1, -1, -1, -1, -1, -4// d
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
+        }
+        //
+        // Ok, see if we can get it back
+        TestRecordLong read = (TestRecordLong) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+        assertEquals(read.c, write.c);
+        assertEquals(read.d, write.d);
     }
 
 }
