@@ -127,4 +127,99 @@ public class ReaderWriterTest {
         assertEquals(read.d, write.d);
     }
 
+    @Test
+    public void writeReadRecordShortPos() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
+        TestRecordShort write = new TestRecordShort((short) 1, (short) 0x00_FFL);
+        writer.putRecord(0, write);
+        byte[] packed = {0x01, // a
+                0x00, -1 // b
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
+        }
+        //
+        // Ok, see if we can get it back
+        TestRecordShort read = (TestRecordShort) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+    }
+
+    @Test
+    public void writeReadRecordShortNeg() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
+        TestRecordShort write = new TestRecordShort((short) -1, (short) -2);
+        writer.putRecord(0, write);
+        byte[] packed = {-1, // a
+                -1, -2 // b
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
+        }
+        //
+        // Ok, see if we can get it back
+        TestRecordShort read = (TestRecordShort) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+    }
+
+    @Test
+    public void writeReadRecordBytePos() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
+        TestRecordByte write = new TestRecordByte((byte) 1);
+        writer.putRecord(0, write);
+        assertEquals(1, memory.getByte(0));
+        //
+        // Ok, see if we can get it back
+        TestRecordByte read = (TestRecordByte) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+    }
+
+    @Test
+    public void writeReadRecordByteNeg() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
+        TestRecordByte write = new TestRecordByte((byte) -1);
+        writer.putRecord(0, write);
+        assertEquals(-1, memory.getByte(0));
+        //
+        // Ok, see if we can get it back
+        TestRecordByte read = (TestRecordByte) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+    }
+
+    @Test
+    public void writeReadRecordChar() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordChar.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        //
+        TestRecordChar write = new TestRecordChar((char) 65, (char) 0x1234);
+        writer.putRecord(0, write);
+        byte[] packed = {0x41, // a
+                0x12, 0x34 // b
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
+        }
+        //
+        // Ok, see if we can get it back
+        TestRecordChar read = (TestRecordChar) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+    }
 }

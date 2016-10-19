@@ -24,8 +24,8 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
-import com.codingrodent.InMemoryRecordStore.util.BitTwiddling;
-import com.codingrodent.InMemoryRecordStore.utility.Utilities;
+import com.codingrodent.InMemoryRecordStore.exception.RecordStoreException;
+import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 
 /**
  *
@@ -56,37 +56,29 @@ public class Writer {
      */
     public void putRecord(final int loc, final Object record) {
         if (!record.getClass().equals(recordDescriptor.getClazz())) {
-            throw new IllegalArgumentException("Object supplied to writer is of the wrong type");
+            throw new RecordStoreException("Object supplied to writer is of the wrong type");
         }
-        Class clazz = record.getClass();
-        int pos = 0;
-        byte[] data = new byte[recordDescriptor.getSizeInBytes()];
-        for (String fieldName : recordDescriptor.getFieldNames()) {
-            try {
-                System.out.println(clazz.getDeclaredField(fieldName).get(record));
-                //
-                RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-                pos = PackFieldIntoBytes(pos, data, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        for (byte b : data) {
-            System.out.print(Utilities.getByte(b) + " ");
-        }
-        System.out.println();
+        // Write buffer to storage
         int byteSize = recordDescriptor.getSizeInBytes();
         int writeLocation = loc * byteSize;
         if ((memoryStore.getBytes() - writeLocation) < byteSize) {
-            throw new IndexOutOfBoundsException("Write location beyond end of storage");
+            throw new RecordStoreException("Write location beyond end of storage");
         }
-        memoryStore.setByteArray(writeLocation, data);
+        // Find all fields and build byte buffer
+        Class clazz = record.getClass();
+        int pos = 0;
+        byte[] buffer = new byte[recordDescriptor.getSizeInBytes()];
+        for (String fieldName : recordDescriptor.getFieldNames()) {
+            try {
+                RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
+                pos = PackFieldIntoBytes(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                throw new RecordStoreException(e);
+            }
+        }
+        // Write buffer into storage
+        memoryStore.setByteArray(writeLocation, buffer);
     }
-
-    //
-    //
-    //
 
     /**
      * Pack an annotated field into the byte storage for a record
@@ -112,9 +104,9 @@ public class Writer {
                 short v = (Short) value;
                 if (1 == byteLength) {
                     v = BitTwiddling.shrink(v, 8);
-                    buffer[pos++] = (byte) (v & 0xFF);
+                    buffer[pos++] = (byte) (v & 0x00FF);
                 } else {
-                    buffer[pos + 1] = (byte) (v & 0xFF);
+                    buffer[pos + 1] = (byte) (v & 0x00FF);
                     buffer[pos++] = (byte) (v >>> 8);
                     pos++;
                 }
@@ -123,9 +115,9 @@ public class Writer {
             case Char16: {
                 char v = (Character) value;
                 if (1 == byteLength) {
-                    buffer[pos++] = (byte) (byte) (v & 0xFF);
+                    buffer[pos++] = (byte) (v & 0x00FF);
                 } else {
-                    buffer[pos + 1] = (byte) (v & 0xFF);
+                    buffer[pos + 1] = (byte) (v & 0x00FF);
                     buffer[pos++] = (byte) (v >>> 8);
                     pos++;
                 }
@@ -136,7 +128,7 @@ public class Writer {
                 if (byteLength < 4)
                     v = BitTwiddling.shrink(v, 8 * byteLength);
                 for (int i = byteLength - 1; i >= 0; i--) {
-                    buffer[pos + i] = (byte) (v & 0xFF);
+                    buffer[pos + i] = (byte) (v & 0x00FF);
                     v = v >>> 8;
                 }
                 pos = pos + byteLength;
@@ -147,7 +139,7 @@ public class Writer {
                 if (byteLength < 8)
                     v = BitTwiddling.shrink(v, 8 * byteLength);
                 for (int i = byteLength - 1; i >= 0; i--) {
-                    buffer[pos + i] = (byte) (v & 0xFF);
+                    buffer[pos + i] = (byte) (v & 0x00FF);
                     v = v >>> 8;
                 }
                 pos = pos + byteLength;

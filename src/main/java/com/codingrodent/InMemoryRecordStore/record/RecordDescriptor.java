@@ -148,7 +148,7 @@ public class RecordDescriptor {
          *
          * @param clazz     Class of field
          * @param fieldName Name of field
-         * @param order     Posotion in packing order
+         * @param order     Position in packing order
          * @param length    Length in bits
          */
         FieldDetails(Class<?> clazz, String fieldName, int order, int length) {
