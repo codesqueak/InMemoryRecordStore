@@ -53,21 +53,22 @@ public class Writer {
      *
      * @param loc    Location
      * @param record Record
+     * @throws RecordStoreException General error when writing record
      */
-    public void putRecord(final int loc, final Object record) {
+    public void putRecord(final int loc, final Object record) throws RecordStoreException {
         if (!record.getClass().equals(recordDescriptor.getClazz())) {
             throw new RecordStoreException("Object supplied to writer is of the wrong type");
         }
         // Write buffer to storage
-        int byteSize = recordDescriptor.getSizeInBytes();
-        int writeLocation = loc * byteSize;
-        if ((memoryStore.getBytes() - writeLocation) < byteSize) {
+        int byteLength = recordDescriptor.getLengthInBytes();
+        int writeLocation = loc * byteLength;
+        if ((memoryStore.getBytes() - writeLocation) < byteLength) {
             throw new RecordStoreException("Write location beyond end of storage");
         }
         // Find all fields and build byte buffer
         Class clazz = record.getClass();
         int pos = 0;
-        byte[] buffer = new byte[recordDescriptor.getSizeInBytes()];
+        byte[] buffer = new byte[recordDescriptor.getLengthInBytes()];
         for (String fieldName : recordDescriptor.getFieldNames()) {
             try {
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);

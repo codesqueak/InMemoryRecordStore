@@ -21,18 +21,30 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
+package com.codingrodent.InMemoryRecordStore.record;
 
-package com.codingrodent.InMemoryRecordStore.exception;
+import com.codingrodent.InMemoryRecordStore.annotations.*;
 
-public class RecordStoreException extends RuntimeException {
+/**
+ * Test data record
+ */
+@PackRecord()
+public class TestRecordBadPack {
 
-    public RecordStoreException(String message) {
-        super(message);
+    @PackField(order = 0, bits = 1)
+    public Short a;
+
+    @PackField(order = 1, bits = 9)
+    @Padding(bits = 8, order = 2)
+    public Void b;
+
+    public TestRecordBadPack() {
     }
 
-    public RecordStoreException(Throwable cause) {
-        super(cause);
+    public TestRecordBadPack(short a, Void b) {
+        this.a = a;
+        this.b = b;
+
     }
 
 }
-

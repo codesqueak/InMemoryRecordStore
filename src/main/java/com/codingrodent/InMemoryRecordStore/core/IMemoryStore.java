@@ -35,7 +35,7 @@ public interface IMemoryStore {
     /**
      * Build the storage
      *
-     * @param words Size in 32 bit words
+     * @param words Length in 32 bit words
      */
     void build(int words);
 
@@ -47,14 +47,14 @@ public interface IMemoryStore {
     /**
      * Get the number of words of memory allocated
      *
-     * @return Memory size allocated in 32 bit words
+     * @return Memory length allocated in 32 bit words
      */
     int getWords();
 
     /**
      * Get the number of bytes of memory allocated
      *
-     * @return Memory size allocated in 8 bit bytes
+     * @return Memory length allocated in 8 bit bytes
      */
     int getBytes();
 
@@ -105,9 +105,9 @@ public interface IMemoryStore {
      * Write a byte of memory to a any address. This operation is always treated as unaligned
      *
      * @param address Address to be written to (Will wrap if too large)
-     * @param size    Bytes to be read from memory
+     * @param length  Bytes to be read from memory
      */
-    byte[] getByteArray(int address, final int size);
+    byte[] getByteArray(int address, final int length);
 
     /**
      * Write a word of memory to a any address. his operation is always treated as unaligned
@@ -160,7 +160,7 @@ public interface IMemoryStore {
     void setByteArray(int address, final byte[] byteValues);
 
     /**
-     * Validate an address, and if OK wrap on the size of the memory allocated
+     * Validate an address, and if OK wrap on the length of the memory allocated
      *
      * @param address Address to be checked
      * @return Wrapped address divided by four to give the 32 bit word to be accessed

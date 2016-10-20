@@ -27,6 +27,7 @@ import org.junit.*;
 
 import java.util.Iterator;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.*;
 
 /**
@@ -58,12 +59,12 @@ public class RecordDescriptorTest {
 
     @Test
     public void getSizeInBytes() throws Exception {
-        assertEquals(recordDescriptor.getSizeInBytes(), 15);
+        assertEquals(recordDescriptor.getLengthInBytes(), 15);
     }
 
     @Test
     public void getSizeInBits() throws Exception {
-        assertEquals(recordDescriptor.getSizeInBits(), 15 * 8);
+        assertEquals(recordDescriptor.getLengthInBits(), 15 * 8);
     }
 
     @Test
@@ -83,4 +84,37 @@ public class RecordDescriptorTest {
         assertFalse(names.hasNext());
     }
 
+    @Test
+    public void exceptions() throws Exception {
+        // Wrong record type
+        try {
+            recordDescriptor = new RecordDescriptor(Integer.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "The record must contain a PackRecord annotation");
+        }
+        // Padding annotation in wrong place
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordBadPadding.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "@Padding can only be used on Void fields");
+        }
+        // Pack annotation in wrong place
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordBadPack.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "@Pack cannot be used on Void fields");
+        }
+        // Pack annotation on unsupported type
+        //
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordUnsupportedPack.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Unsupported packing type. java.lang.String");
+        }
+
+    }
 }

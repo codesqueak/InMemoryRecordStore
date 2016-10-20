@@ -52,12 +52,13 @@ public class Reader {
      *
      * @param location Location of stored object in memory
      * @return Record object with fields populated
+     * @throws RecordStoreException General error when reading record
      */
-    public Object getRecord(final int location) {
-        final int byteSize = recordDescriptor.getSizeInBytes();
+    public Object getRecord(final int location) throws RecordStoreException {
+        final int byteLength = recordDescriptor.getLengthInBytes();
         int pos = 0;
-        int address = location * byteSize;
-        byte[] buffer = memoryStore.getByteArray(address, byteSize);
+        int address = location * byteLength;
+        byte[] buffer = memoryStore.getByteArray(address, byteLength);
         Class clazz = recordDescriptor.getClazz();
         //
         // Populate each field
@@ -86,7 +87,7 @@ public class Reader {
      */
     private int unpackFieldIntoObject(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws IllegalAccessException {
         IMemoryStore.Type type = fieldDetails.getType();
-        int byteSize = fieldDetails.getByteLength();
+        int byteLength = fieldDetails.getByteLength();
         switch (type) {
             case Bit: {
                 field.set(target, 0x01 == getUnsignedByte(buffer, pos++));
@@ -98,7 +99,7 @@ public class Reader {
             }
             case Char16: {
                 char c;
-                if (1 == byteSize) {
+                if (1 == byteLength) {
                     c = (char) (buffer[pos++] & 0x00FF);
                 } else {
                     c = (char) ((getUnsignedByte(buffer, pos++) << 8) | getUnsignedByte(buffer, pos++));
@@ -107,7 +108,7 @@ public class Reader {
                 break;
             }
             case Short16: {
-                if (1 == byteSize) {
+                if (1 == byteLength) {
                     field.set(target, (short) buffer[pos++]);
                 } else {
                     field.set(target, (short) ((getUnsignedByte(buffer, pos++) << 8) | getUnsignedByte(buffer, pos++)));
@@ -116,32 +117,31 @@ public class Reader {
             }
             case Word32: {
                 int v = 0;
-                for (int i = 0; i < byteSize; i++) {
+                for (int i = 0; i < byteLength; i++) {
                     v = (v << 8) | getUnsignedByte(buffer, pos++);
                 }
-                if (byteSize < 4) {
-                    v = BitTwiddling.extend(v, 8 * byteSize);
+                if (byteLength < 4) {
+                    v = BitTwiddling.extend(v, 8 * byteLength);
                 }
                 field.set(target, v);
                 break;
             }
             case Word64: {
                 long v = 0;
-                for (int i = 0; i < byteSize; i++) {
+                for (int i = 0; i < byteLength; i++) {
                     v = (v << 8) | getUnsignedByte(buffer, pos++);
                 }
-                if (byteSize < 8) {
-                    v = BitTwiddling.extend(v, 8 * byteSize);
+                if (byteLength < 8) {
+                    v = BitTwiddling.extend(v, 8 * byteLength);
                 }
                 field.set(target, v);
                 break;
             }
             case Void: {
-                pos = pos + byteSize;
+                pos = pos + byteLength;
                 break;
             }
         }
-
         return pos;
     }
 
