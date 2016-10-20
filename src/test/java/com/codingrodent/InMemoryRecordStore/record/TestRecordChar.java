@@ -23,24 +23,26 @@
 */
 package com.codingrodent.InMemoryRecordStore.record;
 
-import org.junit.*;
+import com.codingrodent.InMemoryRecordStore.annotations.*;
 
 /**
- *
+ * Test data record
  */
-public class WriterTest {
-    @Before
-    public void setUp() throws Exception {
+@PackRecord()
+public class TestRecordChar {
 
+    @PackField(order = 0, bits = 1)
+    public Character a;
+
+    @PackField(order = 1, bits = 9)
+    public char b;
+
+    public TestRecordChar() {
     }
 
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
-    @Test
-    public void putRecord() throws Exception {
+    public TestRecordChar(char a, char b) {
+        this.a = a;
+        this.b = b;
 
     }
 

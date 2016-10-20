@@ -27,6 +27,7 @@ import org.junit.*;
 
 import java.util.Iterator;
 
+import static junit.framework.TestCase.fail;
 import static org.junit.Assert.*;
 
 /**
@@ -38,7 +39,7 @@ public class RecordDescriptorTest {
 
     @Before
     public void setUp() throws Exception {
-        recordDescriptor = new RecordDescriptor(Record1.class);
+        recordDescriptor = new RecordDescriptor(TestRecord.class);
     }
 
     @After
@@ -58,17 +59,17 @@ public class RecordDescriptorTest {
 
     @Test
     public void getSizeInBytes() throws Exception {
-        assertEquals(recordDescriptor.getSizeInBytes(), 9);
+        assertEquals(recordDescriptor.getLengthInBytes(), 15);
     }
 
     @Test
     public void getSizeInBits() throws Exception {
-        assertEquals(recordDescriptor.getSizeInBits(), 9 * 8);
+        assertEquals(recordDescriptor.getLengthInBits(), 15 * 8);
     }
 
     @Test
     public void getClazz() throws Exception {
-        assertEquals(recordDescriptor.getClazz(), Record1.class);
+        assertEquals(recordDescriptor.getClazz(), TestRecord.class);
     }
 
     @Test
@@ -79,7 +80,41 @@ public class RecordDescriptorTest {
         assertEquals(names.next(), "v1");
         assertEquals(names.next(), "b");
         assertEquals(names.next(), "d");
+        assertEquals(names.next(), "e");
         assertFalse(names.hasNext());
     }
 
+    @Test
+    public void exceptions() throws Exception {
+        // Wrong record type
+        try {
+            recordDescriptor = new RecordDescriptor(Integer.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "The record must contain a PackRecord annotation");
+        }
+        // Padding annotation in wrong place
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordBadPadding.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "@Padding can only be used on Void fields");
+        }
+        // Pack annotation in wrong place
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordBadPack.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "@Pack cannot be used on Void fields");
+        }
+        // Pack annotation on unsupported type
+        //
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordUnsupportedPack.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Unsupported packing type. java.lang.String");
+        }
+
+    }
 }

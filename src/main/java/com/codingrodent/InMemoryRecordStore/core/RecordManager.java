@@ -32,9 +32,9 @@ import com.codingrodent.InMemoryRecordStore.record.*;
 public class RecordManager {
 
     private final AlignmentMode mode;
-    private final int sizeInBits;
-    private final int sizeInBytes;
-    private final int sizeInWords;
+    private final int lengthInBits;
+    private final int lengthInBytes;
+    private final int lengthInWords;
     private final Reader reader;
     private final Writer writer;
     private RecordDescriptor recordDescriptor;
@@ -43,35 +43,35 @@ public class RecordManager {
      * Create a new In Memory component descriptor
      *
      * @param memoryStore      Data storage structure
-     * @param size             The size of the memory core in records
+     * @param records          The records of the memory core in records
      * @param recordDescriptor Field type information
      */
-    public RecordManager(final IMemoryStore memoryStore, final int size, final RecordDescriptor recordDescriptor) {
-        if (size < 1) {
+    public RecordManager(final IMemoryStore memoryStore, final int records, final RecordDescriptor recordDescriptor) {
+        if (records < 1) {
             throw new IllegalArgumentException("The component must have at least one record");
         }
         this.recordDescriptor = recordDescriptor;
-        // Determine size based on the four possible alignment strategies
-        int sizeInBits;
-        int sizeInBytes;
+        // Determine records based on the four possible alignment strategies
+        int lengthInBits;
+        int lengthInBytes;
         if (recordDescriptor.isFieldByteAligned()) {
             if (recordDescriptor.isRecordByteAligned()) {
-                sizeInBytes = recordDescriptor.getSizeInBytes() * size;
-                sizeInBits = sizeInBytes * 8;
+                lengthInBytes = recordDescriptor.getLengthInBytes() * records;
+                lengthInBits = lengthInBytes * 8;
                 mode = AlignmentMode.BYTE_BYTE;
             } else {
-                sizeInBytes = recordDescriptor.getSizeInBytes() * size;
+                lengthInBytes = recordDescriptor.getLengthInBytes() * records;
                 mode = AlignmentMode.BYTE_BIT;
-                sizeInBits = sizeInBytes * 8;
+                lengthInBits = lengthInBytes * 8;
             }
         } else {
             if (recordDescriptor.isRecordByteAligned()) {
-                sizeInBytes = recordDescriptor.getSizeInBytes() * size;
-                sizeInBits = sizeInBytes * 8;
+                lengthInBytes = recordDescriptor.getLengthInBytes() * records;
+                lengthInBits = lengthInBytes * 8;
                 mode = AlignmentMode.BIT_BYTE;
             } else {
-                sizeInBits = recordDescriptor.getSizeInBits() * size;
-                sizeInBytes = (sizeInBits + 7) >> 3;
+                lengthInBits = recordDescriptor.getLengthInBits() * records;
+                lengthInBytes = (lengthInBits + 7) >> 3;
                 mode = AlignmentMode.BIT_BIT;
             }
         }
@@ -79,12 +79,12 @@ public class RecordManager {
             throw new UnsupportedOperationException("Alignment mode selected not supported at present (" + mode + ")");
         }
         //
-        this.sizeInBytes = sizeInBytes;
-        this.sizeInBits = sizeInBits;
-        this.sizeInWords = ((sizeInBytes - 1) >> 2) + 1;
+        this.lengthInBytes = lengthInBytes;
+        this.lengthInBits = lengthInBits;
+        this.lengthInWords = ((lengthInBytes - 1) >> 2) + 1;
         this.reader = new Reader(memoryStore, recordDescriptor, mode);
         this.writer = new Writer(memoryStore, recordDescriptor, mode);
-        memoryStore.build(sizeInWords);
+        memoryStore.build(lengthInWords);
     }
 
     /**
@@ -101,8 +101,8 @@ public class RecordManager {
     /**
      * Write a record at the specified location
      *
-     * @param location    Location
-     * @param record Record
+     * @param location Location
+     * @param record   Record
      */
     public void putRecord(final int location, final Object record) {
         writer.putRecord(location, record);
@@ -112,16 +112,16 @@ public class RecordManager {
     // ******************************************************************************
     // ******************************************************************************
 
-    public int getSizeInBits() {
-        return sizeInBits;
+    public int getLengthInBits() {
+        return lengthInBits;
     }
 
-    public int getSizeInBytes() {
-        return sizeInBytes;
+    public int getLengthInBytes() {
+        return lengthInBytes;
     }
 
-    public int getSizeInWords() {
-        return sizeInWords;
+    public int getLengthInWords() {
+        return lengthInWords;
     }
 
     // ******************************************************************************

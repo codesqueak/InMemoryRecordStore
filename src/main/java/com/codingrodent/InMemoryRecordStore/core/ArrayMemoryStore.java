@@ -47,8 +47,8 @@ public class ArrayMemoryStore implements IMemoryStore {
     /**
      * Create a new memory core for storage.
      *
-     * @param words Size of the memory block requested. The range is 1 to 2**28 32 bit words (1GB)
-     * @throws IllegalArgumentException Thrown if the requested storage size if out of range
+     * @param words Length of the memory block requested. The range is 1 to 2**28 32 bit words (1GB)
+     * @throws IllegalArgumentException Thrown if the requested storage length if out of range
      */
     public ArrayMemoryStore(final int words) {
         build(words);
@@ -57,7 +57,7 @@ public class ArrayMemoryStore implements IMemoryStore {
     /**
      * Build the storage
      *
-     * @param words Size in 32 bit words
+     * @param words Length in 32 bit words
      */
     @Override
     public void build(int words) {
@@ -83,7 +83,7 @@ public class ArrayMemoryStore implements IMemoryStore {
     /**
      * Get the number of words of memory allocated
      *
-     * @return Memory size allocated in 32 bit words
+     * @return Memory length allocated in 32 bit words
      */
     @Override
     public int getWords() {
@@ -93,7 +93,7 @@ public class ArrayMemoryStore implements IMemoryStore {
     /**
      * Get the number of bytes of memory allocated
      *
-     * @return Memory size allocated in 8 bit bytes
+     * @return Memory length allocated in 8 bit bytes
      */
     @Override
     public int getBytes() {
@@ -238,11 +238,11 @@ public class ArrayMemoryStore implements IMemoryStore {
      * Write a byte of memory to a any address. This operation is always treated as unaligned
      *
      * @param address Address to be written to (Will wrap if too large)
-     * @param size    Bytes to be read from memory
+     * @param length  Bytes to be read from memory
      */
-    public byte[] getByteArray(int address, final int size) {
-        byte[] data = new byte[size];
-        for (int i = 0; i < size; i++) {
+    public byte[] getByteArray(int address, final int length) {
+        byte[] data = new byte[length];
+        for (int i = 0; i < length; i++) {
             data[i] = getByte(address++);
         }
         return data;

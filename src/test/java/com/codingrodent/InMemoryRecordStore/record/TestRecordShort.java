@@ -21,19 +21,29 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.annotations;
+package com.codingrodent.InMemoryRecordStore.record;
 
-import java.lang.annotation.*;
+import com.codingrodent.InMemoryRecordStore.annotations.*;
 
 /**
- * Annotation to identify unused space for padding
+ * Test data record
  */
-@Target({ElementType.FIELD})
-@Inherited
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Padding {
-    int bits();
+@PackRecord()
+public class TestRecordShort {
 
-    int order();
+    @PackField(order = 0, bits = 1)
+    public Short a;
+
+    @PackField(order = 1, bits = 9)
+    public Short b;
+
+    public TestRecordShort() {
+    }
+
+    public TestRecordShort(short a, short b) {
+        this.a = a;
+        this.b = b;
+
+    }
+
 }

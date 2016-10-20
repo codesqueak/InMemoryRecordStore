@@ -21,19 +21,18 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.annotations;
 
-import java.lang.annotation.*;
+package com.codingrodent.InMemoryRecordStore.exception;
 
-/**
- * Annotation to identify unused space for padding
- */
-@Target({ElementType.FIELD})
-@Inherited
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-public @interface Padding {
-    int bits();
+public class RecordStoreException extends RuntimeException {
 
-    int order();
+    public RecordStoreException(String message) {
+        super(message);
+    }
+
+    public RecordStoreException(Throwable cause) {
+        super(cause);
+    }
+
 }
+

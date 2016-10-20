@@ -21,28 +21,15 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.util;
+package com.codingrodent.InMemoryRecordStore.utility;
 
-import org.junit.*;
+import org.junit.Test;
 
-import static com.codingrodent.InMemoryRecordStore.util.BitTwiddling.extend;
-import static com.codingrodent.InMemoryRecordStore.util.BitTwiddling.shrink;
+import static com.codingrodent.InMemoryRecordStore.utility.BitTwiddling.extend;
+import static com.codingrodent.InMemoryRecordStore.utility.BitTwiddling.shrink;
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
 public class BitTwiddlingTest {
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
 
     @Test
     public void extendShrinkByte() throws Exception {

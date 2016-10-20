@@ -28,21 +28,83 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 /**
  * Test data record
  */
-@PackRecord(recordByteAligned = true, fieldByteAligned = true)
-public class Record1 {
+@PackRecord()
+public class TestRecord {
 
-    @PackField(order = 0, length = 24)
-    public Integer a = 0;
+    @PackField(order = 0, bits = 24)
+    public Integer a;
 
-    @PackField(order = 7, length = 16)
-    public int b = 7;
+    @PackField(order = 7, bits = 16)
+    public int b;
 
-    @PackField(order = 3, length = 16)
-    public int c = 3;
+    @PackField(order = 3, bits = 16)
+    public int c;
 
-    @PackField(order = 121, length = 1)
-    public boolean d = true;
+    @PackField(order = 100, bits = 1)
+    public boolean d;
 
-    @Padding(order = 4, length = 8)
+    @Padding(order = 4, bits = 8)
     public Void v1;
+
+    @PackField(order = 200, bits = 48)
+    public Long e;
+
+    public TestRecord() {
+    }
+
+    public TestRecord(Integer a, int b, int c, boolean d, long e) {
+        this.a = a;
+        this.b = b;
+        this.c = c;
+        this.d = d;
+        this.e = e;
+    }
+
+    public Integer getA() {
+        return a;
+    }
+
+    public void setA(final Integer a) {
+        this.a = a;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public void setB(final int b) {
+        this.b = b;
+    }
+
+    public int getC() {
+        return c;
+    }
+
+    public void setC(final int c) {
+        this.c = c;
+    }
+
+    public long getE() {
+        return e;
+    }
+
+    public void setE(final long e) {
+        this.e = e;
+    }
+
+    public boolean isD() {
+        return d;
+    }
+
+    public void setD(final boolean d) {
+        this.d = d;
+    }
+
+    public Void getV1() {
+        return v1;
+    }
+
+    public void setV1(final Void v1) {
+        this.v1 = v1;
+    }
 }
