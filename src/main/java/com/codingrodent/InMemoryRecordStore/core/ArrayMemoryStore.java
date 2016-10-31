@@ -235,10 +235,11 @@ public class ArrayMemoryStore implements IMemoryStore {
     }
 
     /**
-     * Write a byte of memory to a any address. This operation is always treated as unaligned
+     * Read a  byte array from any address. This operation is always treated as unaligned
      *
      * @param address Address to be written to (Will wrap if too large)
      * @param length  Bytes to be read from memory
+     * @return Memory array at address
      */
     public byte[] getByteArray(int address, final int length) {
         byte[] data = new byte[length];

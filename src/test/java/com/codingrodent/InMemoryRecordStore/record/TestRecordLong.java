@@ -28,7 +28,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 /**
  * Test data record
  */
-@PackRecord()
+@PackRecord
 public class TestRecordLong {
 
     @PackField(order = 0, bits = 1)
@@ -40,7 +40,7 @@ public class TestRecordLong {
     @PackField(order = 32, bits = 31)
     public long c;
 
-    @PackField(order = 32, bits = 63)
+    @PackField(order = 33, bits = 63)
     public long d;
 
     public TestRecordLong() {

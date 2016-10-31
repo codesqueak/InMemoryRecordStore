@@ -28,7 +28,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 /**
  * Test data record
  */
-@PackRecord()
+@PackRecord
 public class Record {
 
     @PackField(order = 0, bits = 24)

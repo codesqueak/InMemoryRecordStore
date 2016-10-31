@@ -40,6 +40,7 @@ public class Reader {
      *
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
+     * @param mode             Alignment mode (bit/byte)
      */
     public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
         this.recordDescriptor = recordDescriptor;

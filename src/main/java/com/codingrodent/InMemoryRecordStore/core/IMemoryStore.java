@@ -102,10 +102,11 @@ public interface IMemoryStore {
     byte getByte(final int address);
 
     /**
-     * Write a byte of memory to a any address. This operation is always treated as unaligned
+     * Read a  byte array from any address. This operation is always treated as unaligned
      *
      * @param address Address to be written to (Will wrap if too large)
      * @param length  Bytes to be read from memory
+     * @return Memory array at address
      */
     byte[] getByteArray(int address, final int length);
 
@@ -152,7 +153,7 @@ public interface IMemoryStore {
     void setByte(final int address, final byte byteValue);
 
     /**
-     * Write a byte of memory to a any address. This operation is always treated as unaligned
+     * Write a byte array to memory to any address. This operation is always treated as unaligned
      *
      * @param address    Address to be written to (Will wrap if too large)
      * @param byteValues Bytes to be written to memory
