@@ -34,6 +34,7 @@ public class Writer {
     private final RecordDescriptor recordDescriptor;
     private final IMemoryStore memoryStore;
     private final IMemoryStore.AlignmentMode mode;
+    private final BitWriter bitWriter;
 
     /**
      * Create a new record writer
@@ -43,6 +44,11 @@ public class Writer {
      * @param mode             Alignment mode
      */
     public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final IMemoryStore.AlignmentMode mode) {
+        if (recordDescriptor.isFieldByteAligned()) {
+            this.bitWriter = null;
+        } else {
+            this.bitWriter = new BitWriter(recordDescriptor);
+        }
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
         this.mode = mode;
@@ -60,7 +66,7 @@ public class Writer {
             throw new RecordStoreException("Object supplied to writer is of the wrong type");
         }
         // Write buffer to storage
-        int byteLength = recordDescriptor.getLengthInBytes();
+        int byteLength = recordDescriptor.getByteLength();
         int writeLocation = loc * byteLength;
         if ((memoryStore.getBytes() - writeLocation) < byteLength) {
             throw new RecordStoreException("Write location beyond end of storage");
@@ -68,17 +74,21 @@ public class Writer {
         // Find all fields and build byte buffer
         Class clazz = record.getClass();
         int pos = 0;
-        byte[] buffer = new byte[recordDescriptor.getLengthInBytes()];
+        byte[] buffer = new byte[recordDescriptor.getByteLength()];
         for (String fieldName : recordDescriptor.getFieldNames()) {
             try {
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-                pos = PackFieldIntoBytes(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+                pos = packFieldIntoBytes(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RecordStoreException(e);
             }
         }
-        // Write buffer into storage
-        memoryStore.setByteArray(writeLocation, buffer);
+        // Write buffer into storage - bit pack if necessary
+        if (null != bitWriter) {
+            memoryStore.setByteArray(writeLocation, bitWriter.bitPack(buffer));
+        } else {
+            memoryStore.setByteArray(writeLocation, buffer);
+        }
     }
 
     /**
@@ -91,7 +101,7 @@ public class Writer {
      * @param type       Object type
      * @return Next free byte in the buffer
      */
-    private int PackFieldIntoBytes(int pos, byte[] buffer, Object value, int byteLength, IMemoryStore.Type type) {
+    private int packFieldIntoBytes(int pos, byte[] buffer, Object value, int byteLength, IMemoryStore.Type type) {
         //
         // Don't forget - you can't make things longer !
         switch (type) {

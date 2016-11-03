@@ -21,7 +21,7 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
@@ -29,22 +29,82 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
  * Test data record
  */
 @PackRecord
-public class TestRecordBadPadding {
+public class TestRecord {
 
-    @PackField(order = 0, bits = 1)
-    public Short a;
+    @PackField(order = 0, bits = 24)
+    public Integer a;
 
-    @PackField(order = 1, bits = 9)
-    @Padding(bits = 8, order = 2)
-    public Short b;
+    @PackField(order = 7, bits = 16)
+    public int b;
 
-    public TestRecordBadPadding() {
+    @PackField(order = 3, bits = 16)
+    public int c;
+
+    @PackField(order = 100, bits = 1)
+    public boolean d;
+
+    @Padding(order = 4, bits = 8)
+    public Void v1;
+
+    @PackField(order = 200, bits = 48)
+    public Long e;
+
+    public TestRecord() {
     }
 
-    public TestRecordBadPadding(short a, short b) {
+    public TestRecord(Integer a, int b, int c, boolean d, long e) {
         this.a = a;
         this.b = b;
-
+        this.c = c;
+        this.d = d;
+        this.e = e;
     }
 
+    public Integer getA() {
+        return a;
+    }
+
+    public void setA(final Integer a) {
+        this.a = a;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public void setB(final int b) {
+        this.b = b;
+    }
+
+    public int getC() {
+        return c;
+    }
+
+    public void setC(final int c) {
+        this.c = c;
+    }
+
+    public long getE() {
+        return e;
+    }
+
+    public void setE(final long e) {
+        this.e = e;
+    }
+
+    public boolean isD() {
+        return d;
+    }
+
+    public void setD(final boolean d) {
+        this.d = d;
+    }
+
+    public Void getV1() {
+        return v1;
+    }
+
+    public void setV1(final Void v1) {
+        this.v1 = v1;
+    }
 }

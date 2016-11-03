@@ -56,7 +56,7 @@ public class Reader {
      * @throws RecordStoreException General error when reading record
      */
     public Object getRecord(final int location) throws RecordStoreException {
-        final int byteLength = recordDescriptor.getLengthInBytes();
+        final int byteLength = recordDescriptor.getByteLength();
         int pos = 0;
         int address = location * byteLength;
         byte[] buffer = memoryStore.getByteArray(address, byteLength);

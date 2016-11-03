@@ -21,36 +21,90 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
 /**
  * Test data record
  */
-@PackRecord
-public class TestRecordLong {
+@PackRecord(fieldByteAligned = false)
+public class TestRecordBitAligned {
 
-    @PackField(order = 0, bits = 1)
-    public Long a;
+    @PackField(order = 0, bits = 14)
+    public Integer a;
 
-    @PackField(order = 1, bits = 9)
-    public Long b;
+    @PackField(order = 1, bits = 10)
+    public int b;
 
-    @PackField(order = 32, bits = 31)
-    public long c;
+    @PackField(order = 2, bits = 20)
+    public int c;
 
-    @PackField(order = 33, bits = 63)
-    public long d;
+    @PackField(order = 3, bits = 1)
+    public boolean d;
 
-    public TestRecordLong() {
+    @Padding(order = 4, bits = 7)
+    public Void v1;
+
+    @PackField(order = 5, bits = 12)
+    public Long e;
+
+    public TestRecordBitAligned() {
     }
 
-    public TestRecordLong(long a, long b, long c, long d) {
+    public TestRecordBitAligned(Integer a, int b, int c, boolean d, long e) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
+        this.e = e;
     }
 
+    public Integer getA() {
+        return a;
+    }
+
+    public void setA(final Integer a) {
+        this.a = a;
+    }
+
+    public int getB() {
+        return b;
+    }
+
+    public void setB(final int b) {
+        this.b = b;
+    }
+
+    public int getC() {
+        return c;
+    }
+
+    public void setC(final int c) {
+        this.c = c;
+    }
+
+    public long getE() {
+        return e;
+    }
+
+    public void setE(final long e) {
+        this.e = e;
+    }
+
+    public boolean isD() {
+        return d;
+    }
+
+    public void setD(final boolean d) {
+        this.d = d;
+    }
+
+    public Void getV1() {
+        return v1;
+    }
+
+    public void setV1(final Void v1) {
+        this.v1 = v1;
+    }
 }

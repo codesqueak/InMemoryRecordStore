@@ -21,19 +21,18 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
-import com.codingrodent.InMemoryRecordStore.record.records.*;
+import com.codingrodent.InMemoryRecordStore.record.*;
 import org.junit.*;
 
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
 /**
  *
  */
-public class ReaderWriterExceptionTest {
+public class ReaderWriterBitTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
@@ -49,29 +48,23 @@ public class ReaderWriterExceptionTest {
     }
 
     @Test
-    public void writeReadExceptions() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+    public void writeReadRecord() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
+        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
         //
-        // Record type
-        try {
-            writer.putRecord(0, new TestRecordLong());
-            fail("Expecting RecordStoreException to be thrown");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Object supplied to writer is of the wrong type");
-        }
-        //
-        // Storage limits
-        TestRecord testRecord = new TestRecord(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
-        writer.putRecord(0, testRecord);
-        int maxRecords = 1024 * 4 / descriptor.getByteLength();
-        writer.putRecord(maxRecords - 1, testRecord);
-        try {
-            writer.putRecord(maxRecords, testRecord);
-            fail("Expecting RecordStoreException to be thrown");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Write location beyond end of storage");
+        TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
+        writer.putRecord(0, write);
+        byte[] packed = {0x00, 0x00, 0x01, // a
+                -128, 0x00, // c
+                0x00, // v1
+                -1, -1, // b
+                0x01, // d
+                0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC//
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
         }
         //
 

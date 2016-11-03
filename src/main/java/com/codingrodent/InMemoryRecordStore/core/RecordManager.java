@@ -56,21 +56,21 @@ public class RecordManager {
         int lengthInBytes;
         if (recordDescriptor.isFieldByteAligned()) {
             if (recordDescriptor.isRecordByteAligned()) {
-                lengthInBytes = recordDescriptor.getLengthInBytes() * records;
+                lengthInBytes = recordDescriptor.getByteLength() * records;
                 lengthInBits = lengthInBytes * 8;
                 mode = AlignmentMode.BYTE_BYTE;
             } else {
-                lengthInBytes = recordDescriptor.getLengthInBytes() * records;
+                lengthInBytes = recordDescriptor.getByteLength() * records;
                 mode = AlignmentMode.BYTE_BIT;
                 lengthInBits = lengthInBytes * 8;
             }
         } else {
             if (recordDescriptor.isRecordByteAligned()) {
-                lengthInBytes = recordDescriptor.getLengthInBytes() * records;
+                lengthInBytes = recordDescriptor.getByteLength() * records;
                 lengthInBits = lengthInBytes * 8;
                 mode = AlignmentMode.BIT_BYTE;
             } else {
-                lengthInBits = recordDescriptor.getLengthInBits() * records;
+                lengthInBits = recordDescriptor.getBitLength() * records;
                 lengthInBytes = (lengthInBits + 7) >> 3;
                 mode = AlignmentMode.BIT_BIT;
             }

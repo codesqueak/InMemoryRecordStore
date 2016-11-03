@@ -24,6 +24,7 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
+import com.codingrodent.InMemoryRecordStore.record.records.*;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
