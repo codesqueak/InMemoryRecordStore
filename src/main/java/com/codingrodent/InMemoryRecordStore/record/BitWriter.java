@@ -23,12 +23,16 @@
 */
 package com.codingrodent.InMemoryRecordStore.record;
 
+import com.codingrodent.InMemoryRecordStore.utility.Utilities;
+
 import java.util.Arrays;
 
 /**
- * This class contains functionality to  convert a byte packed record into its bit packed equivalent
+ * This class contains functionality to convert a byte packed record into its bit packed equivalent
  */
 public class BitWriter {
+
+    private final static int[] BIT_SET = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
     private final RecordDescriptor recordDescriptor;
 
@@ -62,28 +66,40 @@ public class BitWriter {
             sourceBytePosition = sourceBytePosition + byteLength;
         }
         // all done ...
-        return byteRecord;
+        return targetArray;
     }
 
     /**
      * Pack one byte aligned field into the bit aligned field.  Byte fields are right aligned, bit fields left
+     * <p>
+     * Very slow implementation  - optimize once test cases have good coverage
      *
      * @param sourceArray      The record array of byte fields data
      * @param targetArray      The target bit field array
      * @param writeBitPosition Where to write to in the target array
      * @param bitLength        Size of field in bits
-     * @return Target bit array with field writtent to it
+     * @return Target bit array with field written to it
      */
     private byte[] insertBits(byte[] sourceArray, byte[] targetArray, int writeBitPosition, int bitLength) {
         final int byteArrayOffset = sourceArray.length - 1;
         for (int bit = bitLength - 1; bit >= 0; bit--) {
             int readBit = bit & 0x07;
             int readByte = byteArrayOffset - (bit >> 3);
-            int writeBit = 7 - (writeBitPosition & 0x07);
-            int writeByte = writeBitPosition++ >> 3;
-            System.out.println("From " + readBit + " " + readByte + " to  " + writeBit + " " + writeByte);
+            int readMask = BIT_SET[readBit];
+            //
+            int val = (sourceArray[readByte] & readMask);
+            if (0 != val) {
+                int writeBit = 7 - (writeBitPosition & 0x07);
+                int writeByte = writeBitPosition >> 3;
+                targetArray[writeByte] = (byte) (targetArray[writeByte] | BIT_SET[writeBit]);
+                //
+                System.out.println("From " + readBit + " " + readByte + " to  " + writeBit + " " + writeByte + " " + Utilities.getByte(targetArray[writeByte]) + " " + (val > 0));
+                if (0 == writeBit) {
+                    System.out.println("-------------");
+                }
+            }
+            writeBitPosition++;
         }
-        System.out.println("-------------");
         return targetArray;
     }
 

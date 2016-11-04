@@ -25,6 +25,7 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.*;
+import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
@@ -53,14 +54,24 @@ public class ReaderWriterBitTest {
         writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
         //
-        TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
+        TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L);
         writer.putRecord(0, write);
-        byte[] packed = {0x00, 0x00, 0x01, // a
-                -128, 0x00, // c
-                0x00, // v1
-                -1, -1, // b
-                0x01, // d
-                0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC//
+
+        for (int i = 0; i <= 7; i++) {
+            System.out.print(Utilities.getByte(memory.getByte(i)) + " ");
+        }
+        System.out.println();
+
+        byte[] packed = { //
+                0b00000000, //
+                0b00000111, //
+                (byte) 0b11111111, //
+                (byte) 0b11111000, //
+                0b00000000, //
+                0b00001000, //
+                0b00000010, //
+                0b00110100 //
+
         };
         // Did record pack correctly ?
         for (int i = 0; i < packed.length; i++) {
