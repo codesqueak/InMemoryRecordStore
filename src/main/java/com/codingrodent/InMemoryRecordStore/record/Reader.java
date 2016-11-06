@@ -33,7 +33,6 @@ import java.lang.reflect.Field;
 public class Reader {
     private final RecordDescriptor recordDescriptor;
     private final IMemoryStore memoryStore;
-    private final AlignmentMode mode;
 
     /**
      * Create a new record reader
@@ -45,7 +44,6 @@ public class Reader {
     public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
-        this.mode = mode;
     }
 
     /**
