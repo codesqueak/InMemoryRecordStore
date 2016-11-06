@@ -71,7 +71,7 @@ public class Reader {
             }
             return target;
         } catch (IllegalAccessException | InstantiationException | NoSuchFieldException e) {
-            throw new RecordStoreException(e);
+            throw new RecordStoreException("Unable to populate record", e);
         }
     }
 

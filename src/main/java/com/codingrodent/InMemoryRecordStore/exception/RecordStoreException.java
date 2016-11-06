@@ -30,6 +30,10 @@ public class RecordStoreException extends RuntimeException {
         super(message);
     }
 
+    public RecordStoreException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public RecordStoreException(Throwable cause) {
         super(cause);
     }

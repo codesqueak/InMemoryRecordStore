@@ -51,10 +51,11 @@ public class ReaderWriterBitTest {
     @Test
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
         //
-        TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L);
+        TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L, (short) -307,//
+                (short) 0x15, (byte) -11, (char) 65, (char) 1089);
         writer.putRecord(0, write);
 
         for (int i = 0; i <= 7; i++) {
@@ -70,7 +71,12 @@ public class ReaderWriterBitTest {
                 0b00000000, //
                 0b00001000, //
                 0b00000010, //
-                0b00110100 //
+                0b00110100, //
+                (byte) 0b10110011, //
+                0b01101011, //
+                0b01011000, //
+                0b001_10001, //
+                0b000001_00 //
 
         };
         // Did record pack correctly ?

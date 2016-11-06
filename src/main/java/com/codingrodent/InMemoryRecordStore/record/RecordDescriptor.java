@@ -146,7 +146,6 @@ public class RecordDescriptor {
         private int order;
         private int bitLength;
         private int byteLength;
-        private boolean padding;
 
         /**
          * Create details for one annotated field
@@ -220,10 +219,5 @@ public class RecordDescriptor {
         String getFieldName() {
             return fieldName;
         }
-
-        boolean isPadding() {
-            return padding;
-        }
     }
-
 }

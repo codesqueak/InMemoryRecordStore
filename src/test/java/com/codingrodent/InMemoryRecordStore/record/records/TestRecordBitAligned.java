@@ -34,30 +34,51 @@ public class TestRecordBitAligned {
     @PackField(order = 0, bits = 14)
     public Integer a;
 
-    @PackField(order = 1, bits = 10)
+    @PackField(order = 1, bits = 10) //24
     public int b;
 
-    @PackField(order = 2, bits = 20)
+    @PackField(order = 2, bits = 20) // 44
     public int c;
 
-    @PackField(order = 3, bits = 1)
+    @PackField(order = 3, bits = 1) // 45
     public boolean d;
 
-    @Padding(order = 4, bits = 7)
+    @Padding(order = 4, bits = 7) // 52
     public Void v1;
 
-    @PackField(order = 5, bits = 12)
+    @PackField(order = 5, bits = 12) // 64
     public Long e;
+
+    @PackField(order = 6, bits = 10) // 74
+    public Short f;
+
+    @PackField(order = 6, bits = 5) // 79
+    public Short g;
+
+    @PackField(order = 7, bits = 5) // 84
+    public Byte h;
+
+    @PackField(order = 8, bits = 7) // 91
+    public char i;
+
+    @PackField(order = 8, bits = 11) // 102
+    public char j;
 
     public TestRecordBitAligned() {
     }
 
-    public TestRecordBitAligned(Integer a, int b, int c, boolean d, long e) {
+    public TestRecordBitAligned(Integer a, int b, int c, boolean d, long e, short f, short g, byte h, char i, char j) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
         this.e = e;
+        this.f = f;
+        this.g = g;
+        this.h = h;
+        this.h = h;
+        this.i = i;
+        this.j = j;
     }
 
     public Integer getA() {
@@ -107,4 +128,45 @@ public class TestRecordBitAligned {
     public void setV1(final Void v1) {
         this.v1 = v1;
     }
+
+    public short isF() {
+        return f;
+    }
+
+    public void setF(final short f) {
+        this.f = f;
+    }
+
+    public short isG() {
+        return g;
+    }
+
+    public void setG(final short g) {
+        this.g = g;
+    }
+
+    public Byte isH() {
+        return h;
+    }
+
+    public void setH(final Byte h) {
+        this.h = h;
+    }
+
+    public char isI() {
+        return i;
+    }
+
+    public void setI(final char i) {
+        this.i = i;
+    }
+
+    public char isJ() {
+        return j;
+    }
+
+    public void setJ(final char j) {
+        this.j = j;
+    }
+
 }

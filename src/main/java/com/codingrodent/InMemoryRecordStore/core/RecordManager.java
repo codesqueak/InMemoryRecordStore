@@ -83,7 +83,7 @@ public class RecordManager {
         this.lengthInBits = lengthInBits;
         this.lengthInWords = ((lengthInBytes - 1) >> 2) + 1;
         this.reader = new Reader(memoryStore, recordDescriptor, mode);
-        this.writer = new Writer(memoryStore, recordDescriptor, mode);
+        this.writer = new Writer(memoryStore, recordDescriptor);
         memoryStore.build(lengthInWords);
     }
 

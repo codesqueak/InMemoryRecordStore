@@ -25,8 +25,6 @@ package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 
-import java.util.Arrays;
-
 /**
  * This class contains functionality to convert a byte packed record into its bit packed equivalent
  */
@@ -46,30 +44,6 @@ public class BitWriter {
     }
 
     /**
-     * Convert byte packed to bit packed record
-     *
-     * @param byteRecord Byte packed record
-     * @return Bit packed record
-     */
-    public byte[] bitPack(final byte[] byteRecord) {
-        int packedByteLength = ((recordDescriptor.getBitLength() - 1) >> 3) + 1;
-        byte[] targetArray = new byte[packedByteLength];
-        int writeBitPosition = 0;
-        int sourceBytePosition = 0;
-        for (String fieldName : recordDescriptor.getFieldNames()) {
-            RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-            int bitLength = fieldDetails.getBitLength();
-            int byteLength = fieldDetails.getByteLength();
-            byte[] field = Arrays.copyOfRange(byteRecord, sourceBytePosition, sourceBytePosition + byteLength);
-            targetArray = insertBits(field, targetArray, writeBitPosition, bitLength);
-            writeBitPosition = writeBitPosition + bitLength;
-            sourceBytePosition = sourceBytePosition + byteLength;
-        }
-        // all done ...
-        return targetArray;
-    }
-
-    /**
      * Pack one byte aligned field into the bit aligned field.  Byte fields are right aligned, bit fields left
      * <p>
      * Very slow implementation  - optimize once test cases have good coverage
@@ -80,7 +54,7 @@ public class BitWriter {
      * @param bitLength        Size of field in bits
      * @return Target bit array with field written to it
      */
-    private byte[] insertBits(byte[] sourceArray, byte[] targetArray, int writeBitPosition, int bitLength) {
+    public byte[] insertBits(byte[] sourceArray, byte[] targetArray, int writeBitPosition, final int bitLength) {
         final int byteArrayOffset = sourceArray.length - 1;
         for (int bit = bitLength - 1; bit >= 0; bit--) {
             int readBit = bit & 0x07;

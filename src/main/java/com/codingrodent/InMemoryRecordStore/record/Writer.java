@@ -33,7 +33,6 @@ import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 public class Writer {
     private final RecordDescriptor recordDescriptor;
     private final IMemoryStore memoryStore;
-    private final IMemoryStore.AlignmentMode mode;
     private final BitWriter bitWriter;
 
     /**
@@ -41,9 +40,8 @@ public class Writer {
      *
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
-     * @param mode             Alignment mode
      */
-    public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final IMemoryStore.AlignmentMode mode) {
+    public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor) {
         if (recordDescriptor.isFieldByteAligned()) {
             this.bitWriter = null;
         } else {
@@ -51,7 +49,6 @@ public class Writer {
         }
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
-        this.mode = mode;
     }
 
     /**
@@ -78,26 +75,26 @@ public class Writer {
         for (String fieldName : recordDescriptor.getFieldNames()) {
             try {
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-                pos = packFieldIntoBytes(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+                if (recordDescriptor.isFieldByteAligned()) {
+                    pos = packFieldIntoBytes(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+                } else {
+                    pos = packFieldIntoBits(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getBitLength(), fieldDetails.getType());
+                }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RecordStoreException(e);
             }
         }
-        // Write buffer into storage - bit pack if necessary
-        if (null != bitWriter) {
-            memoryStore.setByteArray(writeLocation, bitWriter.bitPack(buffer));
-        } else {
-            memoryStore.setByteArray(writeLocation, buffer);
-        }
+        // Write buffer into storage
+        memoryStore.setByteArray(writeLocation, buffer);
     }
 
     /**
      * Pack an annotated field into the byte storage for a record
      *
-     * @param pos        Write position
+     * @param pos        Write position (byte)
      * @param buffer     Byte buffer
      * @param value      Object to be written. Actual type from record.
-     * @param byteLength Write bits in bytes
+     * @param byteLength Length of target field in bytes
      * @param type       Object type
      * @return Next free byte in the buffer
      */
@@ -105,20 +102,22 @@ public class Writer {
         //
         // Don't forget - you can't make things longer !
         switch (type) {
-            case Bit:
+            case Bit: {
                 buffer[pos++] = (byte) ((Boolean) value ? 0x01 : 0x00);
                 break;
-            case Byte8:
+            }
+            case Byte8: {
                 buffer[pos++] = (Byte) value;
                 break;
+            }
             case Short16: {
                 short v = (Short) value;
                 if (1 == byteLength) {
                     v = BitTwiddling.shrink(v, 8);
                     buffer[pos++] = (byte) (v & 0x00FF);
                 } else {
-                    buffer[pos + 1] = (byte) (v & 0x00FF);
                     buffer[pos++] = (byte) (v >>> 8);
+                    buffer[pos++] = (byte) (v & 0x00FF);
                     pos++;
                 }
                 break;
@@ -128,8 +127,8 @@ public class Writer {
                 if (1 == byteLength) {
                     buffer[pos++] = (byte) (v & 0x00FF);
                 } else {
-                    buffer[pos + 1] = (byte) (v & 0x00FF);
                     buffer[pos++] = (byte) (v >>> 8);
+                    buffer[pos++] = (byte) (v & 0x00FF);
                     pos++;
                 }
                 break;
@@ -161,5 +160,98 @@ public class Writer {
                 break;
         }
         return pos;
+    }
+
+    /**
+     * Pack an annotated field into the bit storage for a record
+     *
+     * @param pos       Write position (bit)
+     * @param buffer    Byte buffer
+     * @param value     Object to be written. Actual type from record.
+     * @param bitLength Length of target field in bits
+     * @param type      Object type
+     * @return Next free bit in the buffer
+     */
+    private int packFieldIntoBits(int pos, byte[] buffer, Object value, int bitLength, IMemoryStore.Type type) {
+        //
+        // Don't forget - you can't make things longer !
+        switch (type) {
+            case Bit: {
+                byte[] booleanValue = {(byte) ((Boolean) value ? 0x01 : 0x00)};
+                bitWriter.insertBits(booleanValue, buffer, pos, bitLength);
+                break;
+            }
+            case Byte8: {
+                byte[] byteValue = {(Byte) value};
+                byteValue[0] = (byte) value;
+                bitWriter.insertBits(byteValue, buffer, pos, bitLength);
+                break;
+            }
+            case Short16: {
+                short shrunkShort;
+                if (bitLength < 16)
+                    shrunkShort = BitTwiddling.shrink((Short) value, bitLength);
+                else
+                    shrunkShort = (Short) value;
+                byte[] shortValue;
+                if (bitLength <= 8) {
+                    shortValue = new byte[1];
+                    shortValue[0] = (byte) (shrunkShort & 0x00FF);
+                } else {
+                    shortValue = new byte[2];
+                    shortValue[0] = (byte) ((shrunkShort & 0xFF00) >>> 8);
+                    shortValue[1] = (byte) (shrunkShort & 0x00FF);
+                }
+                bitWriter.insertBits(shortValue, buffer, pos, bitLength);
+                break;
+            }
+            case Char16: {
+                char c = (Character) value;
+                byte[] charValue;
+                if (bitLength <= 8) {
+                    charValue = new byte[1];
+                    charValue[0] = (byte) (c & 0x00FF);
+                } else {
+                    charValue = new byte[2];
+                    charValue[0] = (byte) ((c & 0xFF00) >>> 8);
+                    charValue[1] = (byte) (c & 0x00FF);
+                }
+                bitWriter.insertBits(charValue, buffer, pos, bitLength);
+                break;
+            }
+            case Word32: {
+                int shrunkInt;
+                if (bitLength < 32)
+                    shrunkInt = BitTwiddling.shrink((Integer) value, bitLength);
+                else
+                    shrunkInt = (Integer) value;
+                int size = ((bitLength - 1) >> 3) + 1;
+                byte[] integerValue = new byte[size];
+                for (int i = 1; i <= size; i++) {
+                    integerValue[size - i] = (byte) (shrunkInt & 0x00FF);
+                    shrunkInt = shrunkInt >>> 8;
+                }
+                bitWriter.insertBits(integerValue, buffer, pos, bitLength);
+                break;
+            }
+            case Word64: {
+                long shrunkLong;
+                if (bitLength < 64)
+                    shrunkLong = BitTwiddling.shrink((Long) value, bitLength);
+                else
+                    shrunkLong = (Long) value;
+                int size = ((bitLength - 1) >> 3) + 1;
+                byte[] longValue = new byte[size];
+                for (int i = 1; i <= size; i++) {
+                    longValue[size - i] = (byte) (shrunkLong & 0x00FF);
+                    shrunkLong = shrunkLong >>> 8;
+                }
+                bitWriter.insertBits(longValue, buffer, pos, bitLength);
+                break;
+            }
+            case Void:
+                break;
+        }
+        return pos + bitLength;
     }
 }

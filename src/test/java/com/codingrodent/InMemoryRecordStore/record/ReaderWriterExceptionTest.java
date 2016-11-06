@@ -51,7 +51,7 @@ public class ReaderWriterExceptionTest {
     @Test
     public void writeReadExceptions() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         // Record type
@@ -73,8 +73,6 @@ public class ReaderWriterExceptionTest {
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Write location beyond end of storage");
         }
-        //
-
     }
 
 }
