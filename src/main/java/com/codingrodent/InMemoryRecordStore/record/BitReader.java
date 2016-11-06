@@ -23,27 +23,6 @@
 */
 package com.codingrodent.InMemoryRecordStore.record;
 
-import com.codingrodent.InMemoryRecordStore.annotations.*;
-
-/**
- * Test data record
- */
-@PackRecord
-public class TestRecordChar {
-
-    @PackField(order = 0, bits = 1)
-    public Character a;
-
-    @PackField(order = 1, bits = 9)
-    public char b;
-
-    public TestRecordChar() {
-    }
-
-    public TestRecordChar(char a, char b) {
-        this.a = a;
-        this.b = b;
-
-    }
+public class BitReader {
 
 }

@@ -21,22 +21,24 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
+package com.codingrodent.InMemoryRecordStore.record.records;
 
-package com.codingrodent.InMemoryRecordStore.exception;
+import com.codingrodent.InMemoryRecordStore.annotations.*;
 
-public class RecordStoreException extends RuntimeException {
+/**
+ * Test data record
+ */
+@PackRecord
+public class TestRecordByte {
 
-    public RecordStoreException(String message) {
-        super(message);
+    @PackField(order = 0, bits = 1)
+    public Byte a;
+
+    public TestRecordByte() {
     }
 
-    public RecordStoreException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public RecordStoreException(Throwable cause) {
-        super(cause);
+    public TestRecordByte(byte a) {
+        this.a = a;
     }
 
 }
-

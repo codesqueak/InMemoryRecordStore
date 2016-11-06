@@ -33,7 +33,6 @@ import java.lang.reflect.Field;
 public class Reader {
     private final RecordDescriptor recordDescriptor;
     private final IMemoryStore memoryStore;
-    private final AlignmentMode mode;
 
     /**
      * Create a new record reader
@@ -45,7 +44,6 @@ public class Reader {
     public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
-        this.mode = mode;
     }
 
     /**
@@ -56,7 +54,7 @@ public class Reader {
      * @throws RecordStoreException General error when reading record
      */
     public Object getRecord(final int location) throws RecordStoreException {
-        final int byteLength = recordDescriptor.getLengthInBytes();
+        final int byteLength = recordDescriptor.getByteLength();
         int pos = 0;
         int address = location * byteLength;
         byte[] buffer = memoryStore.getByteArray(address, byteLength);
@@ -71,7 +69,7 @@ public class Reader {
             }
             return target;
         } catch (IllegalAccessException | InstantiationException | NoSuchFieldException e) {
-            throw new RecordStoreException(e);
+            throw new RecordStoreException("Unable to populate record", e);
         }
     }
 

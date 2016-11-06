@@ -91,11 +91,13 @@ public class RecordDescriptor {
         //
         // Calculate storage requirements
         int lengthInBits = 0;
+        int lengthInBytes = 0;
         HashMap<String, FieldDetails> fieldDetailsMap = new HashMap<>();
         for (FieldDetails field : fieldDetails) {
             fieldNames.add(field.getFieldName());
+            lengthInBytes = lengthInBytes + field.getByteLength();
             if (fieldByteAligned) {
-                // Pack at byte level
+                // pack at byte level
                 lengthInBits = lengthInBits + field.getByteLength() * 8;
             } else {
                 // pack at bit level
@@ -104,7 +106,7 @@ public class RecordDescriptor {
             fieldDetailsMap.put(field.getFieldName(), field);
         }
         this.lengthInBits = lengthInBits;
-        this.lengthInBytes = ((lengthInBits - 1) >> 3) + 1;
+        this.lengthInBytes = lengthInBytes;
         this.fieldDetailsMap = fieldDetailsMap;
         this.fieldNames = Collections.unmodifiableList(fieldNames);
     }
@@ -117,11 +119,11 @@ public class RecordDescriptor {
         return recordByteAligned;
     }
 
-    public int getLengthInBytes() {
+    public int getByteLength() {
         return lengthInBytes;
     }
 
-    public int getLengthInBits() {
+    public int getBitLength() {
         return lengthInBits;
     }
 
@@ -144,7 +146,6 @@ public class RecordDescriptor {
         private int order;
         private int bitLength;
         private int byteLength;
-        private boolean padding;
 
         /**
          * Create details for one annotated field
@@ -218,10 +219,5 @@ public class RecordDescriptor {
         String getFieldName() {
             return fieldName;
         }
-
-        boolean isPadding() {
-            return padding;
-        }
     }
-
 }

@@ -21,7 +21,7 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
@@ -29,28 +29,22 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
  * Test data record
  */
 @PackRecord
-public class TestRecordLong {
+public class TestRecordBadPadding {
 
     @PackField(order = 0, bits = 1)
-    public Long a;
+    public Short a;
 
     @PackField(order = 1, bits = 9)
-    public Long b;
+    @Padding(bits = 8, order = 2)
+    public Short b;
 
-    @PackField(order = 32, bits = 31)
-    public long c;
-
-    @PackField(order = 33, bits = 63)
-    public long d;
-
-    public TestRecordLong() {
+    public TestRecordBadPadding() {
     }
 
-    public TestRecordLong(long a, long b, long c, long d) {
+    public TestRecordBadPadding(short a, short b) {
         this.a = a;
         this.b = b;
-        this.c = c;
-        this.d = d;
+
     }
 
 }

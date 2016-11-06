@@ -21,30 +21,77 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.record;
+package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
 /**
  * Test data record
  */
-@PackRecord
-public class TestRecordBadPadding {
+@PackRecord(fieldByteAligned = false)
+public class TestRecordNoPack {
 
-    @PackField(order = 0, bits = 1)
-    public Short a;
+    @PackField(order = 0, bits = 8)
+    public Byte a;
 
-    @PackField(order = 1, bits = 9)
-    @Padding(bits = 8, order = 2)
+    @PackField(order = 1, bits = 16)
     public Short b;
 
-    public TestRecordBadPadding() {
-    }
+    @PackField(order = 2, bits = 32)
+    public int c;
 
-    public TestRecordBadPadding(short a, short b) {
+    @PackField(order = 3, bits = 64)
+    public long d;
+
+    @PackField(order = 4, bits = 16)
+    public char e;
+
+    public TestRecordNoPack(byte a, short b, int c, long d, char e) {
         this.a = a;
         this.b = b;
+        this.c = c;
+        this.d = d;
+        this.e = e;
+    }
 
+    public Byte getA() {
+        return a;
+    }
+
+    public void setA(final Byte a) {
+        this.a = a;
+    }
+
+    public Short getB() {
+        return b;
+    }
+
+    public void setB(final Short b) {
+        this.b = b;
+    }
+
+    public int getC() {
+        return c;
+    }
+
+    public void setC(final int c) {
+        this.c = c;
+    }
+
+    public long getD() {
+        return d;
+    }
+
+    public void setD(final long d) {
+        this.d = d;
+    }
+
+    public char getE() {
+        return e;
+    }
+
+    public void setE(final char e) {
+        this.e = e;
     }
 
 }

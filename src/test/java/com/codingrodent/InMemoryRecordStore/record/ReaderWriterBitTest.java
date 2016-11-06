@@ -24,16 +24,16 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
-import com.codingrodent.InMemoryRecordStore.record.records.*;
+import com.codingrodent.InMemoryRecordStore.record.records.TestRecordBitAligned;
+import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 import org.junit.*;
 
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
 /**
  *
  */
-public class ReaderWriterExceptionTest {
+public class ReaderWriterBitTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
@@ -49,30 +49,42 @@ public class ReaderWriterExceptionTest {
     }
 
     @Test
-    public void writeReadExceptions() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
+    public void writeReadRecord() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
         //
-        // Record type
-        try {
-            writer.putRecord(0, new TestRecordLong());
-            fail("Expecting RecordStoreException to be thrown");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Object supplied to writer is of the wrong type");
+        TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L, (short) -307,//
+                (short) 0x15, (byte) -11, (char) 65, (char) 1089);
+        writer.putRecord(0, write);
+
+        for (int i = 0; i < descriptor.getByteLength(); i++) {
+            System.out.print(Utilities.getByte(memory.getByte(i)) + " ");
+        }
+        System.out.println();
+
+        byte[] packed = { //
+                0b00000000, //
+                0b00000111, //
+                (byte) 0b11111111, //
+                (byte) 0b11111000, //
+                0b00000000, //
+                0b00001000, //
+                0b00000010, //
+                0b00110100, //
+                (byte) 0b10110011, //
+                0b01101011, //
+                0b01011000, //
+                0b001_10001, //
+                0b000001_00 //
+
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
         }
         //
-        // Storage limits
-        TestRecord testRecord = new TestRecord(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
-        writer.putRecord(0, testRecord);
-        int maxRecords = 1024 * 4 / descriptor.getByteLength();
-        writer.putRecord(maxRecords - 1, testRecord);
-        try {
-            writer.putRecord(maxRecords, testRecord);
-            fail("Expecting RecordStoreException to be thrown");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Write location beyond end of storage");
-        }
+
     }
 
 }

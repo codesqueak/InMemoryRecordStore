@@ -24,6 +24,7 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
+import com.codingrodent.InMemoryRecordStore.record.records.*;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +50,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecord write = new TestRecord(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
@@ -78,7 +79,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecordLongPos() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecordLong write = new TestRecordLong(1, 0x00_FFL, 0x0000_FFFFL, 0x1122_3344_5566_7700L);
@@ -104,7 +105,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecordLongNeg() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecordLong write = new TestRecordLong(-1, -2, -3, -4);
@@ -130,7 +131,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecordShortPos() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecordShort write = new TestRecordShort((short) 1, (short) 0x00_FFL);
@@ -152,7 +153,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecordShortNeg() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecordShort write = new TestRecordShort((short) -1, (short) -2);
@@ -174,7 +175,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecordBytePos() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecordByte write = new TestRecordByte((byte) 1);
@@ -189,7 +190,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecordByteNeg() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecordByte write = new TestRecordByte((byte) -1);
@@ -204,7 +205,7 @@ public class ReaderWriterTest {
     @Test
     public void writeReadRecordChar() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordChar.class);
-        writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
         //
         TestRecordChar write = new TestRecordChar((char) 65, (char) 0x1234);

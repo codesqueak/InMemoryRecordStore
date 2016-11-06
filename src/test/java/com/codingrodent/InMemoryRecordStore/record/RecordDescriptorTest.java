@@ -23,6 +23,7 @@
 */
 package com.codingrodent.InMemoryRecordStore.record;
 
+import com.codingrodent.InMemoryRecordStore.record.records.*;
 import org.junit.*;
 
 import java.util.Iterator;
@@ -59,12 +60,12 @@ public class RecordDescriptorTest {
 
     @Test
     public void getSizeInBytes() throws Exception {
-        assertEquals(recordDescriptor.getLengthInBytes(), 15);
+        assertEquals(recordDescriptor.getByteLength(), 15);
     }
 
     @Test
     public void getSizeInBits() throws Exception {
-        assertEquals(recordDescriptor.getLengthInBits(), 15 * 8);
+        assertEquals(recordDescriptor.getBitLength(), 15 * 8);
     }
 
     @Test

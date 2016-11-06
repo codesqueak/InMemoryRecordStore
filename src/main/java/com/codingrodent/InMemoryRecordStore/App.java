@@ -19,7 +19,7 @@ public class App {
             new RecordManager(new ArrayMemoryStore(), 1024, descriptor);
             //
             IMemoryStore memory = new ArrayMemoryStore(1024);
-            Writer writer = new Writer(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+            Writer writer = new Writer(memory, descriptor);
             Reader reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
             System.out.println("-- writer --");
             writer.putRecord(0, new Record());
