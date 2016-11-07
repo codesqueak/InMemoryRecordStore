@@ -91,11 +91,9 @@ public class RecordDescriptor {
         //
         // Calculate storage requirements
         int lengthInBits = 0;
-        int lengthInBytes = 0;
         HashMap<String, FieldDetails> fieldDetailsMap = new HashMap<>();
         for (FieldDetails field : fieldDetails) {
             fieldNames.add(field.getFieldName());
-            lengthInBytes = lengthInBytes + field.getByteLength();
             if (fieldByteAligned) {
                 // pack at byte level
                 lengthInBits = lengthInBits + field.getByteLength() * 8;
@@ -106,7 +104,7 @@ public class RecordDescriptor {
             fieldDetailsMap.put(field.getFieldName(), field);
         }
         this.lengthInBits = lengthInBits;
-        this.lengthInBytes = lengthInBytes;
+        this.lengthInBytes = ((lengthInBits - 1) >> 3) + 1;
         this.fieldDetailsMap = fieldDetailsMap;
         this.fieldNames = Collections.unmodifiableList(fieldNames);
     }

@@ -24,7 +24,7 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
-import com.codingrodent.InMemoryRecordStore.record.records.TestRecordBitAligned;
+import com.codingrodent.InMemoryRecordStore.record.records.TestRecordNoPackTooLong;
 import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 import org.junit.*;
 
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
 /**
  *
  */
-public class ReaderWriterBitTest {
+public class ReaderWriterBitTooLongTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
@@ -50,12 +50,11 @@ public class ReaderWriterBitTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordNoPackTooLong.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
         //
-        TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L, (short) -307,//
-                (short) 0x15, (byte) -11, (char) 65, (char) 1089);
+        TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A');
         writer.putRecord(0, write);
 
         for (int i = 0; i < descriptor.getByteLength(); i++) {
@@ -63,23 +62,15 @@ public class ReaderWriterBitTest {
         }
         System.out.println();
 
-        byte[] packed = { //
-                0b00000000, //
-                0b00000111, //
-                (byte) 0b11111111, //
-                (byte) 0b11111000, //
-                0b00000000, //
-                0b00001000, //
-                0b00000010, //
-                0b00110100, //
-                (byte) 0b10110011, //
-                0b01101011, //
-                0b01011000, //
-                0b001_10001, //
-                0b000001_00 //
+        byte[] packed = {0x12, // 2
+                0x34, 0x56, // 3
+                0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, // 7
+                0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, (byte) 0xF0, // 15
+                0x00, 0x41, // 17
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};  // 25
 
-        };
         assertEquals(packed.length, descriptor.getByteLength());
+
         // Did record pack correctly ?
         for (int i = 0; i < packed.length; i++) {
             assertEquals(packed[i], memory.getByte(i));
