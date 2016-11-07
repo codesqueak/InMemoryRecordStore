@@ -54,7 +54,7 @@ public class ReaderWriterBitTooLongTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
         //
-        TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A');
+        TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A', true);
         writer.putRecord(0, write);
 
         for (int i = 0; i < descriptor.getByteLength(); i++) {
@@ -62,12 +62,13 @@ public class ReaderWriterBitTooLongTest {
         }
         System.out.println();
 
-        byte[] packed = {0x12, // 2
+        byte[] packed = {0x12, // 1
                 0x34, 0x56, // 3
                 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, // 7
                 0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, (byte) 0xF0, // 15
                 0x00, 0x41, // 17
-                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};  // 25
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 25
+                0x01}; // 26
 
         assertEquals(packed.length, descriptor.getByteLength());
 
@@ -75,8 +76,6 @@ public class ReaderWriterBitTooLongTest {
         for (int i = 0; i < packed.length; i++) {
             assertEquals(packed[i], memory.getByte(i));
         }
-        //
-
     }
 
 }

@@ -49,12 +49,16 @@ public class TestRecordNoPackTooLong {
     @Padding(order = 5, bits = 65)
     public Void v;
 
-    public TestRecordNoPackTooLong(byte a, short b, int c, long d, char e) {
+    @PackField(order = 6, bits = 9)
+    public Boolean f;
+
+    public TestRecordNoPackTooLong(byte a, short b, int c, long d, char e, boolean f) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
         this.e = e;
+        this.f = f;
     }
 
     public Byte getA() {
@@ -95,6 +99,14 @@ public class TestRecordNoPackTooLong {
 
     public void setE(final char e) {
         this.e = e;
+    }
+
+    public Boolean getF() {
+        return f;
+    }
+
+    public void setF(final Boolean f) {
+        this.f = f;
     }
 
 }
