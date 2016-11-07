@@ -25,4 +25,19 @@ package com.codingrodent.InMemoryRecordStore.record;
 
 public class BitReader {
 
+    private final RecordDescriptor recordDescriptor;
+
+    /**
+     * Create a new bit reader
+     *
+     * @param recordDescriptor Field type information
+     */
+    public BitReader(RecordDescriptor recordDescriptor) {
+        this.recordDescriptor = recordDescriptor;
+    }
+
+
+
+
+
 }
