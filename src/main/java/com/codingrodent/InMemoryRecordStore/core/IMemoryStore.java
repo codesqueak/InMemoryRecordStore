@@ -174,8 +174,6 @@ public interface IMemoryStore {
         return (address % getBytes()) >> 2;
     }
 
-    enum AlignmentMode {BIT_BIT, BIT_BYTE, BYTE_BIT, BYTE_BYTE}
-
     enum Type {
         Bit, Byte8, Short16, Word32, Word64, Char16, Void
     }

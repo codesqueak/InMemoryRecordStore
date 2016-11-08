@@ -51,7 +51,7 @@ public class ReaderWriterTest {
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecord write = new TestRecord(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
         writer.putRecord(0, write);
@@ -80,7 +80,7 @@ public class ReaderWriterTest {
     public void writeReadRecordLongPos() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordLong write = new TestRecordLong(1, 0x00_FFL, 0x0000_FFFFL, 0x1122_3344_5566_7700L);
         writer.putRecord(0, write);
@@ -106,7 +106,7 @@ public class ReaderWriterTest {
     public void writeReadRecordLongNeg() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordLong write = new TestRecordLong(-1, -2, -3, -4);
         writer.putRecord(0, write);
@@ -132,7 +132,7 @@ public class ReaderWriterTest {
     public void writeReadRecordShortPos() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordShort write = new TestRecordShort((short) 1, (short) 0x00_FFL);
         writer.putRecord(0, write);
@@ -154,7 +154,7 @@ public class ReaderWriterTest {
     public void writeReadRecordShortNeg() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordShort write = new TestRecordShort((short) -1, (short) -2);
         writer.putRecord(0, write);
@@ -176,7 +176,7 @@ public class ReaderWriterTest {
     public void writeReadRecordBytePos() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordByte write = new TestRecordByte((byte) 1);
         writer.putRecord(0, write);
@@ -191,7 +191,7 @@ public class ReaderWriterTest {
     public void writeReadRecordByteNeg() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordByte write = new TestRecordByte((byte) -1);
         writer.putRecord(0, write);
@@ -206,7 +206,7 @@ public class ReaderWriterTest {
     public void writeReadRecordChar() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordChar.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordChar write = new TestRecordChar((char) 65, (char) 0x1234);
         writer.putRecord(0, write);
@@ -222,5 +222,51 @@ public class ReaderWriterTest {
         TestRecordChar read = (TestRecordChar) reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
+    }
+
+    @Test
+    public void writeReadRecordBitAligned() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
+        writer = new Writer(memory, descriptor);
+        reader = new Reader(memory, descriptor);
+        //
+        TestRecordBitAligned write = new TestRecordBitAligned(123, 45, 6, true, 789L, (short) 12, (short) 3, (byte) 4, 'A', 'Z', 0x0000789A_BCDEF012L);
+        writer.putRecord(0, write);
+        //
+        // Ok, see if we can get it back
+        TestRecordBitAligned read = (TestRecordBitAligned) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+        assertEquals(read.c, write.c);
+        assertEquals(read.d, write.d);
+        assertEquals(read.e, write.e);
+        assertEquals(read.f, write.f);
+        assertEquals(read.g, write.g);
+        assertEquals(read.h, write.h);
+        assertEquals(read.i, write.i);
+        assertEquals(read.j, write.j);
+    }
+
+    @Test
+    public void writeReadRecordBitAlignedNegative() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
+        writer = new Writer(memory, descriptor);
+        reader = new Reader(memory, descriptor);
+        //
+        TestRecordBitAligned write = new TestRecordBitAligned(-123, -45, -6, false, -789L, (short) -12, (short) -3, (byte) -4, 'A', (char) 0x07FF, 0x0000F89A_BCDEF012L);
+        writer.putRecord(0, write);
+        //
+        // Ok, see if we can get it back
+        TestRecordBitAligned read = (TestRecordBitAligned) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+        assertEquals(read.c, write.c);
+        assertEquals(read.d, write.d);
+        assertEquals(read.e, write.e);
+        assertEquals(read.f, write.f);
+        assertEquals(read.g, write.g);
+        assertEquals(read.h, write.h);
+        assertEquals(read.i, write.i);
+        assertEquals(read.j, write.j);
     }
 }

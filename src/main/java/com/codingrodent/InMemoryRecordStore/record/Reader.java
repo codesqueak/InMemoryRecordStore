@@ -24,7 +24,6 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
-import com.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
 import com.codingrodent.InMemoryRecordStore.exception.RecordStoreException;
 import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 
@@ -33,15 +32,20 @@ import java.lang.reflect.Field;
 public class Reader {
     private final RecordDescriptor recordDescriptor;
     private final IMemoryStore memoryStore;
+    private final BitReader bitReader;
 
     /**
      * Create a new record reader
      *
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
-     * @param mode             Alignment mode (bit/byte)
      */
-    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
+    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor) {
+        if (recordDescriptor.isFieldByteAligned()) {
+            this.bitReader = null;
+        } else {
+            this.bitReader = new BitReader();
+        }
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
     }
@@ -65,7 +69,11 @@ public class Reader {
             Object target = clazz.newInstance();
             for (String fieldName : recordDescriptor.getFieldNames()) {
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
-                pos = unpackFieldIntoObject(target, target.getClass().getDeclaredField(fieldName), pos, buffer, fieldDetails);
+                if (recordDescriptor.isFieldByteAligned()) {
+                    pos = unpackFieldIntoObjectBytes(target, target.getClass().getDeclaredField(fieldName), pos, buffer, fieldDetails);
+                } else {
+                    pos = unpackFieldIntoObjectBits(target, target.getClass().getDeclaredField(fieldName), pos, buffer, fieldDetails);
+                }
             }
             return target;
         } catch (IllegalAccessException | InstantiationException | NoSuchFieldException e) {
@@ -74,7 +82,7 @@ public class Reader {
     }
 
     /**
-     * Unpack a field in a byte buffer back into a source object
+     * Unpack a field in a byte buffer back into a source object (Byte aligned)
      *
      * @param target       Object being constructed
      * @param field        Field to be written to
@@ -84,7 +92,7 @@ public class Reader {
      * @return Next position in byte buffer
      * @throws IllegalAccessException If introspection write fails
      */
-    private int unpackFieldIntoObject(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws IllegalAccessException {
+    private int unpackFieldIntoObjectBytes(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws IllegalAccessException {
         IMemoryStore.Type type = fieldDetails.getType();
         int byteLength = fieldDetails.getByteLength();
         switch (type) {
@@ -141,6 +149,68 @@ public class Reader {
                 break;
             }
         }
+        return pos;
+    }
+
+    /**
+     * Unpack a field in a byte buffer back into a source object (Bit aligned)
+     *
+     * @param target       Object being constructed
+     * @param field        Field to be written to
+     * @param pos          Position in byte buffer (Bit location)
+     * @param buffer       Byte buffer
+     * @param fieldDetails Description of the field
+     * @return Next position in byte buffer
+     * @throws IllegalAccessException If introspection write fails
+     */
+    private int unpackFieldIntoObjectBits(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws IllegalAccessException {
+        IMemoryStore.Type type = fieldDetails.getType();
+        int bitLength = fieldDetails.getBitLength();
+        switch (type) {
+            case Bit: {
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, 0x01 == raw);
+                break;
+            }
+            case Byte8: {
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, (byte) BitTwiddling.extend(raw, bitLength));
+                break;
+            }
+            case Char16: {
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, (char) (raw & 0x0000_FFFF));
+                break;
+            }
+            case Short16: {
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, (short) BitTwiddling.extend(raw, bitLength));
+                break;
+            }
+            case Word32: {
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, BitTwiddling.extend(raw, bitLength));
+                break;
+            }
+            case Word64: {
+                if (bitLength > 32) {
+                    int upperBits = bitLength - 32;
+                    long raw0 = bitReader.unpack(buffer, pos, upperBits);
+                    raw0 = raw0 << 32;
+                    long raw1 = bitReader.unpack(buffer, pos + upperBits, 32);
+                    field.set(target, BitTwiddling.extend(raw0 | raw1, bitLength));
+                } else {
+                    int raw = bitReader.unpack(buffer, pos, bitLength);
+                    field.set(target, (long) BitTwiddling.extend(raw, bitLength));
+                    break;
+                }
+                break;
+            }
+            case Void: {
+                break;
+            }
+        }
+        pos = pos + bitLength;
         return pos;
     }
 

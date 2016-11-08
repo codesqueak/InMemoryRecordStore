@@ -25,7 +25,6 @@ package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.records.TestRecordBitAligned;
-import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
@@ -52,16 +51,11 @@ public class ReaderWriterBitTest {
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L, (short) -307,//
-                (short) 0x15, (byte) -11, (char) 65, (char) 1089);
+                (short) 0x15, (byte) -11, (char) 65, (char) 1089, 0x0000789A_BCDEF012L);
         writer.putRecord(0, write);
-
-        for (int i = 0; i < descriptor.getByteLength(); i++) {
-            System.out.print(Utilities.getByte(memory.getByte(i)) + " ");
-        }
-        System.out.println();
 
         byte[] packed = { //
                 0b00000000, //
@@ -75,17 +69,19 @@ public class ReaderWriterBitTest {
                 (byte) 0b10110011, //
                 0b01101011, //
                 0b01011000, //
-                0b001_10001, //
-                0b000001_00 //
-
+                0b00110001, //
+                0b00000101, //
+                (byte) 0b11100010, //
+                0b01101010, //
+                (byte) 0b11110011, //
+                0b01111011, //
+                (byte) 0b11000000, //
+                0b01001000 //
         };
         assertEquals(packed.length, descriptor.getByteLength());
         // Did record pack correctly ?
         for (int i = 0; i < packed.length; i++) {
             assertEquals(packed[i], memory.getByte(i));
         }
-        //
-
     }
-
 }

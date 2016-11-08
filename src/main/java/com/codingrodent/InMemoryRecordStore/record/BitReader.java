@@ -23,6 +23,36 @@
 */
 package com.codingrodent.InMemoryRecordStore.record;
 
-public class BitReader {
+class BitReader {
+    private final static int[] BIT_TEST = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
 
+    /**
+     * Create a new bit reader
+     */
+    public BitReader() {
+    }
+
+    /**
+     * Pack one byte aligned field into the bit aligned field.  Byte fields are right aligned, bit fields left
+     * <p>
+     * Very slow implementation  - optimize once test cases have good coverage
+     *
+     * @param sourceArray     The record array of byte fields data
+     * @param readBitPosition Where to read  from in the source array
+     * @param bitLength       Size of field in bits
+     * @return Integer holding up to 32 bit value
+     */
+    public int unpack(byte[] sourceArray, int readBitPosition, final int bitLength) {
+        int target = 0;
+        for (int i = 0; i < bitLength; i++) {
+            int readByte = sourceArray[readBitPosition >> 3];
+            int readMask = BIT_TEST[readBitPosition & 0x07];
+            target = target << 1;
+            if (0 != (readByte & readMask)) {
+                target = target | 0x01;
+            }
+            readBitPosition++;
+        }
+        return target;
+    }
 }

@@ -338,8 +338,6 @@ public class TestArrayMemoryStore {
     public void testDump() {
         try {
             core.dump(2);
-            // core.dump(4);
-            // core.dump(8);
         } catch (final Exception e) {
             fail("Unexpected exception: " + e.getMessage());
         }
