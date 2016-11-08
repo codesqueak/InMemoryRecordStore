@@ -56,6 +56,13 @@ public class BitTwiddling {
         // Stop creation
     }
 
+    /**
+     * Sign extend a value
+     *
+     * @param val  Value to be extended
+     * @param bits Number of bits in value
+     * @return Extended value
+     */
     public static byte extend(final byte val, final int bits) {
         final int m = EXTEND32[bits];
         return (byte) ((val ^ m) - m);

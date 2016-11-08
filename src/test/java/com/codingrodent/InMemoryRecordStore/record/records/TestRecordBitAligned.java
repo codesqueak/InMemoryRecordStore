@@ -64,10 +64,13 @@ public class TestRecordBitAligned {
     @PackField(order = 10, bits = 11) // 102
     public char j;
 
+    @PackField(order = 11, bits = 48) // 150
+    public long k;
+
     public TestRecordBitAligned() {
     }
 
-    public TestRecordBitAligned(Integer a, int b, int c, boolean d, long e, short f, short g, byte h, char i, char j) {
+    public TestRecordBitAligned(Integer a, int b, int c, boolean d, long e, short f, short g, byte h, char i, char j, long k) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -79,6 +82,7 @@ public class TestRecordBitAligned {
         this.h = h;
         this.i = i;
         this.j = j;
+        this.k = k;
     }
 
     public Integer getA() {
@@ -167,6 +171,14 @@ public class TestRecordBitAligned {
 
     public void setJ(final char j) {
         this.j = j;
+    }
+
+    public long isK() {
+        return k;
+    }
+
+    public void setK(final long k) {
+        this.k = k;
     }
 
 }

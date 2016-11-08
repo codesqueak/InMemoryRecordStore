@@ -2,7 +2,7 @@
 
 def checkoutCode() {
     stage 'checkout'
-     checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/codesqueak/InMemoryRecordStore.git']]]
+    checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/codesqueak/InMemoryRecordStore.git']]]
 }
 
 def build() {
@@ -33,10 +33,10 @@ def jacocoreport() {
 stage 'execute In Memory Record Store build'
 
 node {
-  checkoutCode()
-  build()
-  test()
-  junitreport()
-  findbugsreport()
-  jacocoreport()
+    checkoutCode()
+    build()
+    test()
+    junitreport()
+    findbugsreport()
+    jacocoreport()
 }

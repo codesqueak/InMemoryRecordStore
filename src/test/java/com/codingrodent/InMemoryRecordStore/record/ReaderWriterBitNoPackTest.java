@@ -25,7 +25,6 @@ package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.records.TestRecordNoPack;
-import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
@@ -52,24 +51,18 @@ public class ReaderWriterBitNoPackTest {
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordNoPack.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordNoPack write = new TestRecordNoPack((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A');
         writer.putRecord(0, write);
 
-        for (int i = 0; i < descriptor.getByteLength(); i++) {
-            System.out.print(Utilities.getByte(memory.getByte(i)) + " ");
-        }
-        System.out.println();
-
-        byte[] packed = {0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, 0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, (byte) 0xF0};
+        byte[] packed = {0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, 0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, (byte) 0xF0, 0x00, 0x41};
 
         // Did record pack correctly ?
+        assertEquals(packed.length, descriptor.getByteLength());
         for (int i = 0; i < packed.length; i++) {
             assertEquals(packed[i], memory.getByte(i));
         }
-        //
-
     }
 
 }

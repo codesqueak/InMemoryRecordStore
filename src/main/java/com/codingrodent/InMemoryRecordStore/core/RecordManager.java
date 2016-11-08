@@ -55,34 +55,19 @@ public class RecordManager {
         int lengthInBits;
         int lengthInBytes;
         if (recordDescriptor.isFieldByteAligned()) {
-            if (recordDescriptor.isRecordByteAligned()) {
-                lengthInBytes = recordDescriptor.getByteLength() * records;
-                lengthInBits = lengthInBytes * 8;
-                mode = AlignmentMode.BYTE_BYTE;
-            } else {
-                lengthInBytes = recordDescriptor.getByteLength() * records;
-                mode = AlignmentMode.BYTE_BIT;
-                lengthInBits = lengthInBytes * 8;
-            }
+            lengthInBytes = recordDescriptor.getByteLength() * records;
+            lengthInBits = lengthInBytes * 8;
+            mode = AlignmentMode.BYTE;
         } else {
-            if (recordDescriptor.isRecordByteAligned()) {
-                lengthInBytes = recordDescriptor.getByteLength() * records;
-                lengthInBits = lengthInBytes * 8;
-                mode = AlignmentMode.BIT_BYTE;
-            } else {
-                lengthInBits = recordDescriptor.getBitLength() * records;
-                lengthInBytes = (lengthInBits + 7) >> 3;
-                mode = AlignmentMode.BIT_BIT;
-            }
-        }
-        if (AlignmentMode.BYTE_BYTE != mode) {
-            throw new UnsupportedOperationException("Alignment mode selected not supported at present (" + mode + ")");
+            lengthInBytes = recordDescriptor.getByteLength() * records;
+            lengthInBits = lengthInBytes * 8;
+            mode = AlignmentMode.BIT;
         }
         //
         this.lengthInBytes = lengthInBytes;
         this.lengthInBits = lengthInBits;
         this.lengthInWords = ((lengthInBytes - 1) >> 2) + 1;
-        this.reader = new Reader(memoryStore, recordDescriptor, mode);
+        this.reader = new Reader(memoryStore, recordDescriptor);
         this.writer = new Writer(memoryStore, recordDescriptor);
         memoryStore.build(lengthInWords);
     }

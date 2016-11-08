@@ -20,7 +20,7 @@ public class App {
             //
             IMemoryStore memory = new ArrayMemoryStore(1024);
             Writer writer = new Writer(memory, descriptor);
-            Reader reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+            Reader reader = new Reader(memory, descriptor);
             System.out.println("-- writer --");
             writer.putRecord(0, new Record());
             System.out.println("-- reader --");

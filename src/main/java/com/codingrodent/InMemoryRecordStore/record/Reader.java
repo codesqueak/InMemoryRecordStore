@@ -24,7 +24,6 @@
 package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
-import com.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
 import com.codingrodent.InMemoryRecordStore.exception.RecordStoreException;
 import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 
@@ -40,9 +39,8 @@ public class Reader {
      *
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
-     * @param mode             Alignment mode (bit/byte)
      */
-    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor, final AlignmentMode mode) {
+    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor) {
         if (recordDescriptor.isFieldByteAligned()) {
             this.bitReader = null;
         } else {
@@ -168,54 +166,44 @@ public class Reader {
     private int unpackFieldIntoObjectBits(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws IllegalAccessException {
         IMemoryStore.Type type = fieldDetails.getType();
         int bitLength = fieldDetails.getBitLength();
-        int byteLength = fieldDetails.getByteLength();
         switch (type) {
             case Bit: {
-                field.set(target, 0x01 == getUnsignedByte(buffer, pos++));
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, 0x01 == raw);
                 break;
             }
             case Byte8: {
-                field.set(target, buffer[pos++]);
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, (byte) BitTwiddling.extend(raw, bitLength));
                 break;
             }
             case Char16: {
-                char c;
-                if (1 == byteLength) {
-                    c = (char) (buffer[pos++] & 0x00FF);
-                } else {
-                    c = (char) ((getUnsignedByte(buffer, pos++) << 8) | getUnsignedByte(buffer, pos++));
-                }
-                field.set(target, c);
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, (char) (raw & 0x0000_FFFF));
                 break;
             }
             case Short16: {
-                if (1 == byteLength) {
-                    field.set(target, (short) buffer[pos++]);
-                } else {
-                    field.set(target, (short) ((getUnsignedByte(buffer, pos++) << 8) | getUnsignedByte(buffer, pos++)));
-                }
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, (short) BitTwiddling.extend(raw, bitLength));
                 break;
             }
             case Word32: {
-                int v = 0;
-                for (int i = 0; i < byteLength; i++) {
-                    v = (v << 8) | getUnsignedByte(buffer, pos++);
-                }
-                if (byteLength < 4) {
-                    v = BitTwiddling.extend(v, 8 * byteLength);
-                }
-                field.set(target, v);
+                int raw = bitReader.unpack(buffer, pos, bitLength);
+                field.set(target, BitTwiddling.extend(raw, bitLength));
                 break;
             }
             case Word64: {
-                long v = 0;
-                for (int i = 0; i < byteLength; i++) {
-                    v = (v << 8) | getUnsignedByte(buffer, pos++);
+                if (bitLength > 32) {
+                    int upperBits = bitLength - 32;
+                    long raw0 = bitReader.unpack(buffer, pos, upperBits);
+                    raw0 = raw0 << 32;
+                    long raw1 = bitReader.unpack(buffer, pos + upperBits, 32);
+                    field.set(target, (long) BitTwiddling.extend(raw0 | raw1, bitLength));
+                } else {
+                    int raw = bitReader.unpack(buffer, pos, bitLength);
+                    field.set(target, (long) BitTwiddling.extend(raw, bitLength));
+                    break;
                 }
-                if (byteLength < 8) {
-                    v = BitTwiddling.extend(v, 8 * byteLength);
-                }
-                field.set(target, v);
                 break;
             }
             case Void: {

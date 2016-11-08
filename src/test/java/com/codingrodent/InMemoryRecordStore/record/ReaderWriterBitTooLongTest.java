@@ -25,7 +25,6 @@ package com.codingrodent.InMemoryRecordStore.record;
 
 import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.records.TestRecordNoPackTooLong;
-import com.codingrodent.InMemoryRecordStore.utility.Utilities;
 import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
@@ -52,15 +51,10 @@ public class ReaderWriterBitTooLongTest {
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordNoPackTooLong.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BIT_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A', true);
         writer.putRecord(0, write);
-
-        for (int i = 0; i < descriptor.getByteLength(); i++) {
-            System.out.print(Utilities.getByte(memory.getByte(i)) + " ");
-        }
-        System.out.println();
 
         byte[] packed = {0x12, // 1
                 0x34, 0x56, // 3

@@ -23,8 +23,6 @@
 */
 package com.codingrodent.InMemoryRecordStore.record;
 
-import com.codingrodent.InMemoryRecordStore.utility.Utilities;
-
 /**
  * This class contains functionality to convert a byte packed record into its bit packed equivalent
  */
@@ -66,11 +64,6 @@ public class BitWriter {
                 int writeBit = 7 - (writeBitPosition & 0x07);
                 int writeByte = writeBitPosition >> 3;
                 targetArray[writeByte] = (byte) (targetArray[writeByte] | BIT_SET[writeBit]);
-                //
-                System.out.println("From " + readBit + " " + readByte + " to  " + writeBit + " " + writeByte + " " + Utilities.getByte(targetArray[writeByte]) + " " + (val > 0));
-                if (0 == writeBit) {
-                    System.out.println("-------------");
-                }
             }
             writeBitPosition++;
         }

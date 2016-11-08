@@ -52,7 +52,7 @@ public class ReaderWriterExceptionTest {
     public void writeReadExceptions() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
         writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor, IMemoryStore.AlignmentMode.BYTE_BYTE);
+        reader = new Reader(memory, descriptor);
         //
         // Record type
         try {
