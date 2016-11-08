@@ -23,7 +23,6 @@
 */
 package com.codingrodent.InMemoryRecordStore.core;
 
-import com.codingrodent.InMemoryRecordStore.core.IMemoryStore.AlignmentMode;
 import com.codingrodent.InMemoryRecordStore.record.*;
 
 /**
@@ -31,7 +30,6 @@ import com.codingrodent.InMemoryRecordStore.record.*;
  */
 public class RecordManager {
 
-    private final AlignmentMode mode;
     private final int lengthInBits;
     private final int lengthInBytes;
     private final int lengthInWords;
@@ -57,11 +55,9 @@ public class RecordManager {
         if (recordDescriptor.isFieldByteAligned()) {
             lengthInBytes = recordDescriptor.getByteLength() * records;
             lengthInBits = lengthInBytes * 8;
-            mode = AlignmentMode.BYTE;
         } else {
             lengthInBytes = recordDescriptor.getByteLength() * records;
             lengthInBits = lengthInBytes * 8;
-            mode = AlignmentMode.BIT;
         }
         //
         this.lengthInBytes = lengthInBytes;

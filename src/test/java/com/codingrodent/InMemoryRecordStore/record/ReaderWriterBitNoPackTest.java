@@ -39,7 +39,7 @@ public class ReaderWriterBitNoPackTest {
 
     @Before
     public void setUp() throws Exception {
-        memory = new ArrayMemoryStore(1024);
+        memory = new ArrayMemoryStore(2048);
 
     }
 

@@ -45,7 +45,7 @@ public class Writer {
         if (recordDescriptor.isFieldByteAligned()) {
             this.bitWriter = null;
         } else {
-            this.bitWriter = new BitWriter(recordDescriptor);
+            this.bitWriter = new BitWriter();
         }
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;

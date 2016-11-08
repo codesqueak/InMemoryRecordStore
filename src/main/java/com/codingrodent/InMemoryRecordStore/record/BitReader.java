@@ -23,18 +23,13 @@
 */
 package com.codingrodent.InMemoryRecordStore.record;
 
-public class BitReader {
+class BitReader {
     private final static int[] BIT_TEST = {0x80, 0x40, 0x20, 0x10, 0x08, 0x04, 0x02, 0x01};
-
-    private final RecordDescriptor recordDescriptor;
 
     /**
      * Create a new bit reader
-     *
-     * @param recordDescriptor Field type information
      */
-    public BitReader(RecordDescriptor recordDescriptor) {
-        this.recordDescriptor = recordDescriptor;
+    public BitReader() {
     }
 
     /**

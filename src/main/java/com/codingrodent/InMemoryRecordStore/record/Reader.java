@@ -44,7 +44,7 @@ public class Reader {
         if (recordDescriptor.isFieldByteAligned()) {
             this.bitReader = null;
         } else {
-            this.bitReader = new BitReader(recordDescriptor);
+            this.bitReader = new BitReader();
         }
         this.recordDescriptor = recordDescriptor;
         this.memoryStore = memoryStore;
@@ -198,7 +198,7 @@ public class Reader {
                     long raw0 = bitReader.unpack(buffer, pos, upperBits);
                     raw0 = raw0 << 32;
                     long raw1 = bitReader.unpack(buffer, pos + upperBits, 32);
-                    field.set(target, (long) BitTwiddling.extend(raw0 | raw1, bitLength));
+                    field.set(target, BitTwiddling.extend(raw0 | raw1, bitLength));
                 } else {
                     int raw = bitReader.unpack(buffer, pos, bitLength);
                     field.set(target, (long) BitTwiddling.extend(raw, bitLength));

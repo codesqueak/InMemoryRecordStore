@@ -26,19 +26,14 @@ package com.codingrodent.InMemoryRecordStore.record;
 /**
  * This class contains functionality to convert a byte packed record into its bit packed equivalent
  */
-public class BitWriter {
+class BitWriter {
 
     private final static int[] BIT_SET = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 
-    private final RecordDescriptor recordDescriptor;
-
     /**
      * Create a new bit  writer
-     *
-     * @param recordDescriptor Field type information
      */
-    public BitWriter(final RecordDescriptor recordDescriptor) {
-        this.recordDescriptor = recordDescriptor;
+    public BitWriter() {
     }
 
     /**
@@ -50,9 +45,8 @@ public class BitWriter {
      * @param targetArray      The target bit field array
      * @param writeBitPosition Where to write to in the target array
      * @param bitLength        Size of field in bits
-     * @return Target bit array with field written to it
      */
-    public byte[] insertBits(byte[] sourceArray, byte[] targetArray, int writeBitPosition, final int bitLength) {
+    public void insertBits(byte[] sourceArray, byte[] targetArray, int writeBitPosition, final int bitLength) {
         final int byteArrayOffset = sourceArray.length - 1;
         for (int bit = bitLength - 1; bit >= 0; bit--) {
             int readBit = bit & 0x07;
@@ -67,7 +61,6 @@ public class BitWriter {
             }
             writeBitPosition++;
         }
-        return targetArray;
     }
 
 }
