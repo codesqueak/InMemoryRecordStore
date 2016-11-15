@@ -34,7 +34,6 @@ import java.util.*;
  */
 public class RecordDescriptor {
     private final Class clazz;
-    private final boolean recordByteAligned;
     private final boolean fieldByteAligned;
     private final int lengthInBits;
     private final int lengthInBytes;
@@ -55,7 +54,6 @@ public class RecordDescriptor {
             throw new IllegalArgumentException("The record must contain a PackRecord annotation");
         }
         this.fieldByteAligned = annotation.fieldByteAligned();
-        this.recordByteAligned = annotation.recordByteAligned();
         //
         // Recover any field annotations
         List<FieldDetails> fieldList = new LinkedList<>();
@@ -111,10 +109,6 @@ public class RecordDescriptor {
 
     public boolean isFieldByteAligned() {
         return fieldByteAligned;
-    }
-
-    public boolean isRecordByteAligned() {
-        return recordByteAligned;
     }
 
     public int getByteLength() {

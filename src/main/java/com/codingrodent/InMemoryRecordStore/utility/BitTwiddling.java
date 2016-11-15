@@ -28,7 +28,7 @@ package com.codingrodent.InMemoryRecordStore.utility;
  */
 public class BitTwiddling {
     private final static int[] EXTEND32 = new int[33];
-    private final static int[] EXTEND64 = new int[65];
+    private final static long[] EXTEND64 = new long[65];
     private final static int[] SHRINK32 = new int[33];
     private final static long[] SHRINK64 = new long[65];
 

@@ -153,8 +153,8 @@ public class Writer {
                     v = v >>> 8;
                 }
                 pos = pos + byteLength;
+                break;
             }
-            break;
             case Void:
                 pos = pos + byteLength;
                 break;

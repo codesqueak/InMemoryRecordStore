@@ -34,6 +34,11 @@ import com.codingrodent.InMemoryRecordStore.utility.Utilities;
  * recommended that the aligned word read / write methods are used where appropriate
  */
 public class ArrayMemoryStore implements IMemoryStore {
+
+    private final static int STORAGE_LIMIT = 0x7FFF_FFFC;
+    private final static int MAX_WORDS = STORAGE_LIMIT / 4;
+    private final static long LSLW = 0x0000_0000_FFFF_FFFFL;
+
     private int[] core = null;
     private int bytes = 0;
     private int words = 0;
@@ -64,7 +69,7 @@ public class ArrayMemoryStore implements IMemoryStore {
         if ((words < 1) || (words > MAX_WORDS)) {
             throw new IllegalArgumentException("The number of words requested was out of range");
         }
-        bytes = words * BYTES_PER_WORD;
+        bytes = words * 4;
         this.words = words;
         core = new int[words];
     }
