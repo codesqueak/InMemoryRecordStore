@@ -25,12 +25,10 @@ package com.codingrodent.InMemoryRecordStore.core;
 
 /**
  * This interface defines facilities  to read and write the 'RAM' via methods using all supported types
+ *
+ * Maximum effectiuve size is 2GB
  */
 public interface IMemoryStore {
-    int BYTES_PER_WORD = 4;
-    int MAX_BYTES = 1 << 29;                // 2**30 - 1GB
-    int MAX_WORDS = MAX_BYTES / 4;
-    long LSLW = 0x00000000FFFFFFFFL;
 
     /**
      * Build the storage

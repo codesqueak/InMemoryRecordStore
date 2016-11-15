@@ -30,7 +30,8 @@ import com.codingrodent.InMemoryRecordStore.record.*;
  */
 public class RecordManager {
 
-    private final int lengthInBits;
+    private final static long STORAGE_LIMIT = 0x7FFF_FFFC;
+
     private final int lengthInBytes;
     private final int lengthInWords;
     private final Reader reader;
@@ -45,24 +46,16 @@ public class RecordManager {
      * @param recordDescriptor Field type information
      */
     public RecordManager(final IMemoryStore memoryStore, final int records, final RecordDescriptor recordDescriptor) {
-        if (records < 1) {
-            throw new IllegalArgumentException("The component must have at least one record");
+        if (records < 8) {
+            throw new IllegalArgumentException("The component must have at least eight records");
         }
         this.recordDescriptor = recordDescriptor;
-        // Determine records based on the four possible alignment strategies
-        int lengthInBits;
-        int lengthInBytes;
-        if (recordDescriptor.isFieldByteAligned()) {
-            lengthInBytes = recordDescriptor.getByteLength() * records;
-            lengthInBits = lengthInBytes * 8;
-        } else {
-            lengthInBytes = recordDescriptor.getByteLength() * records;
-            lengthInBits = lengthInBytes * 8;
+        long lengthInBytes = ((long) recordDescriptor.getByteLength()) * records;
+        if (lengthInBytes > STORAGE_LIMIT) {
+            throw new IllegalArgumentException("Maximum storage limit exceeded - " + STORAGE_LIMIT + " bytes");
         }
-        //
-        this.lengthInBytes = lengthInBytes;
-        this.lengthInBits = lengthInBits;
-        this.lengthInWords = ((lengthInBytes - 1) >> 2) + 1;
+        this.lengthInBytes = (int) lengthInBytes;
+        this.lengthInWords = (int) (((lengthInBytes - 1) >> 2) + 1);
         this.reader = new Reader(memoryStore, recordDescriptor);
         this.writer = new Writer(memoryStore, recordDescriptor);
         memoryStore.build(lengthInWords);
@@ -87,10 +80,6 @@ public class RecordManager {
      */
     public void putRecord(final int location, final Object record) {
         writer.putRecord(location, record);
-    }
-
-    public int getLengthInBits() {
-        return lengthInBits;
     }
 
     public int getLengthInBytes() {
