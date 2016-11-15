@@ -49,11 +49,11 @@ public class ReaderWriterTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        TestRecord write = new TestRecord(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x01, // a
                 -128, 0x00, // c
@@ -68,7 +68,7 @@ public class ReaderWriterTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecord read = (TestRecord) reader.getRecord(0);
+        TestRecordBytePack read = (TestRecordBytePack) reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
         assertEquals(read.c, write.c);

@@ -40,7 +40,7 @@ public class RecordDescriptorTest {
 
     @Before
     public void setUp() throws Exception {
-        recordDescriptor = new RecordDescriptor(TestRecord.class);
+        recordDescriptor = new RecordDescriptor(TestRecordBytePack.class);
     }
 
     @After
@@ -51,11 +51,6 @@ public class RecordDescriptorTest {
     @Test
     public void isFieldByteAligned() throws Exception {
         assertTrue(recordDescriptor.isFieldByteAligned());
-    }
-
-    @Test
-    public void isRecordByteAligned() throws Exception {
-        assertTrue(recordDescriptor.isRecordByteAligned());
     }
 
     @Test
@@ -70,7 +65,7 @@ public class RecordDescriptorTest {
 
     @Test
     public void getClazz() throws Exception {
-        assertEquals(recordDescriptor.getClazz(), TestRecord.class);
+        assertEquals(recordDescriptor.getClazz(), TestRecordBytePack.class);
     }
 
     @Test

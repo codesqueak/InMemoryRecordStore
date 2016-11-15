@@ -29,7 +29,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
  * Test data record
  */
 @PackRecord
-public class TestRecord {
+public class TestRecordBytePack {
 
     @PackField(order = 0, bits = 24)
     public Integer a;
@@ -46,13 +46,13 @@ public class TestRecord {
     @Padding(order = 4, bits = 8)
     public Void v1;
 
-    @PackField(order = 200, bits = 48)
+    @PackField(order = 200, bits = 46)
     public Long e;
 
-    public TestRecord() {
+    public TestRecordBytePack() {
     }
 
-    public TestRecord(Integer a, int b, int c, boolean d, long e) {
+    public TestRecordBytePack(Integer a, int b, int c, boolean d, long e) {
         this.a = a;
         this.b = b;
         this.c = c;

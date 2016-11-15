@@ -50,7 +50,7 @@ public class ReaderWriterExceptionTest {
 
     @Test
     public void writeReadExceptions() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecord.class);
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
@@ -63,12 +63,12 @@ public class ReaderWriterExceptionTest {
         }
         //
         // Storage limits
-        TestRecord testRecord = new TestRecord(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
-        writer.putRecord(0, testRecord);
+        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
+        writer.putRecord(0, testRecordBytePack);
         int maxRecords = 1024 * 4 / descriptor.getByteLength();
-        writer.putRecord(maxRecords - 1, testRecord);
+        writer.putRecord(maxRecords - 1, testRecordBytePack);
         try {
-            writer.putRecord(maxRecords, testRecord);
+            writer.putRecord(maxRecords, testRecordBytePack);
             fail("Expecting RecordStoreException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Write location beyond end of storage");
