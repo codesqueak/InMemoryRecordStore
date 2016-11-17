@@ -25,18 +25,15 @@ package com.codingrodent.InMemoryRecordStore.core;
 
 import com.codingrodent.InMemoryRecordStore.record.*;
 
-/**
- *
- */
-public class RecordManager {
+public class RecordManager<T> {
 
     private final static long STORAGE_LIMIT = 0x7FFF_FFFC;
 
     private final int lengthInBytes;
     private final int lengthInWords;
-    private final Reader reader;
-    private final Writer writer;
-    private RecordDescriptor recordDescriptor;
+    private final int records;
+    private final Reader<T> reader;
+    private final Writer<T> writer;
 
     /**
      * Create a new In Memory component descriptor
@@ -45,19 +42,19 @@ public class RecordManager {
      * @param records          The records of the memory core in records
      * @param recordDescriptor Field type information
      */
-    public RecordManager(final IMemoryStore memoryStore, final int records, final RecordDescriptor recordDescriptor) {
+    public RecordManager(final IMemoryStore memoryStore, final int records, final RecordDescriptor<T> recordDescriptor) {
         if (records < 8) {
             throw new IllegalArgumentException("The component must have at least eight records");
         }
-        this.recordDescriptor = recordDescriptor;
         long lengthInBytes = ((long) recordDescriptor.getByteLength()) * records;
         if (lengthInBytes > STORAGE_LIMIT) {
             throw new IllegalArgumentException("Maximum storage limit exceeded - " + STORAGE_LIMIT + " bytes");
         }
         this.lengthInBytes = (int) lengthInBytes;
         this.lengthInWords = (int) (((lengthInBytes - 1) >> 2) + 1);
-        this.reader = new Reader(memoryStore, recordDescriptor);
-        this.writer = new Writer(memoryStore, recordDescriptor);
+        this.records = records;
+        this.reader = new Reader<>(memoryStore, recordDescriptor);
+        this.writer = new Writer<>(memoryStore, recordDescriptor);
         memoryStore.build(lengthInWords);
     }
 
@@ -67,9 +64,11 @@ public class RecordManager {
      * @param location Location
      * @return Record
      */
-    public Object getRecord(final int location) {
-        Object record = reader.getRecord(location);
-        return recordDescriptor.getClazz().cast(record);
+    public T getRecord(final int location) throws IllegalArgumentException {
+        if ((location < 0) | (location > records)) {
+            throw new IllegalArgumentException("Record location out of bounds");
+        }
+        return reader.getRecord(location);
     }
 
     /**
@@ -78,16 +77,39 @@ public class RecordManager {
      * @param location Location
      * @param record   Record
      */
-    public void putRecord(final int location, final Object record) {
+    public void putRecord(final int location, final T record) throws IllegalArgumentException {
+        if ((location < 0) | (location > records)) {
+            throw new IllegalArgumentException("Record location out of bounds");
+        }
         writer.putRecord(location, record);
     }
+
+    /**
+     * Return the length of a record in bytes
+     *
+     * @return Byte length
+     */
 
     public int getLengthInBytes() {
         return lengthInBytes;
     }
 
+    /**
+     * Return the length of a record in words. Note 1 word = 4 bytes.  A byte length of 5 for example, would equal two words.
+     *
+     * @return Word length
+     */
     public int getLengthInWords() {
         return lengthInWords;
+    }
+
+    /**
+     * Get the number of records allocated for storage
+     *
+     * @return Allocated storage
+     */
+    public int getRecords() {
+        return records;
     }
 
 }

@@ -30,8 +30,8 @@ import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 /**
  *
  */
-public class Writer {
-    private final RecordDescriptor recordDescriptor;
+public class Writer<T> {
+    private final RecordDescriptor<T> recordDescriptor;
     private final IMemoryStore memoryStore;
     private final BitWriter bitWriter;
 
@@ -41,7 +41,7 @@ public class Writer {
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
      */
-    public Writer(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor) {
+    public Writer(final IMemoryStore memoryStore, final RecordDescriptor<T> recordDescriptor) {
         if (recordDescriptor.isFieldByteAligned()) {
             this.bitWriter = null;
         } else {
@@ -58,7 +58,7 @@ public class Writer {
      * @param record Record
      * @throws RecordStoreException General error when writing record
      */
-    public void putRecord(final int loc, final Object record) throws RecordStoreException {
+    public void putRecord(final int loc, final T record) throws RecordStoreException {
         if (!record.getClass().equals(recordDescriptor.getClazz())) {
             throw new RecordStoreException("Object supplied to writer is of the wrong type");
         }

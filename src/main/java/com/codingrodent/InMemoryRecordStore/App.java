@@ -3,6 +3,8 @@ package com.codingrodent.InMemoryRecordStore;
 import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.*;
 
+import java.util.LinkedList;
+
 /**
  * Test twiddling
  */
@@ -25,6 +27,9 @@ public class App {
             writer.putRecord(0, new Record());
             System.out.println("-- reader --");
             reader.getRecord(0);
+
+            LinkedList ll = new LinkedList();
+            ll.iterator();
 
         } catch (Exception e) {
             e.printStackTrace();
