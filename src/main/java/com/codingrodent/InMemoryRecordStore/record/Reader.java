@@ -29,8 +29,8 @@ import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 
 import java.lang.reflect.Field;
 
-public class Reader {
-    private final RecordDescriptor recordDescriptor;
+public class Reader<T> {
+    private final RecordDescriptor<T> recordDescriptor;
     private final IMemoryStore memoryStore;
     private final BitReader bitReader;
 
@@ -40,7 +40,7 @@ public class Reader {
      * @param memoryStore      Data storage structure
      * @param recordDescriptor Field type information
      */
-    public Reader(final IMemoryStore memoryStore, final RecordDescriptor recordDescriptor) {
+    public Reader(final IMemoryStore memoryStore, final RecordDescriptor<T> recordDescriptor) {
         if (recordDescriptor.isFieldByteAligned()) {
             this.bitReader = null;
         } else {
@@ -57,7 +57,7 @@ public class Reader {
      * @return Record object with fields populated
      * @throws RecordStoreException General error when reading record
      */
-    public Object getRecord(final int location) throws RecordStoreException {
+    public T getRecord(final int location) throws RecordStoreException {
         final int byteLength = recordDescriptor.getByteLength();
         int pos = 0;
         int address = location * byteLength;
@@ -66,7 +66,7 @@ public class Reader {
         //
         // Populate each field
         try {
-            Object target = clazz.newInstance();
+            @SuppressWarnings("unchecked") T target = (T) clazz.newInstance();
             for (String fieldName : recordDescriptor.getFieldNames()) {
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
                 if (recordDescriptor.isFieldByteAligned()) {
@@ -198,6 +198,7 @@ public class Reader {
                     long raw0 = bitReader.unpack(buffer, pos, upperBits);
                     raw0 = raw0 << 32;
                     long raw1 = bitReader.unpack(buffer, pos + upperBits, 32);
+                    raw1 = raw1 & 0x0000_0000_FFFF_FFFFL;
                     field.set(target, BitTwiddling.extend(raw0 | raw1, bitLength));
                 } else {
                     int raw = bitReader.unpack(buffer, pos, bitLength);
@@ -210,8 +211,7 @@ public class Reader {
                 break;
             }
         }
-        pos = pos + bitLength;
-        return pos;
+        return pos + bitLength;
     }
 
     /**

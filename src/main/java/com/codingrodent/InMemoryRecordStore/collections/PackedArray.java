@@ -21,35 +21,44 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore;
+package com.codingrodent.InMemoryRecordStore.collections;
 
-import com.codingrodent.InMemoryRecordStore.annotations.*;
+import com.codingrodent.InMemoryRecordStore.core.*;
+import com.codingrodent.InMemoryRecordStore.record.RecordDescriptor;
 
-/**
- * Test data record
- */
-@PackRecord
-public class Record {
+public class PackedArray<E> {
 
-    @PackField(order = 0, bits = 24)
-    public Integer a = 0x0012_3456;
+    private final RecordManager recordManager;
 
-    @PackField(order = 7, bits = 16)
-    public int b = 0x0000_FECB;
+    /**
+     * Simple constructor using default storage
+     *
+     * @param clazz   Class of record type
+     * @param records Maximum records to store
+     */
+    public PackedArray(final Class<E> clazz, final int records) {
+        RecordDescriptor descriptor = new RecordDescriptor(clazz);
+        this.recordManager = new RecordManager(new ArrayMemoryStore(), records, descriptor);
+    }
 
-    @PackField(order = 3, bits = 16)
-    public int c = 0x0000_789A;
+    /**
+     * Read a record at the specified location
+     *
+     * @param location Location
+     * @return Record
+     */
+    @SuppressWarnings("unchecked")
+    public E getRecord(final int location) {
+        return (E) recordManager.getRecord(location);
+    }
 
-    @PackField(order = 100, bits = 1)
-    public boolean d = true;
-
-    @Padding(order = 4, bits = 8)
-    public Void v1;
-
-    @PackField(order = 200, bits = 8)
-    public int e = 0x0000_0077;
-
-    @PackField(order = 300, bits = 16)
-    public int f = -32768;
-
+    /**
+     * Write a record at the specified location
+     *
+     * @param location Location
+     * @param record   Record
+     */
+    public void putRecord(final int location, final E record) {
+        recordManager.putRecord(location, record);
+    }
 }

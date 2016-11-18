@@ -25,8 +25,8 @@ package com.codingrodent.InMemoryRecordStore.core;
 
 /**
  * This interface defines facilities  to read and write the 'RAM' via methods using all supported types
- *
- * Maximum effectiuve size is 2GB
+ * <p>
+ * Maximum effective size is 2GB
  */
 public interface IMemoryStore {
 
