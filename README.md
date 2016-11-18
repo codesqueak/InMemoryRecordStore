@@ -1,6 +1,7 @@
 # In Memory Record Storage
 
-In Memory Record Storage is a library to allow object data defined as records to be efficiently stored into memory.  Each record field may be either bit or byte aligned, with each record being in turn bit or byte aligned.
+In Memory Record Storage is a library to allow object data defined as records to be efficiently stored into memory.  
+Each record field may be either bit or byte aligned, with each record being in turn byte aligned.
 The types supported are:
 
 * Boolean
@@ -15,9 +16,8 @@ Both primitive and object types may be used interchangeably.
 
 To define a record, the owning class must be annotated with a *@PackRecord* annotation.  For example,
  
-**@recordByteAligned(recordByteAligned=true, fieldByteAligned=true)**
+**@recordByteAligned(fieldByteAligned=true)**
 
-* recordByteAligned - Signifies if each record is bit or byte aligned in memory
 * fieldByteAligned - Signifies if each field is bit or byte aligned in a record in memory
 
 To define a field in a record, the field must be annotated with a *@PackField* annotation. For example
@@ -63,28 +63,58 @@ public class Record {
 
 The records are held in a data structure complying with the *IMemoryStore* interface.  A basic store, *ArrayMemoryStore* is defined for default use.
 
-The simplest way to use this is to define empty store and let the RecordManager handle allocation.  For example the following defines storage for 
-up to 1024 copies of the Record class.  Read & write operations can now be performed via the record manager which treats storage as an array of records.
+The simplest way to use this is to define an empty store and let the RecordManager handle allocation.  For example the following defines storage for 
+up to 1000 copies of the Record class.  Read & write operations can now be performed via the record manager which treats storage as an array of records.
 
 ```
     RecordDescriptor descriptor = new RecordDescriptor(Record.class);
-    RecordManager rm = new RecordManager(new ArrayMemoryStore(), 1024, descriptor);
+    RecordManager rm = new RecordManager(new ArrayMemoryStore(), 1000, descriptor);
     //
     rm.putRecord(123, new Record())
     Record record = (Record) rm.getRecord(123)
 ```
 
+# Collections
+
+Various collections are available.  It is intended to enlarge this list in future releases.
+
+## Array
+
+A simple array store. For example, to store up to 1000 records use:
+
+```
+    PackedArray<Record> array = new PackedArray<>(Record.class, 1000);
+    Record record = new Record(...); // create
+    array.putRecord(1, record); // save it
+    record = array.getRecord(i); // recover
+```
+
+## LinkedList
+
+A bidirectional linked list. For example, to create a list capable of storing up to 1000 elements use:
+
+```
+    List<Record> list = list = new PackedList<>(Record.class, 1000); // create
+    deque.addFirst(record1); // add some data
+    deque.addFirst(record2);
+    deque.addFirst(record3);
+    list.stream().map(...).forEach(...); // process records
+```
+
+
 # Restrictions
 
-The only mode allowable is Byte / Byte alignment.  Bit alignment modes will be available **_Real Soon Now !_** 
+The following features are not yet available but will included shortly:
+
+* Use of custom memory stores
+* use of custom object reader / writer
 
 # Things to add
 
-* Bit field packing
 * Bit record packing
 * Support arrays
 * Support fixed size strings
-* Collection classes
+* Collection classes (partly implemented)
 * Binary file I/O
 
 # Build

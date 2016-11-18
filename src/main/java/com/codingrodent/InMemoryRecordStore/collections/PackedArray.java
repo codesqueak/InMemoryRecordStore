@@ -26,7 +26,7 @@ package com.codingrodent.InMemoryRecordStore.collections;
 import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.RecordDescriptor;
 
-public class PackedArray<T> {
+public class PackedArray<E> {
 
     private final RecordManager recordManager;
 
@@ -36,7 +36,7 @@ public class PackedArray<T> {
      * @param clazz   Class of record type
      * @param records Maximum records to store
      */
-    public PackedArray(final Class<T> clazz, final int records) {
+    public PackedArray(final Class<E> clazz, final int records) {
         RecordDescriptor descriptor = new RecordDescriptor(clazz);
         this.recordManager = new RecordManager(new ArrayMemoryStore(), records, descriptor);
     }
@@ -48,8 +48,8 @@ public class PackedArray<T> {
      * @return Record
      */
     @SuppressWarnings("unchecked")
-    public T getRecord(final int location) {
-        return (T) recordManager.getRecord(location);
+    public E getRecord(final int location) {
+        return (E) recordManager.getRecord(location);
     }
 
     /**
@@ -58,7 +58,7 @@ public class PackedArray<T> {
      * @param location Location
      * @param record   Record
      */
-    public void putRecord(final int location, final T record) {
+    public void putRecord(final int location, final E record) {
         recordManager.putRecord(location, record);
     }
 }

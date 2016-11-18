@@ -37,8 +37,7 @@ import java.util.function.UnaryOperator;
 
 public class PackedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E> {
 
-    private final static int FIRST_MARKER = Integer.MIN_VALUE;
-    private final static int LAST_MARKER = Integer.MIN_VALUE + 1;
+    private final static int END_MARKER = Integer.MIN_VALUE;
     //
     private final PackedArray<E> packedArray;
     private final int[] forward;
@@ -48,13 +47,16 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     private final Class<E> clazz;
     //
     private final AtomicInteger modCount = new AtomicInteger();
-    private int first = FIRST_MARKER;
-    private int last = LAST_MARKER;
+    private int first = END_MARKER;
+    private int last = END_MARKER;
     private int size = 0;
     private int next = 0;
 
     /**
-     * Constructs an empty list.
+     * Constructs an empty list using default storage
+     *
+     * @param clazz   Class type of object to be stored
+     * @param records Maximum number of objects to be stored
      */
     public PackedList(final Class<E> clazz, final int records) {
         this.packedArray = new PackedArray<>(clazz, records);
@@ -65,13 +67,13 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
         for (int i = 0; i < records - 1; i++) {
             free[i] = i + 1;
         }
-        free[records - 1] = LAST_MARKER;
+        free[records - 1] = END_MARKER;
         this.free = free;
         this.clazz = clazz;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void addFirst(final E e) {
@@ -85,7 +87,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
         packedArray.putRecord(next, e);
         if (0 == size) {
             // set up initial conditions
-            forward[next] = LAST_MARKER;
+            forward[next] = END_MARKER;
             last = next;
         } else {
             // forward pointers
@@ -93,7 +95,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
             // backward pointers
             backward[first] = next;
         }
-        backward[next] = FIRST_MARKER;
+        backward[next] = END_MARKER;
         first = next;
         // next free cell
         next = free[next];
@@ -112,7 +114,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
         packedArray.putRecord(next, e);
         if (0 == size) {
             // set up initial conditions
-            backward[next] = FIRST_MARKER;
+            backward[next] = END_MARKER;
             first = next;
         } else {
             // forward pointers
@@ -120,7 +122,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
             // backward pointers
             backward[next] = last;
         }
-        forward[next] = LAST_MARKER;
+        forward[next] = END_MARKER;
         last = next;
         // next free cell
         next = free[next];
@@ -128,7 +130,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean offerFirst(final E e) {
@@ -137,7 +139,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean offerLast(final E e) {
@@ -146,7 +148,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E removeFirst() {
@@ -161,16 +163,16 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
         first = forward[first];
         // backwards pointers
         if (1 == size) {
-            last = LAST_MARKER;
+            last = END_MARKER;
         } else {
-            backward[first] = FIRST_MARKER;
+            backward[first] = END_MARKER;
         }
         size--;
         return result;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E removeLast() {
@@ -185,16 +187,16 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
         last = backward[last];
         // forward pointers
         if (1 == size) {
-            first = FIRST_MARKER;
+            first = END_MARKER;
         } else {
-            forward[last] = LAST_MARKER;
+            forward[last] = END_MARKER;
         }
         size--;
         return result;
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E pollFirst() {
@@ -204,7 +206,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E pollLast() {
@@ -214,7 +216,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E getFirst() {
@@ -224,7 +226,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E getLast() {
@@ -234,7 +236,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E peekFirst() {
@@ -244,7 +246,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E peekLast() {
@@ -254,7 +256,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * {@inheritDoc}
+     * {{@inheritDoc}}
      * <p>
      * This implementation always throws an
      * {@code UnsupportedOperationException}.
@@ -265,7 +267,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * {@inheritDoc}
+     * {{@inheritDoc}}
      * <p>
      * This implementation always throws an
      * {@code UnsupportedOperationException}.
@@ -276,7 +278,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean offer(final E e) {
@@ -284,7 +286,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E remove() {
@@ -292,7 +294,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E poll() {
@@ -300,7 +302,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E element() {
@@ -308,7 +310,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E peek() {
@@ -316,7 +318,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void push(final E e) {
@@ -324,7 +326,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E pop() {
@@ -332,7 +334,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Iterator<E> descendingIterator() {
@@ -340,7 +342,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int size() {
@@ -348,7 +350,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean contains(Object o) {
@@ -356,7 +358,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean containsAll(Collection<?> c) {
@@ -364,7 +366,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean addAll(Collection<? extends E> c) {
@@ -373,7 +375,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean removeAll(Collection<?> c) {
@@ -381,7 +383,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean retainAll(Collection<?> c) {
@@ -389,7 +391,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public boolean add(final E e) {
@@ -398,7 +400,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int indexOf(Object o) {
@@ -406,7 +408,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public int lastIndexOf(Object o) {
@@ -414,7 +416,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void clear() {
@@ -424,7 +426,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public List<E> subList(int fromIndex, int toIndex) {
@@ -432,7 +434,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void replaceAll(UnaryOperator<E> operator) {
@@ -440,7 +442,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public void sort(Comparator<? super E> c) {
@@ -448,7 +450,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E get(int index) {
@@ -456,7 +458,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public E set(int index, E element) {
@@ -464,7 +466,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public Iterator<E> iterator() {
@@ -472,7 +474,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
      */
     @Override
     public ListIterator<E> listIterator(final int index) {
@@ -485,82 +487,71 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
 
         private final int mod;
         private final boolean descending;
-        private int cursor;
+        private int cursorLeft;
+        private int cursorRight;
 
         public PackedListIterator(final boolean descending) {
             if (descending) {
-                cursor = LAST_MARKER;
+                this.cursorLeft = last;
+                this.cursorRight = END_MARKER;
             } else {
-                cursor = FIRST_MARKER;
+                this.cursorLeft = END_MARKER;
+                this.cursorRight = first;
             }
             this.descending = descending;
             this.mod = modCount.get();
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
         public boolean hasNext() {
             modCheck();
             if (descending)
                 return hasPrevious();
-            if ((isEmpty()) || (LAST_MARKER == cursor))
-                return false;
-            return ((FIRST_MARKER == cursor) || (LAST_MARKER != forward[cursor]));
+            return END_MARKER != cursorRight;
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
         @Override
+        @SuppressWarnings("unchecked")
         public T next() {
             modCheck();
             if (descending)
                 return previous();
             if (hasNext()) {
-                if (FIRST_MARKER == cursor) {
-                    cursor = first;
-                } else {
-                    cursor = forward[cursor];
-                }
-                @SuppressWarnings("unchecked") T record = (T) packedArray.getRecord(cursor);
-                if (LAST_MARKER == forward[cursor])
-                    cursor = LAST_MARKER;
-                return record;
+                cursorLeft = cursorRight;
+                cursorRight = forward[cursorLeft];
+                return (T) packedArray.getRecord(cursorLeft);
             } else
                 throw new NoSuchElementException();
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
 
         @Override
         public boolean hasPrevious() {
             modCheck();
-            if ((isEmpty()) || (FIRST_MARKER == cursor))
-                return false;
-            return ((LAST_MARKER == cursor) || (FIRST_MARKER != backward[cursor]));
+            return END_MARKER != cursorLeft;
         }
 
         /**
-         * @inheritDoc
+         * {@inheritDoc}
          */
 
         @Override
+        @SuppressWarnings("unchecked")
         public T previous() {
             modCheck();
             if (hasPrevious()) {
-                if (LAST_MARKER == cursor) {
-                    cursor = last;
-                } else {
-                    cursor = backward[cursor];
-                }
-                @SuppressWarnings("unchecked") T record = (T) packedArray.getRecord(cursor);
-                if (FIRST_MARKER == backward[cursor])
-                    cursor = FIRST_MARKER;
-                return record;
+                cursorRight = cursorLeft;
+                cursorLeft = backward[cursorRight];
+                return (T) packedArray.getRecord(cursorRight);
             } else
                 throw new NoSuchElementException();
         }
