@@ -37,7 +37,7 @@ public class RecordDescriptor<T> {
     private final boolean fieldByteAligned;
     private final int lengthInBits;
     private final int lengthInBytes;
-    private final HashMap<String, FieldDetails<T>> fieldDetailsMap;
+    private final HashMap<String, FieldDetails> fieldDetailsMap;
     private final List<String> fieldNames;
 
     /**
@@ -56,7 +56,7 @@ public class RecordDescriptor<T> {
         this.fieldByteAligned = annotation.fieldByteAligned();
         //
         // Recover any field annotations
-        List<FieldDetails<T>> fieldList = new LinkedList<>();
+        List<FieldDetails> fieldList = new LinkedList<>();
         Field[] fields = clazz.getFields();
         for (Field field : fields) {
             // Pack annotation
@@ -64,7 +64,8 @@ public class RecordDescriptor<T> {
             if (null != packFieldAnnotation) {
                 Class packClass = field.getType();
                 if (!packClass.getTypeName().equals(Void.class.getTypeName())) {
-                    fieldList.add(new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits()));
+                    FieldDetails fieldDetails = new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits());
+                    fieldList.add(fieldDetails);
                 } else {
                     throw new IllegalArgumentException("@Pack cannot be used on Void fields");
                 }
@@ -72,24 +73,25 @@ public class RecordDescriptor<T> {
             // Padding annotation
             Padding paddingFieldAnnotation = field.getAnnotation(Padding.class);
             if (null != paddingFieldAnnotation) {
-                Class paddingClass = field.getType();
+                Class<?> paddingClass = field.getType();
                 if (paddingClass.getTypeName().equals(Void.class.getTypeName())) {
-                    fieldList.add(new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits()));
+                    FieldDetails fieldDetails = new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits());
+                    fieldList.add(fieldDetails);
                 } else {
                     throw new IllegalArgumentException("@Padding can only be used on Void fields");
                 }
             }
         }
         // Pull out annotation data and sort into layout order
-        @SuppressWarnings("unchecked") FieldDetails<T>[] fieldDetails = fieldList.toArray(new FieldDetails[0]);
+        FieldDetails[] fieldDetails = fieldList.toArray(new FieldDetails[0]);
         // Sort
         Arrays.sort(fieldDetails, (x, y) -> x.getOrder().compareTo(y.getOrder()));
         List<String> fieldNames = new ArrayList<>(fieldDetails.length);
         //
         // Calculate storage requirements
         int lengthInBits = 0;
-        HashMap<String, FieldDetails<T>> fieldDetailsMap = new HashMap<>();
-        for (FieldDetails<T> field : fieldDetails) {
+        HashMap<String, FieldDetails> fieldDetailsMap = new HashMap<>();
+        for (FieldDetails field : fieldDetails) {
             fieldNames.add(field.getFieldName());
             if (fieldByteAligned) {
                 // pack at byte level
@@ -126,11 +128,11 @@ public class RecordDescriptor<T> {
         return fieldNames;
     }
 
-    public FieldDetails<T> getFieldDetails(final String fieldName) {
+    public FieldDetails getFieldDetails(final String fieldName) {
         return fieldDetailsMap.get(fieldName);
     }
 
-    static class FieldDetails<T> {
+    static class FieldDetails {
 
         private IMemoryStore.Type type;
         private String fieldName;
@@ -146,7 +148,7 @@ public class RecordDescriptor<T> {
          * @param order     Position in packing order
          * @param length    Length in bits
          */
-        FieldDetails(Class<T> clazz, String fieldName, int order, int length) {
+        FieldDetails(Class<?> clazz, String fieldName, int order, int length) {
             switch (clazz.getName()) {
                 case "boolean":
                 case "java.lang.Boolean":

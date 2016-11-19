@@ -50,13 +50,13 @@ public class TestRecordBitAligned {
     public Long e;
 
     @PackField(order = 6, bits = 10) // 74
-    public Short f;
+    public short f;
 
     @PackField(order = 7, bits = 5) // 79
     public Short g;
 
     @PackField(order = 8, bits = 5) // 84
-    public Byte h;
+    public byte h;
 
     @PackField(order = 9, bits = 7) // 91
     public char i;

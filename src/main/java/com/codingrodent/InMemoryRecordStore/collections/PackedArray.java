@@ -28,7 +28,7 @@ import com.codingrodent.InMemoryRecordStore.record.RecordDescriptor;
 
 public class PackedArray<E> {
 
-    private final RecordManager recordManager;
+    private final RecordManager<E> recordManager;
 
     /**
      * Simple constructor using default storage
@@ -37,8 +37,8 @@ public class PackedArray<E> {
      * @param records Maximum records to store
      */
     public PackedArray(final Class<E> clazz, final int records) {
-        RecordDescriptor descriptor = new RecordDescriptor(clazz);
-        this.recordManager = new RecordManager(new ArrayMemoryStore(), records, descriptor);
+        RecordDescriptor<E> descriptor = new RecordDescriptor<>(clazz);
+        this.recordManager = new RecordManager<>(new ArrayMemoryStore(), records, descriptor);
     }
 
     /**
@@ -49,7 +49,7 @@ public class PackedArray<E> {
      */
     @SuppressWarnings("unchecked")
     public E getRecord(final int location) {
-        return (E) recordManager.getRecord(location);
+        return recordManager.getRecord(location);
     }
 
     /**
