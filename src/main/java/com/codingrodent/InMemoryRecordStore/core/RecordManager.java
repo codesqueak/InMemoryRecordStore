@@ -65,7 +65,7 @@ public class RecordManager<T> {
      * @return Record
      */
     public T getRecord(final int location) throws IllegalArgumentException {
-        if ((location < 0) | (location > records)) {
+        if ((location < 0) || (location >= records)) {
             throw new IllegalArgumentException("Record location out of bounds");
         }
         return reader.getRecord(location);
@@ -78,7 +78,7 @@ public class RecordManager<T> {
      * @param record   Record
      */
     public void putRecord(final int location, final T record) throws IllegalArgumentException {
-        if ((location < 0) | (location > records)) {
+        if ((location < 0) || (location >= records)) {
             throw new IllegalArgumentException("Record location out of bounds");
         }
         writer.putRecord(location, record);

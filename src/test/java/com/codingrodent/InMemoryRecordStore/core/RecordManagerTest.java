@@ -49,12 +49,44 @@ public class RecordManagerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void validationSize() throws Exception {
-        RecordManager recordManager = new RecordManager(memoryStore, 1, recordDescriptor);
+        new RecordManager(memoryStore, 1, recordDescriptor);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void validationMemory() throws Exception {
-        RecordManager recordManager = new RecordManager(memoryStore, Integer.MAX_VALUE, recordDescriptor);
+        new RecordManager(memoryStore, Integer.MAX_VALUE, recordDescriptor);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getRecord1() throws Exception {
+        RecordDescriptor<TestRecordBytePack> recordDescriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        IMemoryStore memoryStore = new ArrayMemoryStore();
+        RecordManager<TestRecordBytePack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
+        recordManager.getRecord(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void getRecord2() throws Exception {
+        RecordDescriptor<TestRecordBytePack> recordDescriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        IMemoryStore memoryStore = new ArrayMemoryStore();
+        RecordManager<TestRecordBytePack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
+        recordManager.getRecord(RECORDS);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void putRecord1() throws Exception {
+        RecordDescriptor<TestRecordBytePack> recordDescriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        IMemoryStore memoryStore = new ArrayMemoryStore();
+        RecordManager<TestRecordBytePack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
+        recordManager.putRecord(-1, new TestRecordBytePack(1, 456, -123, true, -12345));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void putRecord2() throws Exception {
+        RecordDescriptor<TestRecordBytePack> recordDescriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        IMemoryStore memoryStore = new ArrayMemoryStore();
+        RecordManager<TestRecordBytePack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
+        recordManager.putRecord(RECORDS, new TestRecordBytePack(1, 456, -123, true, -12345));
     }
 
     @Test
@@ -71,6 +103,7 @@ public class RecordManagerTest {
         assertEquals(recordDescriptor.getByteLength(), 15);
         IMemoryStore memoryStore = new ArrayMemoryStore();
         RecordManager<TestRecordBytePack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
+        assertEquals(RECORDS, recordManager.getRecords());
         //
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
@@ -103,6 +136,7 @@ public class RecordManagerTest {
         assertEquals(recordDescriptor.getByteLength(), 14);
         IMemoryStore memoryStore = new ArrayMemoryStore();
         RecordManager<TestRecordBitPack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
+        assertEquals(RECORDS, recordManager.getRecords());
         //
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
