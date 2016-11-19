@@ -53,14 +53,15 @@ public class ReaderWriterTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false);
         writer.putRecord(0, write);
-        byte[] packed = {0x00, 0x00, 0x01, // a
-                -128, 0x00, // c
+        byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
+                -1, -1, -128, 0x00,// c
                 0x00, // v1
                 -1, -1, // b
                 0x01, // d
-                0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC//
+                0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, // e
+                0x00 // f
         };
         // Did record pack correctly ?
         for (int i = 0; i < packed.length; i++) {

@@ -42,7 +42,7 @@ public class PackedListTest {
     public void setUp() throws Exception {
         list = new PackedList<>(TestRecordBytePack.class, RECORDS);
         deque = (Deque) list;
-        record = new TestRecordBytePack(1, 2, -3, true, -4);
+        record = new TestRecordBytePack(1, 2, -3, true, -4, false);
     }
 
     @After
@@ -338,15 +338,15 @@ public class PackedListTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void contains() throws Exception {
-        list.contains(new TestRecordBytePack(1, 2, -3, true, -4));
+        list.contains(new TestRecordBytePack(1, 2, -3, true, -4, false));
     }
 
     @Test
     public void addAll() throws Exception {
         LinkedList<TestRecordBytePack> ll = new LinkedList<>();
-        TestRecordBytePack record1 = new TestRecordBytePack(1, 2, -3, true, -4);
-        TestRecordBytePack record2 = new TestRecordBytePack(2, 2, -3, true, -4);
-        TestRecordBytePack record3 = new TestRecordBytePack(3, 2, -3, true, -4);
+        TestRecordBytePack record1 = new TestRecordBytePack(1, 2, -3, true, -4, false);
+        TestRecordBytePack record2 = new TestRecordBytePack(2, 2, -3, true, -4, false);
+        TestRecordBytePack record3 = new TestRecordBytePack(3, 2, -3, true, -4, false);
         ll.add(record1);
         ll.add(record2);
         ll.add(record3);
@@ -394,7 +394,7 @@ public class PackedListTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void set() throws Exception {
-        list.set(0, new TestRecordBytePack(1, 2, -3, true, -4));
+        list.set(0, new TestRecordBytePack(1, 2, -3, true, -4, false));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -404,12 +404,12 @@ public class PackedListTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void indexOf() throws Exception {
-        list.indexOf(new TestRecordBytePack(1, 2, -3, true, -4));
+        list.indexOf(new TestRecordBytePack(1, 2, -3, true, -4, false));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void lastIndexOf() throws Exception {
-        list.lastIndexOf(new TestRecordBytePack(1, 2, -3, true, -4));
+        list.lastIndexOf(new TestRecordBytePack(1, 2, -3, true, -4, false));
     }
 
     @Test(expected = UnsupportedOperationException.class)

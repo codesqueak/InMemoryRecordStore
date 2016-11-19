@@ -31,7 +31,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 @PackRecord(fieldByteAligned = false)
 public class TestRecordBitPack {
 
-    @PackField(order = 0, bits = 24)
+    @PackField(order = 0, bits = 20)
     public Integer a;
 
     @PackField(order = 7, bits = 16)
@@ -49,15 +49,19 @@ public class TestRecordBitPack {
     @PackField(order = 200, bits = 46)
     public Long e;
 
+    @PackField(order = 201, bits = 4)
+    public Boolean f;
+
     public TestRecordBitPack() {
     }
 
-    public TestRecordBitPack(Integer a, int b, int c, boolean d, long e) {
+    public TestRecordBitPack(Integer a, int b, int c, boolean d, long e, Boolean f) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
         this.e = e;
+        this.f = f;
     }
 
     public Integer getA() {
@@ -72,15 +76,16 @@ public class TestRecordBitPack {
         return c;
     }
 
-    public long getE() {
-        return e;
-    }
-
     public boolean isD() {
         return d;
     }
 
-    public void setV1(final Void v1) {
-        this.v1 = v1;
+    public long getE() {
+        return e;
     }
+
+    public Boolean getF() {
+        return f;
+    }
+
 }

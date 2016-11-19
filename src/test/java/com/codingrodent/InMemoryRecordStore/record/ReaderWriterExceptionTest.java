@@ -63,7 +63,7 @@ public class ReaderWriterExceptionTest {
         }
         //
         // Storage limits
-        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL);
+        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false);
         writer.putRecord(0, testRecordBytePack);
         int maxRecords = 1024 * 4 / descriptor.getByteLength();
         writer.putRecord(maxRecords - 1, testRecordBytePack);
