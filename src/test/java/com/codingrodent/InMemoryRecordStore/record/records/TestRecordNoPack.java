@@ -53,45 +53,4 @@ public class TestRecordNoPack {
         this.d = d;
         this.e = e;
     }
-
-    public Byte getA() {
-        return a;
-    }
-
-    public void setA(final Byte a) {
-        this.a = a;
-    }
-
-    public Short getB() {
-        return b;
-    }
-
-    public void setB(final Short b) {
-        this.b = b;
-    }
-
-    public int getC() {
-        return c;
-    }
-
-    public void setC(final int c) {
-        this.c = c;
-    }
-
-    public long getD() {
-        return d;
-    }
-
-    public void setD(final long d) {
-        this.d = d;
-    }
-
-    public char getE() {
-        return e;
-    }
-
-    public void setE(final char e) {
-        this.e = e;
-    }
-
 }
