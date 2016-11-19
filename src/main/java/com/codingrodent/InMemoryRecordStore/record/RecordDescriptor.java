@@ -188,7 +188,6 @@ public class RecordDescriptor<T> {
                 case "double":
                 case "java.lang.Float":
                 case "float":
-                    throw new IllegalArgumentException("Unsupported packing type (Future). " + clazz.getName());
                 default:
                     throw new IllegalArgumentException("Unsupported packing type. " + clazz.getName());
             }
