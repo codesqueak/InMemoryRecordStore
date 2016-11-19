@@ -64,44 +64,20 @@ public class TestRecordBitPack {
         return a;
     }
 
-    public void setA(final Integer a) {
-        this.a = a;
-    }
-
     public int getB() {
         return b;
-    }
-
-    public void setB(final int b) {
-        this.b = b;
     }
 
     public int getC() {
         return c;
     }
 
-    public void setC(final int c) {
-        this.c = c;
-    }
-
     public long getE() {
         return e;
     }
 
-    public void setE(final long e) {
-        this.e = e;
-    }
-
     public boolean isD() {
         return d;
-    }
-
-    public void setD(final boolean d) {
-        this.d = d;
-    }
-
-    public Void getV1() {
-        return v1;
     }
 
     public void setV1(final Void v1) {

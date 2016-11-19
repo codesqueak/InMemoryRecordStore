@@ -1,42 +1,49 @@
 #!groovy
 
 def checkoutCode() {
-    stage 'checkout'
-    checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/codesqueak/InMemoryRecordStore.git']]]
+    stage('checkout') {
+        checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']], userRemoteConfigs: [[url: 'https://github.com/codesqueak/InMemoryRecordStore.git']]]
+    }
 }
 
 def build() {
-    stage 'build'
-    sh './gradlew clean build -x test'
+    stage('build') {
+        sh './gradlew clean build -x test'
+    }
 }
 
 def test() {
-    stage 'test'
-    sh './gradlew test'
+    stage('test') {
+        sh './gradlew test'
+    }
 }
 
 def junitreport() {
-    stage 'JUnit report'
-    step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/test/TEST-*.xml'])
+    stage('JUnit report') {
+        step([$class: 'JUnitResultArchiver', testResults: 'build/test-results/test/TEST-*.xml'])
+    }
 }
 
 def findbugsreport() {
-    stage 'Findbugs report'
-    step([$class: 'FindBugsPublisher', pattern: 'build/reports/findbugs/main.xml'])
+    stage('Findbugs report') {
+        step([$class: 'FindBugsPublisher', pattern: 'build/reports/findbugs/main.xml'])
+    }
 }
 
 def jacocoreport() {
-    stage 'Jacoco report'
-    step([$class: 'JacocoPublisher', execPattern: 'build/jacoco/jacocoTest.exec', excludes: ['com.codingrodent.InMemoryRecordStore.record.records/**'], pattern: 'build/jacoco/classpathdumps/net/codingrodent/**/*.class'])
+    stage('Jacoco report') {
+        step([$class: 'JacocoPublisher', execPattern: 'build/jacoco/jacocoTest.exec', excludes: ['com.codingrodent.InMemoryRecordStore.record.records/**'], pattern: 'build/jacoco/classpathdumps/net/codingrodent/**/*.class'])
+    }
 }
 
-stage 'execute In Memory Record Store build'
+stage('execute In Memory Record Store build') {
 
-node {
-    checkoutCode()
-    build()
-    test()
-    junitreport()
-    findbugsreport()
-    jacocoreport()
+    node {
+        checkoutCode()
+        build()
+        test()
+        junitreport()
+        findbugsreport()
+        jacocoreport()
+    }
 }

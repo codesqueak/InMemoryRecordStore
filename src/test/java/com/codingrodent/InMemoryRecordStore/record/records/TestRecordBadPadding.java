@@ -38,13 +38,4 @@ public class TestRecordBadPadding {
     @Padding(bits = 8, order = 2)
     public Short b;
 
-    public TestRecordBadPadding() {
-    }
-
-    public TestRecordBadPadding(short a, short b) {
-        this.a = a;
-        this.b = b;
-
-    }
-
 }

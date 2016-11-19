@@ -38,13 +38,4 @@ public class TestRecordBadPack {
     @Padding(bits = 8, order = 2)
     public Void b;
 
-    public TestRecordBadPack() {
-    }
-
-    public TestRecordBadPack(short a, Void b) {
-        this.a = a;
-        this.b = b;
-
-    }
-
 }
