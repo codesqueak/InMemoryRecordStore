@@ -27,6 +27,8 @@ import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.records.TestRecordNoPackTooLong;
 import org.junit.*;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -53,7 +55,7 @@ public class ReaderWriterBitTooLongTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A', true);
+        TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A', true, new UUID(0xFFEE_DDCC_BBAA_9988L, 0x7766_5544_3322_1100L));
         writer.putRecord(0, write);
 
         byte[] packed = {0x12, // 1
@@ -62,7 +64,9 @@ public class ReaderWriterBitTooLongTest {
                 0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, (byte) 0xDE, (byte) 0xF0, // 15
                 0x00, 0x41, // 17
                 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // 25
-                0x01}; // 26
+                0x01, // 26
+                (byte) 0xFF, (byte) 0xEE, (byte) 0xDD, (byte) 0xCC, (byte) 0xBB, (byte) 0xAA, (byte) 0x99, (byte) 0x88, //
+                0x77, 0x66, 0x55, 0x44, 0x33, 0x22, 0x11, 0x00};
 
         assertEquals(packed.length, descriptor.getByteLength());
 

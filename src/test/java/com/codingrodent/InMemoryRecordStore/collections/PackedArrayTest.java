@@ -26,6 +26,8 @@ package com.codingrodent.InMemoryRecordStore.collections;
 import com.codingrodent.InMemoryRecordStore.record.records.*;
 import org.junit.*;
 
+import java.util.UUID;
+
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -71,7 +73,7 @@ public class PackedArrayTest {
         PackedArray<TestRecordBytePack> array = new PackedArray<>(TestRecordBytePack.class, RECORDS);
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false);
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
             array.putRecord(i, testRecordBytePack);
             TestRecordBytePack testRecordBytePackGet = array.getRecord(i);
             //
@@ -80,10 +82,13 @@ public class PackedArrayTest {
             assertEquals(testRecordBytePack.getC(), testRecordBytePackGet.getC());
             assertEquals(testRecordBytePack.isD(), testRecordBytePackGet.isD());
             assertEquals(testRecordBytePack.getE(), testRecordBytePackGet.getE());
+            assertEquals(testRecordBytePack.getF(), testRecordBytePackGet.getF());
+            assertEquals(testRecordBytePack.getG(), testRecordBytePackGet.getG());
+
         }
         // Make sure no record overwrite has happened by re-reading all records
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false);
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
             TestRecordBytePack testRecordBytePackGet = array.getRecord(i);
             //
             assertEquals(testRecordBytePack.getA(), testRecordBytePackGet.getA());
@@ -99,7 +104,7 @@ public class PackedArrayTest {
         PackedArray<TestRecordBitPack> array = new PackedArray<>(TestRecordBitPack.class, RECORDS);
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false);
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
             array.putRecord(i, testRecordbitPack);
             TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
             //
@@ -108,10 +113,12 @@ public class PackedArrayTest {
             assertEquals(testRecordbitPack.getC(), testRecordBitPackGet.getC());
             assertEquals(testRecordbitPack.isD(), testRecordBitPackGet.isD());
             assertEquals(testRecordbitPack.getE(), testRecordBitPackGet.getE());
+            assertEquals(testRecordbitPack.getF(), testRecordBitPackGet.getF());
+            assertEquals(testRecordbitPack.getG(), testRecordBitPackGet.getG());
         }
         // Make sure no record overwrite has happened by re-reading all records
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false);
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
             TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
             //
             assertEquals(testRecordbitPack.getA(), testRecordBitPackGet.getA());
@@ -119,6 +126,8 @@ public class PackedArrayTest {
             assertEquals(testRecordbitPack.getC(), testRecordBitPackGet.getC());
             assertEquals(testRecordbitPack.isD(), testRecordBitPackGet.isD());
             assertEquals(testRecordbitPack.getE(), testRecordBitPackGet.getE());
+            assertEquals(testRecordbitPack.getF(), testRecordBitPackGet.getF());
+            assertEquals(testRecordbitPack.getG(), testRecordBitPackGet.getG());
         }
     }
 

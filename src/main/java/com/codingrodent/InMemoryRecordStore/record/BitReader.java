@@ -33,7 +33,7 @@ class BitReader {
     }
 
     /**
-     * Pack one byte aligned field into the bit aligned field.  Byte fields are right aligned, bit fields left
+     * Unpack byte aligned field into the bit aligned field.  Byte fields are right aligned, bit fields left
      * <p>
      * Very slow implementation  - optimize once test cases have good coverage
      *
@@ -55,4 +55,34 @@ class BitReader {
         }
         return target;
     }
+
+    /**
+     * Unpack byte aligned field into the bit aligned field.  Byte fields are right aligned, bit fields left
+     * <p>
+     * Very slow implementation  - optimize once test cases have good coverage
+     *
+     * @param sourceArray     The record array of byte fields data
+     * @param readBitPosition Where to read  from in the source array
+     * @return Integer holding up to 32 bit value
+     */
+    public int unpack32(byte[] sourceArray, int readBitPosition) {
+        return unpack(sourceArray, readBitPosition, 32);
+    }
+
+    /**
+     * Unpack byte aligned field into the bit aligned field.  Byte fields are right aligned, bit fields left
+     * <p>
+     * Very slow implementation  - optimize once test cases have good coverage
+     *
+     * @param sourceArray     The record array of byte fields data
+     * @param readBitPosition Where to read  from in the source array
+     * @return Integer holding up to 32 bit value
+     */
+    public long unpack64(byte[] sourceArray, int readBitPosition) {
+
+        long p0 = unpack32(sourceArray, readBitPosition);
+        long p1 = unpack32(sourceArray, readBitPosition + 32);
+        return (p0 << 32) | (p1 & 0x0000_0000_FFFF_FFFFL);
+    }
+
 }

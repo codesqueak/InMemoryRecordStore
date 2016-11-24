@@ -25,6 +25,8 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
+import java.util.UUID;
+
 /**
  * Test data record
  */
@@ -52,16 +54,20 @@ public class TestRecordBitPack {
     @PackField(order = 201, bits = 4)
     public Boolean f;
 
+    @PackField(order = 202, bits = 20)
+    public UUID g;
+
     public TestRecordBitPack() {
     }
 
-    public TestRecordBitPack(Integer a, int b, int c, boolean d, long e, Boolean f) {
+    public TestRecordBitPack(Integer a, int b, int c, boolean d, long e, Boolean f, UUID g) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
         this.e = e;
         this.f = f;
+        this.g = g;
     }
 
     public Integer getA() {
@@ -86,6 +92,10 @@ public class TestRecordBitPack {
 
     public Boolean getF() {
         return f;
+    }
+
+    public UUID getG() {
+        return g;
     }
 
 }

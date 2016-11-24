@@ -27,6 +27,8 @@ import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 import com.codingrodent.InMemoryRecordStore.exception.RecordStoreException;
 import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 
+import java.util.UUID;
+
 /**
  *
  */
@@ -155,9 +157,26 @@ public class Writer<T> {
                 pos = pos + byteLength;
                 break;
             }
-            case Void:
+            case Void: {
                 pos = pos + byteLength;
                 break;
+            }
+            case UUID: {
+                UUID v = (UUID) value;
+                long p = v.getMostSignificantBits();
+                for (int i = 7; i >= 0; i--) {
+                    buffer[pos + i] = (byte) (p & 0x00FF);
+                    p = p >>> 8;
+                }
+                pos = pos + 8;
+                p = v.getLeastSignificantBits();
+                for (int i = 7; i >= 0; i--) {
+                    buffer[pos + i] = (byte) (p & 0x00FF);
+                    p = p >>> 8;
+                }
+                pos = pos + 8;
+                break;
+            }
         }
         return pos;
     }
@@ -249,8 +268,27 @@ public class Writer<T> {
                 bitWriter.insertBits(longValue, buffer, pos, bitLength);
                 break;
             }
-            case Void:
+            case Void: {
                 break;
+            }
+            case UUID: {
+                UUID v = (UUID) value;
+                byte[] longValue = new byte[8];
+                long p = v.getMostSignificantBits();
+                for (int i = 7; i >= 0; i--) {
+                    longValue[i] = (byte) (p & 0x00FF);
+                    p = p >>> 8;
+                }
+                bitWriter.insertBits(longValue, buffer, pos, 64);
+                //
+                p = v.getLeastSignificantBits();
+                for (int i = 7; i >= 0; i--) {
+                    longValue[i] = (byte) (p & 0x00FF);
+                    p = p >>> 8;
+                }
+                bitWriter.insertBits(longValue, buffer, pos + 64, 64);
+                break;
+            }
         }
         return pos + bitLength;
     }

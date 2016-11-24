@@ -27,6 +27,8 @@ import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.records.*;
 import org.junit.*;
 
+import java.util.UUID;
+
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
@@ -63,7 +65,7 @@ public class ReaderWriterExceptionTest {
         }
         //
         // Storage limits
-        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false);
+        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID());
         writer.putRecord(0, testRecordBytePack);
         int maxRecords = 1024 * 4 / descriptor.getByteLength();
         writer.putRecord(maxRecords - 1, testRecordBytePack);
