@@ -27,6 +27,8 @@ import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.records.*;
 import org.junit.*;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -53,7 +55,8 @@ public class ReaderWriterTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false);
+        UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
                 -1, -1, -128, 0x00,// c
@@ -61,8 +64,8 @@ public class ReaderWriterTest {
                 -1, -1, // b
                 0x01, // d
                 0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, // e
-                0x00 // f
-        };
+                0x00, // f
+                -128, 0x00, 0x70, 0x00, 0x60, 0x00, 0x50, 0x00, 0x40, 0x00, 0x30, 0x00, 0x20, 0x00, 0x10, 0x00}; // g
         // Did record pack correctly ?
         for (int i = 0; i < packed.length; i++) {
             assertEquals(packed[i], memory.getByte(i));

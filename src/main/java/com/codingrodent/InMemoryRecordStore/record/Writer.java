@@ -168,12 +168,13 @@ public class Writer<T> {
                     buffer[pos + i] = (byte) (p & 0x00FF);
                     p = p >>> 8;
                 }
+                pos = pos + 8;
                 p = v.getLeastSignificantBits();
                 for (int i = 7; i >= 0; i--) {
                     buffer[pos + i] = (byte) (p & 0x00FF);
                     p = p >>> 8;
                 }
-                pos = pos + 16;
+                pos = pos + 8;
                 break;
             }
         }

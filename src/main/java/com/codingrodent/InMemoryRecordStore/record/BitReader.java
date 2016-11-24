@@ -80,9 +80,9 @@ class BitReader {
      */
     public long unpack64(byte[] sourceArray, int readBitPosition) {
 
-        long p0 = ((long) unpack32(sourceArray, readBitPosition)) & 0x0000_0000_FFFF_FFFF;
-        return (((long) unpack32(sourceArray, readBitPosition + 32)) << 32) | p0;
-
+        long p0 = unpack32(sourceArray, readBitPosition);
+        long p1 = unpack32(sourceArray, readBitPosition + 32);
+        return (p0 << 32) | (p1 & 0x0000_0000_FFFF_FFFFl);
     }
 
 }
