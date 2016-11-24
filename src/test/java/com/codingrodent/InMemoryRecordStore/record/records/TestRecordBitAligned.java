@@ -25,6 +25,8 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
+import java.util.UUID;
+
 /**
  * Test data record
  */
@@ -67,10 +69,13 @@ public class TestRecordBitAligned {
     @PackField(order = 11, bits = 48) // 150
     public long k;
 
+    @PackField(order = 12) // 214
+    public UUID l;
+
     public TestRecordBitAligned() {
     }
 
-    public TestRecordBitAligned(Integer a, int b, int c, boolean d, long e, short f, short g, byte h, char i, char j, long k) {
+    public TestRecordBitAligned(Integer a, int b, int c, boolean d, long e, short f, short g, byte h, char i, char j, long k, UUID l) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -83,6 +88,7 @@ public class TestRecordBitAligned {
         this.i = i;
         this.j = j;
         this.k = k;
+        this.l = l;
     }
 
 }

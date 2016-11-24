@@ -85,7 +85,7 @@ public class RecordDescriptor<T> {
         // Pull out annotation data and sort into layout order
         FieldDetails[] fieldDetails = fieldList.toArray(new FieldDetails[0]);
         // Sort
-        Arrays.sort(fieldDetails, (x, y) -> x.getOrder().compareTo(y.getOrder()));
+        Arrays.sort(fieldDetails, Comparator.comparing(FieldDetails::getOrder));
         List<String> fieldNames = new ArrayList<>(fieldDetails.length);
         //
         // Calculate storage requirements

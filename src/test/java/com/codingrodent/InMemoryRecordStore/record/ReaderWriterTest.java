@@ -234,7 +234,7 @@ public class ReaderWriterTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        TestRecordBitAligned write = new TestRecordBitAligned(123, 45, 6, true, 789L, (short) 12, (short) 3, (byte) 4, 'A', 'Z', 0x0000789A_BCDEF012L);
+        TestRecordBitAligned write = new TestRecordBitAligned(123, 45, 6, true, 789L, (short) 12, (short) 3, (byte) 4, 'A', 'Z', 0x0000789A_BCDEF012L, UUID.randomUUID());
         writer.putRecord(0, write);
         //
         // Ok, see if we can get it back
@@ -249,6 +249,8 @@ public class ReaderWriterTest {
         assertEquals(read.h, write.h);
         assertEquals(read.i, write.i);
         assertEquals(read.j, write.j);
+        assertEquals(read.k, write.k);
+        assertEquals(read.l, write.l);
     }
 
     @Test
@@ -257,7 +259,7 @@ public class ReaderWriterTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        TestRecordBitAligned write = new TestRecordBitAligned(-123, -45, -6, false, -789L, (short) -12, (short) -3, (byte) -4, 'A', (char) 0x07FF, 0x0000F89A_BCDEF012L);
+        TestRecordBitAligned write = new TestRecordBitAligned(-123, -45, -6, false, -789L, (short) -12, (short) -3, (byte) -4, 'A', (char) 0x07FF, 0xFFFF_F89A_BCDE_F012L, UUID.randomUUID());
         writer.putRecord(0, write);
         //
         // Ok, see if we can get it back
@@ -272,5 +274,7 @@ public class ReaderWriterTest {
         assertEquals(read.h, write.h);
         assertEquals(read.i, write.i);
         assertEquals(read.j, write.j);
+        assertEquals(read.k, write.k);
+        assertEquals(read.l, write.l);
     }
 }

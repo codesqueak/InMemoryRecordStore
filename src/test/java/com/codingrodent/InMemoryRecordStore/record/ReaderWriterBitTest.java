@@ -27,6 +27,8 @@ import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.records.TestRecordBitAligned;
 import org.junit.*;
 
+import java.util.UUID;
+
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -54,7 +56,7 @@ public class ReaderWriterBitTest {
         reader = new Reader(memory, descriptor);
         //
         TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L, (short) -307,//
-                (short) 0x15, (byte) -11, (char) 65, (char) 1089, 0x0000789A_BCDEF012L);
+                (short) 0x15, (byte) -11, (char) 65, (char) 1089, 0x0000789A_BCDEF012L, new UUID(0xFFEE_DDCC_BBAA_9988L, 0x7766_5544_3322_1100l));
         writer.putRecord(0, write);
 
         byte[] packed = { //
@@ -76,7 +78,23 @@ public class ReaderWriterBitTest {
                 (byte) 0b11110011, //
                 0b01111011, //
                 (byte) 0b11000000, //
-                0b01001000 //
+                0b01001011, //
+                (byte) 0b11111111, //
+                (byte) 0b10111011,//
+                (byte) 0b01110111,//
+                (byte) 0b00110010,//
+                (byte) 0b11101110,//
+                (byte) 0b10101010,//
+                (byte) 0b01100110,//
+                (byte) 0b00100001,//
+                (byte) 0b11011101,//
+                (byte) 0b10011001,//
+                (byte) 0b01010101,//
+                (byte) 0b00010000,//
+                (byte) 0b11001100,//
+                (byte) 0b10001000,//
+                (byte) 0b01000100,//
+                (byte) 0b00000000
         };
         assertEquals(packed.length, descriptor.getByteLength());
         // Did record pack correctly ?

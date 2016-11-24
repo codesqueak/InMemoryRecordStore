@@ -82,7 +82,7 @@ class BitReader {
 
         long p0 = unpack32(sourceArray, readBitPosition);
         long p1 = unpack32(sourceArray, readBitPosition + 32);
-        return (p0 << 32) | (p1 & 0x0000_0000_FFFF_FFFFl);
+        return (p0 << 32) | (p1 & 0x0000_0000_FFFF_FFFFL);
     }
 
 }

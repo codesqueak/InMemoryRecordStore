@@ -25,6 +25,8 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
+import java.util.UUID;
+
 /**
  * Test data record
  */
@@ -52,12 +54,16 @@ public class TestRecordNoPackTooLong {
     @PackField(order = 6, bits = 9)
     public Boolean f;
 
-    public TestRecordNoPackTooLong(byte a, short b, int c, long d, char e, boolean f) {
+    @PackField(order = 7, bits = 150)
+    public UUID g;
+
+    public TestRecordNoPackTooLong(byte a, short b, int c, long d, char e, boolean f, UUID g) {
         this.a = a;
         this.b = b;
         this.c = c;
         this.d = d;
         this.e = e;
         this.f = f;
+        this.g = g;
     }
 }
