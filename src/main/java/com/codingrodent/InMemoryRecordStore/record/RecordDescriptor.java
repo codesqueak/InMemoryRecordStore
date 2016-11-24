@@ -184,6 +184,10 @@ public class RecordDescriptor<T> {
                     type = IMemoryStore.Type.Void;
                     length = length > 64 ? 64 : length;
                     break;
+                case "java.util.UUID":
+                    type = IMemoryStore.Type.UUID;
+                    length = 128;
+                    break;
                 case "java.lang.Double":
                 case "double":
                 case "java.lang.Float":

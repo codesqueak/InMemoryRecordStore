@@ -28,6 +28,7 @@ import com.codingrodent.InMemoryRecordStore.exception.RecordStoreException;
 import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 
 import java.lang.reflect.Field;
+import java.util.UUID;
 
 public class Reader<T> {
     private final RecordDescriptor<T> recordDescriptor;
@@ -148,6 +149,16 @@ public class Reader<T> {
                 pos = pos + byteLength;
                 break;
             }
+            case UUID: {
+                long raw0 = 0;
+                long raw1 = 0;
+                for (int i = 0; i < 8; i++)
+                    raw0 = (raw0 << 8) | getUnsignedByte(buffer, pos++);
+                for (int i = 0; i < 8; i++)
+                    raw1 = (raw1 << 8) | getUnsignedByte(buffer, pos++);
+                field.set(target, new UUID(raw0, raw1));
+                break;
+            }
         }
         return pos;
     }
@@ -208,6 +219,12 @@ public class Reader<T> {
                 break;
             }
             case Void: {
+                break;
+            }
+            case UUID: {
+                long raw0 = bitReader.unpack64(buffer, pos);
+                long raw1 = bitReader.unpack64(buffer, pos + 64);
+                field.set(target, new UUID(raw0, raw1));
                 break;
             }
         }
