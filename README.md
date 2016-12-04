@@ -1,3 +1,5 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 # In Memory Record Storage
 
 In Memory Record Storage is a library to allow object data defined as records to be efficiently stored into memory.  
