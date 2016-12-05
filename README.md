@@ -1,5 +1,6 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codingrodent/InMemoryRecordStore/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.codingrodent/InMemoryRecordStore)
+[![Maven Central](https://img.shields.io/jenkins/s/https/jenkins.qa.ubuntu.com/precise-desktop-amd64_default.svg)](https://img.shields.io/jenkins/s/https/jenkins.qa.ubuntu.com)
 # In Memory Record Storage
 
 In Memory Record Storage is a library to allow object data defined as records to be efficiently stored into memory.  
