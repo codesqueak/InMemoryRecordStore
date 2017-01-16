@@ -277,4 +277,13 @@ public class ReaderWriterTest {
         assertEquals(read.k, write.k);
         assertEquals(read.l, write.l);
     }
+
+    @Test
+    public void writeReadBitArrays() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitArray.class);
+        writer = new Writer(memory, descriptor);
+        reader = new Reader(memory, descriptor);
+        //
+    }
+
 }

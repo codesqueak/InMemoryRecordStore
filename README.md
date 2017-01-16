@@ -104,7 +104,7 @@ A bidirectional linked list. For example, to create a list capable of storing up
 
 # Restrictions
 
-The following features are not yet available but will included shortly:
+The following features are not yet available but will included when I have time:
 
 * Use of custom memory stores
 * use of custom object reader / writer

@@ -62,9 +62,12 @@ public class RecordDescriptor<T> {
             // Pack annotation
             PackField packFieldAnnotation = field.getAnnotation(PackField.class);
             if (null != packFieldAnnotation) {
-                Class packClass = field.getType();
-                if (!packClass.getTypeName().equals(Void.class.getTypeName())) {
-                    FieldDetails fieldDetails = new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits());
+                String packClass = field.getType().getTypeName();
+                if (!packClass.equals(Void.class.getTypeName())) {
+                    String typeName = field.getType().getName();
+                    if (typeName.startsWith("["))
+                        throw new IllegalArgumentException("@Pack cannot be used on arrays");
+                    FieldDetails fieldDetails = new FieldDetails(typeName, field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits(), 0);
                     fieldList.add(fieldDetails);
                 } else {
                     throw new IllegalArgumentException("@Pack cannot be used on Void fields");
@@ -73,13 +76,23 @@ public class RecordDescriptor<T> {
             // Padding annotation
             Padding paddingFieldAnnotation = field.getAnnotation(Padding.class);
             if (null != paddingFieldAnnotation) {
-                Class<?> paddingClass = field.getType();
-                if (paddingClass.getTypeName().equals(Void.class.getTypeName())) {
-                    FieldDetails fieldDetails = new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits());
+                String paddingClass = field.getType().getTypeName();
+                if (paddingClass.equals(Void.class.getTypeName())) {
+                    FieldDetails fieldDetails = new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits(), 0);
                     fieldList.add(fieldDetails);
                 } else {
                     throw new IllegalArgumentException("@Padding can only be used on Void fields");
                 }
+            }
+            // Array annotation
+            PackArray arrayFieldAnnotation = field.getAnnotation(PackArray.class);
+            if (null != arrayFieldAnnotation) {
+                String arrayClass = field.getType().getName();
+                int elements = 0;
+                if (!arrayClass.startsWith("[")) {
+                    throw new IllegalArgumentException("@PackArray must be used on arrays only");
+                }
+
             }
         }
         // Pull out annotation data and sort into layout order
@@ -143,13 +156,14 @@ public class RecordDescriptor<T> {
         /**
          * Create details for one annotated field
          *
-         * @param clazz     Class of field
+         * @param typeName  Class of field
          * @param fieldName Name of field
          * @param order     Position in packing order
          * @param length    Length in bits
+         * @param elements  Array size (if applicable)
          */
-        FieldDetails(Class<?> clazz, String fieldName, int order, int length) {
-            switch (clazz.getName()) {
+        FieldDetails(String typeName, String fieldName, int order, int length, int elements) {
+            switch (typeName) {
                 case "boolean":
                 case "java.lang.Boolean":
                     type = IMemoryStore.Type.Bit;
@@ -188,12 +202,17 @@ public class RecordDescriptor<T> {
                     type = IMemoryStore.Type.UUID;
                     length = 128;
                     break;
+                case "[Z":
+                case "[Ljava.lang.Boolean;":
+                    type = IMemoryStore.Type.BitArray;
+                    length = 128;
+                    break;
                 case "java.lang.Double":
                 case "double":
                 case "java.lang.Float":
                 case "float":
                 default:
-                    throw new IllegalArgumentException("Unsupported packing type. " + clazz.getName());
+                    throw new IllegalArgumentException("Unsupported packing type. " + typeName);
             }
             this.fieldName = fieldName;
             this.order = order;

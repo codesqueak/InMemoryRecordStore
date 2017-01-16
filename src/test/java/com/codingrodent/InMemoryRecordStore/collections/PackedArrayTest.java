@@ -26,11 +26,10 @@ package com.codingrodent.InMemoryRecordStore.collections;
 import com.codingrodent.InMemoryRecordStore.record.records.*;
 import org.junit.*;
 
-import java.util.UUID;
+import java.util.*;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PackedArrayTest {
 
@@ -131,4 +130,48 @@ public class PackedArrayTest {
         }
     }
 
+    @Test(expected = NoSuchElementException.class)
+    public void putGetRecordIterator() {
+        PackedArray<TestRecordBitPack> array = new PackedArray<>(TestRecordBitPack.class, RECORDS);
+        // Check each record read & write
+        for (int i = 0; i < RECORDS; i++) {
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            array.putRecord(i, testRecordbitPack);
+            TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
+            //
+            assertEquals(testRecordbitPack.getA(), testRecordBitPackGet.getA());
+            assertEquals(testRecordbitPack.getB(), testRecordBitPackGet.getB());
+            assertEquals(testRecordbitPack.getC(), testRecordBitPackGet.getC());
+            assertEquals(testRecordbitPack.isD(), testRecordBitPackGet.isD());
+            assertEquals(testRecordbitPack.getE(), testRecordBitPackGet.getE());
+            assertEquals(testRecordbitPack.getF(), testRecordBitPackGet.getF());
+            assertEquals(testRecordbitPack.getG(), testRecordBitPackGet.getG());
+        }
+        // Make sure no record overwrite has happened by re-reading all records
+        int pos = 0;
+        for (TestRecordBitPack testRecordBitPackGet : array) {
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(pos, 456, -123, true, -12345, false, new UUID(pos++, pos));
+            //
+            assertEquals(testRecordbitPack.getA(), testRecordBitPackGet.getA());
+            assertEquals(testRecordbitPack.getB(), testRecordBitPackGet.getB());
+            assertEquals(testRecordbitPack.getC(), testRecordBitPackGet.getC());
+            assertEquals(testRecordbitPack.isD(), testRecordBitPackGet.isD());
+            assertEquals(testRecordbitPack.getE(), testRecordBitPackGet.getE());
+            assertEquals(testRecordbitPack.getF(), testRecordBitPackGet.getF());
+            assertEquals(testRecordbitPack.getG(), testRecordBitPackGet.getG());
+            //
+            // Check fail states
+            Iterator<TestRecordBitPack> iter = array.iterator();
+            try {
+                iter.remove();
+                ;
+            } catch (Exception e) {
+                for (int i = 0; i <= array.getSize(); i++) {
+                    iter.next();
+                }
+                fail("NoSuchElementException expected");
+            }
+            fail("UnsupportedOperationException expected");
+        }
+    }
 }
