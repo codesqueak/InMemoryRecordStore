@@ -35,5 +35,5 @@ import java.lang.annotation.*;
 public @interface PackField {
     int order();
 
-    int bits() default 0;
+    int bits() default 1;
 }

@@ -30,8 +30,7 @@ import org.junit.*;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class RecordManagerTest {
 
@@ -80,7 +79,7 @@ public class RecordManagerTest {
         RecordDescriptor<TestRecordBytePack> recordDescriptor = new RecordDescriptor<>(TestRecordBytePack.class);
         IMemoryStore memoryStore = new ArrayMemoryStore();
         RecordManager<TestRecordBytePack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
-        recordManager.putRecord(-1, new TestRecordBytePack(1, 456, -123, true, -12345, false, UUID.randomUUID()));
+        recordManager.putRecord(-1, new TestRecordBytePack(1, 456, -123, true, -12345, false, UUID.randomUUID(), new boolean[10], new Boolean[20]));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -88,7 +87,7 @@ public class RecordManagerTest {
         RecordDescriptor<TestRecordBytePack> recordDescriptor = new RecordDescriptor<>(TestRecordBytePack.class);
         IMemoryStore memoryStore = new ArrayMemoryStore();
         RecordManager<TestRecordBytePack> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
-        recordManager.putRecord(RECORDS, new TestRecordBytePack(1, 456, -123, true, -12345, false, UUID.randomUUID()));
+        recordManager.putRecord(RECORDS, new TestRecordBytePack(1, 456, -123, true, -12345, false, UUID.randomUUID(), new boolean[10], new Boolean[20]));
     }
 
     @Test
@@ -109,7 +108,7 @@ public class RecordManagerTest {
         //
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], new Boolean[20]);
             recordManager.putRecord(i, testRecordBytePack);
             TestRecordBytePack testRecordBytePackGet = recordManager.getRecord(i);
             //
@@ -123,7 +122,7 @@ public class RecordManagerTest {
         }
         // Make sure no record overwrite has happened by re-reading all records
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], new Boolean[20]);
             TestRecordBytePack testRecordBytePackGet = (TestRecordBytePack) recordManager.getRecord(i);
             //
             assertEquals(testRecordBytePack.getA(), testRecordBytePackGet.getA());

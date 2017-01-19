@@ -34,7 +34,7 @@ public class TestRecordBitArray {
     @PackArray(order = 0, elements = 100)
     public boolean[] a;
 
-    @PackArray(order = 0, elements = 200)
+    @PackArray(order = 1, elements = 200)
     public Boolean[] b;
 
     public TestRecordBitArray() {

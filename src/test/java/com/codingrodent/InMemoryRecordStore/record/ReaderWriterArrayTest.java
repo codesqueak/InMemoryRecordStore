@@ -29,20 +29,19 @@ import org.junit.*;
 
 import java.util.UUID;
 
-import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
 /**
  *
  */
-public class ReaderWriterExceptionTest {
+public class ReaderWriterArrayTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
 
     @Before
     public void setUp() throws Exception {
-        memory = new ArrayMemoryStore(1024);
+        memory = new ArrayMemoryStore(5000);
 
     }
 
@@ -51,30 +50,42 @@ public class ReaderWriterExceptionTest {
     }
 
     @Test
-    public void writeReadExceptions() throws Exception {
+    public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        // Record type
-        try {
-            writer.putRecord(0, new TestRecordLong());
-            fail("Expecting RecordStoreException to be thrown");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Object supplied to writer is of the wrong type");
+        UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, new boolean[10], new Boolean[20]);
+        writer.putRecord(0, write);
+        byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
+                -1, -1, -128, 0x00,// c
+                0x00, // v1
+                -1, -1, // b
+                0x01, // d
+                0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, // e
+                0x00, // f
+                -128, 0x00, 0x70, 0x00, 0x60, 0x00, 0x50, 0x00, 0x40, 0x00, 0x30, 0x00, 0x20, 0x00, 0x10, 0x00}; // g
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
         }
         //
-        // Storage limits
-        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID(), new boolean[10], new Boolean[20]);
-        writer.putRecord(0, testRecordBytePack);
-        int maxRecords = 1024 * 4 / descriptor.getByteLength();
-        writer.putRecord(maxRecords - 1, testRecordBytePack);
-        try {
-            writer.putRecord(maxRecords, testRecordBytePack);
-            fail("Expecting RecordStoreException to be thrown");
-        } catch (Exception e) {
-            assertEquals(e.getMessage(), "Write location beyond end of storage");
-        }
+        // Ok, see if we can get it back
+        TestRecordBytePack read = (TestRecordBytePack) reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+        assertEquals(read.c, write.c);
+        assertEquals(read.d, write.d);
+        assertEquals(read.e, write.e);
+    }
+
+    @Test
+    public void writeReadBitArrays() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitArray.class);
+        writer = new Writer(memory, descriptor);
+        reader = new Reader(memory, descriptor);
+        //
     }
 
 }

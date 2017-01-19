@@ -72,7 +72,7 @@ public class PackedArrayTest {
         PackedArray<TestRecordBytePack> array = new PackedArray<>(TestRecordBytePack.class, RECORDS);
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], new Boolean[20]);
             array.putRecord(i, testRecordBytePack);
             TestRecordBytePack testRecordBytePackGet = array.getRecord(i);
             //
@@ -87,7 +87,7 @@ public class PackedArrayTest {
         }
         // Make sure no record overwrite has happened by re-reading all records
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], new Boolean[20]);
             TestRecordBytePack testRecordBytePackGet = array.getRecord(i);
             //
             assertEquals(testRecordBytePack.getA(), testRecordBytePackGet.getA());

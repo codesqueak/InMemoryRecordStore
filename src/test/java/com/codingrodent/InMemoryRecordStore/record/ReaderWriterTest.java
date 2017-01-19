@@ -56,7 +56,7 @@ public class ReaderWriterTest {
         reader = new Reader(memory, descriptor);
         //
         UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
-        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, new boolean[10], new Boolean[20]);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
                 -1, -1, -128, 0x00,// c
@@ -276,14 +276,6 @@ public class ReaderWriterTest {
         assertEquals(read.j, write.j);
         assertEquals(read.k, write.k);
         assertEquals(read.l, write.l);
-    }
-
-    @Test
-    public void writeReadBitArrays() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitArray.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
-        //
     }
 
 }

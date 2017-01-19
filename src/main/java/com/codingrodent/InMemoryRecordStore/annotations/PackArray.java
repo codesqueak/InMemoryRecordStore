@@ -35,7 +35,7 @@ import java.lang.annotation.*;
 public @interface PackArray {
     int order();
 
-    int bits() default 0;
+    int bits() default 1;
 
     int elements();
 }

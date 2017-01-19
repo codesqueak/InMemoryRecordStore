@@ -41,12 +41,12 @@ class BitWriter {
      * <p>
      * Very slow implementation  - optimize once test cases have good coverage
      *
-     * @param sourceArray      The record array of byte fields data
-     * @param targetArray      The target bit field array
+     * @param sourceArray      The record array of byte fields data (Data in bits 0..n)
+     * @param targetArray      The target bit field array (Data filled from left most bit first)
      * @param writeBitPosition Where to write to in the target array
      * @param bitLength        Size of field in bits
      */
-    public void insertBits(byte[] sourceArray, byte[] targetArray, int writeBitPosition, final int bitLength) {
+    public void insertBits(final byte[] sourceArray, final byte[] targetArray, int writeBitPosition, final int bitLength) {
         final int byteArrayOffset = sourceArray.length - 1;
         for (int bit = bitLength - 1; bit >= 0; bit--) {
             int readBit = bit & 0x07;
@@ -55,6 +55,7 @@ class BitWriter {
             //
             int val = (sourceArray[readByte] & readMask);
             if (0 != val) {
+                // Optimization - All bits start as zero, so only copy one's
                 int writeBit = 7 - (writeBitPosition & 0x07);
                 int writeByte = writeBitPosition >> 3;
                 targetArray[writeByte] = (byte) (targetArray[writeByte] | BIT_SET[writeBit]);
