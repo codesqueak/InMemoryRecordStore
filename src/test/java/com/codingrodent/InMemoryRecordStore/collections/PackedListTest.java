@@ -37,12 +37,14 @@ public class PackedListTest {
     private List<TestRecordBytePack> list;
     private Deque<TestRecordBytePack> deque;
     private TestRecordBytePack record;
+    private Boolean[] booleanArray = {true, false, true, true, false};
+    ;
 
     @Before
     public void setUp() throws Exception {
         list = new PackedList<>(TestRecordBytePack.class, RECORDS);
         deque = (Deque) list;
-        record = new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]);
+        record = new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray);
     }
 
     @After
@@ -338,15 +340,15 @@ public class PackedListTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void contains() throws Exception {
-        list.contains(new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]));
+        list.contains(new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray));
     }
 
     @Test
     public void addAll() throws Exception {
         LinkedList<TestRecordBytePack> ll = new LinkedList<>();
-        TestRecordBytePack record1 = new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]);
-        TestRecordBytePack record2 = new TestRecordBytePack(2, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]);
-        TestRecordBytePack record3 = new TestRecordBytePack(3, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]);
+        TestRecordBytePack record1 = new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray);
+        TestRecordBytePack record2 = new TestRecordBytePack(2, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray);
+        TestRecordBytePack record3 = new TestRecordBytePack(3, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray);
         ll.add(record1);
         ll.add(record2);
         ll.add(record3);
@@ -394,7 +396,7 @@ public class PackedListTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void set() throws Exception {
-        list.set(0, new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]));
+        list.set(0, new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -404,12 +406,12 @@ public class PackedListTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void indexOf() throws Exception {
-        list.indexOf(new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]));
+        list.indexOf(new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray));
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void lastIndexOf() throws Exception {
-        list.lastIndexOf(new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], new Boolean[20]));
+        list.lastIndexOf(new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray));
     }
 
     @Test(expected = UnsupportedOperationException.class)

@@ -55,12 +55,12 @@ public class RecordDescriptorTest {
 
     @Test
     public void getSizeInBytes() throws Exception {
-        assertEquals(recordDescriptor.getByteLength(), 35);
+        assertEquals(recordDescriptor.getByteLength(), 50);
     }
 
     @Test
     public void getSizeInBits() throws Exception {
-        assertEquals(recordDescriptor.getBitLength(), 35 * 8);
+        assertEquals(recordDescriptor.getBitLength(), 50 * 8);
     }
 
     @Test
@@ -79,6 +79,8 @@ public class RecordDescriptorTest {
         assertEquals(names.next(), "e");
         assertEquals(names.next(), "f");
         assertEquals(names.next(), "g");
+        assertEquals(names.next(), "h");
+        assertEquals(names.next(), "i");
         assertFalse(names.hasNext());
     }
 

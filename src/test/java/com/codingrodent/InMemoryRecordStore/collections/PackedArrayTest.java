@@ -29,11 +29,14 @@ import org.junit.*;
 import java.util.*;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PackedArrayTest {
 
     private final static int RECORDS = 2000;
+    private Boolean[] booleanArray = {true, false, true, true, false};
+    ;
 
     @Before
     public void setUp() throws Exception {
@@ -72,7 +75,7 @@ public class PackedArrayTest {
         PackedArray<TestRecordBytePack> array = new PackedArray<>(TestRecordBytePack.class, RECORDS);
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], new Boolean[20]);
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], booleanArray);
             array.putRecord(i, testRecordBytePack);
             TestRecordBytePack testRecordBytePackGet = array.getRecord(i);
             //
@@ -87,7 +90,7 @@ public class PackedArrayTest {
         }
         // Make sure no record overwrite has happened by re-reading all records
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], new Boolean[20]);
+            TestRecordBytePack testRecordBytePack = new TestRecordBytePack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), new boolean[10], booleanArray);
             TestRecordBytePack testRecordBytePackGet = array.getRecord(i);
             //
             assertEquals(testRecordBytePack.getA(), testRecordBytePackGet.getA());

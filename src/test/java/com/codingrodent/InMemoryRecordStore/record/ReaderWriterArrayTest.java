@@ -38,6 +38,8 @@ public class ReaderWriterArrayTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
+    private Boolean[] booleanArray = {true, false, true, true, false};
+    ;
 
     @Before
     public void setUp() throws Exception {
@@ -56,7 +58,7 @@ public class ReaderWriterArrayTest {
         reader = new Reader(memory, descriptor);
         //
         UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
-        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, new boolean[10], new Boolean[20]);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, new boolean[10], booleanArray);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
                 -1, -1, -128, 0x00,// c

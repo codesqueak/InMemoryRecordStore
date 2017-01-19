@@ -60,7 +60,7 @@ public class TestRecordBytePack {
     @PackArray(order = 301, elements = 10)
     public boolean[] h;
 
-    @PackArray(order = 302, elements = 20)
+    @PackArray(order = 302, elements = 5)
     public Boolean[] i;
 
     public TestRecordBytePack() {

@@ -39,6 +39,8 @@ public class ReaderWriterExceptionTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
+    private Boolean[] booleanArray = {true, false, true, true, false};
+    ;
 
     @Before
     public void setUp() throws Exception {
@@ -65,7 +67,7 @@ public class ReaderWriterExceptionTest {
         }
         //
         // Storage limits
-        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID(), new boolean[10], new Boolean[20]);
+        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID(), new boolean[10], booleanArray);
         writer.putRecord(0, testRecordBytePack);
         int maxRecords = 1024 * 4 / descriptor.getByteLength();
         writer.putRecord(maxRecords - 1, testRecordBytePack);
