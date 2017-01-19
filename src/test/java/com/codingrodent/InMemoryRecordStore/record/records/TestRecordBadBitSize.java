@@ -1,7 +1,7 @@
 /*
 * MIT License
 *
-*         Copyright (c) 2016
+*         Copyright (c) 2017
 *
 *         Permission is hereby granted, free of charge, to any person obtaining a copy
 *         of this software and associated documentation files (the "Software"), to deal
@@ -25,32 +25,11 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
-/**
- * Test data record
- */
 @PackRecord
-public class TestRecordBitArray {
+public class TestRecordBadBitSize {
 
-    @PackArray(order = 0, bits = 9, elements = 10)
-    public boolean[] a;
-
-    @PackArray(order = 1, bits = 11, elements = 5)
-    public Boolean[] b;
-
-    public TestRecordBitArray() {
-    }
-
-    public TestRecordBitArray(boolean[] a, Boolean[] b) {
-        this.a = a;
-        this.b = b;
-    }
-
-    public boolean[] getA() {
-        return a;
-    }
-
-    public Boolean[] getB() {
-        return b;
-    }
+    // Bit sise must be 1 or above
+    @PackField(order = 0, bits = 0)
+    public Short a;
 
 }

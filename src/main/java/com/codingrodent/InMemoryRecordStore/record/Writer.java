@@ -30,8 +30,6 @@ import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 import java.lang.reflect.*;
 import java.util.UUID;
 
-import static com.codingrodent.InMemoryRecordStore.core.IMemoryStore.Type.BooleanArray;
-
 /**
  *
  */
@@ -190,11 +188,17 @@ public class Writer<T> {
                 pos = pos + 8;
                 break;
             }
-            case booleanArray:
+            case booleanArray: {
+                boolean[] v = (boolean[]) value;
+                for (boolean b : v)
+                    buffer[pos++] = (byte) (b ? 1 : 0);
+                break;
+            }
             case BooleanArray: {
-                byte[] packedArray = packBitArray(type, value);
-                for (byte p : packedArray)
-                    buffer[pos++] = p;
+                Boolean[] v = (Boolean[]) value;
+                for (boolean b : v)
+                    buffer[pos++] = (byte) (b ? 1 : 0);
+                break;
             }
         }
         return pos;
@@ -313,23 +317,4 @@ public class Writer<T> {
         return pos + bitLength;
     }
 
-    // helpers
-
-    private byte[] packBitArray(IMemoryStore.Type type, Object value) {
-        byte[] target;
-        if (type == BooleanArray) {
-            Boolean[] source = (Boolean[]) value;
-            target = new byte[source.length];
-            int pos = 0;
-            for (Boolean b : source)
-                target[pos++] = (byte) (b ? 1 : 0);
-        } else {
-            boolean[] source = (boolean[]) value;
-            target = new byte[source.length];
-            int pos = 0;
-            for (boolean b : source)
-                target[pos++] = (byte) (b ? 1 : 0);
-        }
-        return target;
-    }
 }

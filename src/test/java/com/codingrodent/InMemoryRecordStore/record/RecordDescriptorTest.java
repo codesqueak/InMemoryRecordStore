@@ -108,13 +108,32 @@ public class RecordDescriptorTest {
             assertEquals(e.getMessage(), "@Pack cannot be used on Void fields");
         }
         // Pack annotation on unsupported type
-        //
         try {
             recordDescriptor = new RecordDescriptor(TestRecordUnsupportedPack.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Unsupported packing type. java.lang.String");
         }
-
+        // Bit size set to less than 1
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordBadBitSize.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Bit packing target length must be at least 1");
+        }
+        // Wrong annotation on array
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordPackOnArray.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "@Pack cannot be used on arrays");
+        }
+        // Pack array annotation on non-array type
+        try {
+            recordDescriptor = new RecordDescriptor(TestRecordArrayPackNotOnArray.class);
+            fail("Expecting IllegalArgumentException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "@PackArray must be used on arrays only");
+        }
     }
 }

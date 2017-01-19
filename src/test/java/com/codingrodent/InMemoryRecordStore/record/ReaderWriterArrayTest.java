@@ -29,7 +29,8 @@ import org.junit.*;
 
 import java.util.UUID;
 
-import static org.junit.Assert.assertEquals;
+import static junit.framework.TestCase.fail;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -38,17 +39,12 @@ public class ReaderWriterArrayTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
+    private boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
     private Boolean[] booleanArray = {true, false, true, true, false};
-    ;
 
     @Before
     public void setUp() throws Exception {
         memory = new ArrayMemoryStore(5000);
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
@@ -58,7 +54,7 @@ public class ReaderWriterArrayTest {
         reader = new Reader(memory, descriptor);
         //
         UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
-        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, new boolean[10], booleanArray);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, bitArray, booleanArray);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
                 -1, -1, -128, 0x00,// c
@@ -67,7 +63,9 @@ public class ReaderWriterArrayTest {
                 0x01, // d
                 0x12, 0x34, 0x56, 0x78, (byte) 0x9A, (byte) 0xBC, // e
                 0x00, // f
-                -128, 0x00, 0x70, 0x00, 0x60, 0x00, 0x50, 0x00, 0x40, 0x00, 0x30, 0x00, 0x20, 0x00, 0x10, 0x00}; // g
+                -128, 0x00, 0x70, 0x00, 0x60, 0x00, 0x50, 0x00, 0x40, 0x00, 0x30, 0x00, 0x20, 0x00, 0x10, 0x00, // g
+                1, 1, 0, 0, 1, 1, 0, 0, 1, 1, // h
+                1, 0, 1, 1, 0}; // i
         // Did record pack correctly ?
         for (int i = 0; i < packed.length; i++) {
             assertEquals(packed[i], memory.getByte(i));
@@ -80,14 +78,46 @@ public class ReaderWriterArrayTest {
         assertEquals(read.c, write.c);
         assertEquals(read.d, write.d);
         assertEquals(read.e, write.e);
+        assertEquals(read.f, write.f);
+        assertEquals(read.g, write.g);
+        // Arrays
+        assertArrayEquals(read.h, write.h);
+        assertArrayEquals(read.i, write.i);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void badSize() throws Exception {
+        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
+        writer = new Writer(memory, descriptor);
+        reader = new Reader(memory, descriptor);
+        //
+        UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
+        boolean[] badArray = {true, true, false, false, true, true, false, false, true}; // only 9 elements
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, badArray, booleanArray);
+        writer.putRecord(0, write);
+        fail("IllegalArgumentException expected");
     }
 
     @Test
-    public void writeReadBitArrays() throws Exception {
+    public void tooManyBitsSpecified() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitArray.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
+        TestRecordBitArray write = new TestRecordBitArray(bitArray, booleanArray);
+        writer.putRecord(0, write);
+        byte[] packed = {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, // 1
+                1, 0, 1, 1, 0}; // b
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
+        }
+        //
+        // Ok, see if we can get it back
+        TestRecordBitArray read = (TestRecordBitArray) reader.getRecord(0);
+        assertArrayEquals(read.a, write.a);
+        assertArrayEquals(read.b, write.b);
     }
+
 
 }
