@@ -113,7 +113,7 @@ Limited support exists for handling fields which are arrays. For example:
 public boolean[] lotsOfBits = new boolean[100];
 ```
 
-This allows support of a 100 element boolean array with each element packed into 2 bits. 
+This allows support of a 100 element boolean array with each element packed into two bits. 
 The default packing density is one bit, allowing for maximumj packing using boolean types.
 
 The following array types are supported at present:
