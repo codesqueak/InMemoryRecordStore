@@ -37,15 +37,16 @@ public class PackedListTest {
     private List<TestRecordBytePack> list;
     private Deque<TestRecordBytePack> deque;
     private TestRecordBytePack record;
+    private final boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
     private final Boolean[] booleanArray = {true, false, true, true, false};
+    private final UUID uuid = new UUID(0x8000_7000_6000_5000L, 0x4000_3000_2000_1000L);
 
     @Before
     public void setUp() throws Exception {
         list = new PackedList<>(TestRecordBytePack.class, RECORDS);
-        deque = (Deque) list;
+        deque = (Deque<TestRecordBytePack>) list;
         record = new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray);
     }
-
 
     @Test
     public void addFirst() {
@@ -626,20 +627,6 @@ public class PackedListTest {
     @Test(expected = NullPointerException.class)
     public void nullPointerException2() throws Exception {
         deque.addLast(null);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void classCastException1() throws Exception {
-        Deque deque = new PackedList<>(TestRecordBytePack.class, RECORDS);
-        deque.addFirst(0);
-        assertEquals(deque.size(), 1);
-    }
-
-    @Test(expected = ClassCastException.class)
-    public void classCastException2() throws Exception {
-        Deque deque = new PackedList<>(TestRecordBytePack.class, RECORDS);
-        deque.addLast(0);
-        assertEquals(deque.size(), 1);
     }
 
 }

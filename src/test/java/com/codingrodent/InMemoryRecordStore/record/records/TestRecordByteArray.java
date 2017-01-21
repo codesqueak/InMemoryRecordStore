@@ -29,7 +29,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
  * Test data record
  */
 @PackRecord
-public class TestRecordBitArray {
+public class TestRecordByteArray {
 
     @PackArray(order = 0, bits = 9, elements = 10)
     public boolean[] a;
@@ -37,10 +37,10 @@ public class TestRecordBitArray {
     @PackArray(order = 1, bits = 11, elements = 5)
     public Boolean[] b;
 
-    public TestRecordBitArray() {
+    public TestRecordByteArray() {
     }
 
-    public TestRecordBitArray(boolean[] a, Boolean[] b) {
+    public TestRecordByteArray(boolean[] a, Boolean[] b) {
         this.a = a;
         this.b = b;
     }

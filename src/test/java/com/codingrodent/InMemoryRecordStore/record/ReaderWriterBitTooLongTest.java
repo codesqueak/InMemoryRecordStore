@@ -44,11 +44,11 @@ public class ReaderWriterBitTooLongTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordNoPackTooLong.class);
-        Writer writer = new Writer(memory, descriptor);
-        Reader reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordNoPackTooLong> descriptor = new RecordDescriptor<>(TestRecordNoPackTooLong.class);
+        Writer<TestRecordNoPackTooLong> writer = new Writer<>(memory, descriptor);
         //
-        TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A', true, new UUID(0xFFEE_DDCC_BBAA_9988L, 0x7766_5544_3322_1100L));
+        TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A', true, new UUID(0xFFEE_DDCC_BBAA_9988L,
+                                                                                                                                                         0x7766_5544_3322_1100L));
         writer.putRecord(0, write);
 
         byte[] packed = {0x12, // 1

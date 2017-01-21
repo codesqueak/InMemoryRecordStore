@@ -32,9 +32,6 @@ import java.util.UUID;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
 public class ReaderWriterExceptionTest {
     private IMemoryStore memory;
     private final Boolean[] booleanArray = {true, false, true, true, false};
@@ -46,19 +43,19 @@ public class ReaderWriterExceptionTest {
 
     @Test
     public void writeReadExceptions() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
-        Writer writer = new Writer(memory, descriptor);
-        Reader reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBytePack> descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        Writer wrongWriter = new Writer<>(memory, descriptor);
         //
         // Record type
         try {
-            writer.putRecord(0, new TestRecordLong());
+            wrongWriter.putRecord(0, new TestRecordLong());
             fail("Expecting RecordStoreException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Object supplied to writer is of the wrong type");
         }
         //
         // Storage limits
+        Writer<TestRecordBytePack> writer = new Writer<>(memory, descriptor);
         TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID(), new boolean[10], booleanArray);
         writer.putRecord(0, testRecordBytePack);
         int maxRecords = 1024 * 4 / descriptor.getByteLength();

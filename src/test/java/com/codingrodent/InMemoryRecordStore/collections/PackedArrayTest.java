@@ -90,38 +90,6 @@ public class PackedArrayTest {
         }
     }
 
-    @Test
-    public void putGetRecordBitAligned() {
-        PackedArray<TestRecordBitPack> array = new PackedArray<>(TestRecordBitPack.class, RECORDS);
-        // Check each record read & write
-        for (int i = 0; i < RECORDS; i++) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), bitArray, booleanArray);
-            array.putRecord(i, testRecordbitPack);
-            TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
-            //
-            assertEquals(testRecordbitPack.getA(), testRecordBitPackGet.getA());
-            assertEquals(testRecordbitPack.getB(), testRecordBitPackGet.getB());
-            assertEquals(testRecordbitPack.getC(), testRecordBitPackGet.getC());
-            assertEquals(testRecordbitPack.isD(), testRecordBitPackGet.isD());
-            assertEquals(testRecordbitPack.getE(), testRecordBitPackGet.getE());
-            assertEquals(testRecordbitPack.getF(), testRecordBitPackGet.getF());
-            assertEquals(testRecordbitPack.getG(), testRecordBitPackGet.getG());
-        }
-        // Make sure no record overwrite has happened by re-reading all records
-        for (int i = 0; i < RECORDS; i++) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), bitArray, booleanArray);
-            TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
-            //
-            assertEquals(testRecordbitPack.getA(), testRecordBitPackGet.getA());
-            assertEquals(testRecordbitPack.getB(), testRecordBitPackGet.getB());
-            assertEquals(testRecordbitPack.getC(), testRecordBitPackGet.getC());
-            assertEquals(testRecordbitPack.isD(), testRecordBitPackGet.isD());
-            assertEquals(testRecordbitPack.getE(), testRecordBitPackGet.getE());
-            assertEquals(testRecordbitPack.getF(), testRecordBitPackGet.getF());
-            assertEquals(testRecordbitPack.getG(), testRecordBitPackGet.getG());
-        }
-    }
-
     @Test(expected = NoSuchElementException.class)
     public void putGetRecordIterator() {
         PackedArray<TestRecordBitPack> array = new PackedArray<>(TestRecordBitPack.class, RECORDS);

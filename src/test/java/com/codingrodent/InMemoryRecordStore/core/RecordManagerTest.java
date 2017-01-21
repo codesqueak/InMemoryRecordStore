@@ -38,7 +38,7 @@ public class RecordManagerTest {
     private final static int RECORDS = 32;
 
     private IMemoryStore memoryStore;
-    private RecordDescriptor recordDescriptor;
+    private RecordDescriptor<Object> recordDescriptor;
     private final Boolean[] booleanArray = {true, false, true, true, false};
     private final boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
 
@@ -95,7 +95,7 @@ public class RecordManagerTest {
 
     @Test
     public void getLength() {
-        RecordManager recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
+        RecordManager<Object> recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
         //
         assertEquals(recordManager.getLengthInBytes(), RECORDS * BYTES_PER_RECORD);
         assertEquals(recordManager.getLengthInWords(), (((RECORDS * BYTES_PER_RECORD) - 1) >> 2) + 1);

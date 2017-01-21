@@ -41,9 +41,8 @@ public class ReaderWriterBitTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBitAligned.class);
-        Writer writer = new Writer(memory, descriptor);
-        Reader reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBitAligned> descriptor = new RecordDescriptor<>(TestRecordBitAligned.class);
+        Writer<TestRecordBitAligned> writer = new Writer<>(memory, descriptor);
         //
         TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L, (short) -307,//
                                                               (short) 0x15, (byte) -11, (char) 65, (char) 1089, 0x0000789A_BCDEF012L, new UUID(0xFFEE_DDCC_BBAA_9988L,

@@ -36,8 +36,6 @@ import static org.junit.Assert.*;
  *
  */
 public class ReaderWriterByteArrayTest {
-    private Reader reader;
-    private Writer writer;
     private IMemoryStore memory;
     private final boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
     private final Boolean[] booleanArray = {true, false, true, true, false};
@@ -49,9 +47,9 @@ public class ReaderWriterByteArrayTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBytePack> descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        Writer<TestRecordBytePack> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordBytePack> reader = new Reader<>(memory, descriptor);
         //
         UUID uuid = new UUID(0x8000_7000_6000_5000L, 0x4000_3000_2000_1000L);
         TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, bitArray, booleanArray);
@@ -72,7 +70,7 @@ public class ReaderWriterByteArrayTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordBytePack read = (TestRecordBytePack) reader.getRecord(0);
+        TestRecordBytePack read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
         assertEquals(read.c, write.c);
@@ -87,24 +85,24 @@ public class ReaderWriterByteArrayTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void badSize() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBitPack> descriptor = new RecordDescriptor<>(TestRecordBitPack.class);
+        Writer<TestRecordBitPack> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordBitPack> reader = new Reader<>(memory, descriptor);
         //
         UUID uuid = new UUID(0x8000_7000_6000_5000L, 0x4000_3000_2000_1000L);
         boolean[] badArray = {true, true, false, false, true, true, false, false, true}; // only 9 elements
-        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, badArray, booleanArray);
+        TestRecordBitPack write = new TestRecordBitPack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, badArray, booleanArray);
         writer.putRecord(0, write);
         fail("IllegalArgumentException expected");
     }
 
     @Test
     public void tooManyBitsSpecified() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBitArray.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordByteArray> descriptor = new RecordDescriptor<>(TestRecordByteArray.class);
+        Writer<TestRecordByteArray> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordByteArray> reader = new Reader<>(memory, descriptor);
         //
-        TestRecordBitArray write = new TestRecordBitArray(bitArray, booleanArray);
+        TestRecordByteArray write = new TestRecordByteArray(bitArray, booleanArray);
         writer.putRecord(0, write);
         byte[] packed = {1, 1, 0, 0, 1, 1, 0, 0, 1, 1, // 1
                 1, 0, 1, 1, 0}; // b
@@ -114,10 +112,9 @@ public class ReaderWriterByteArrayTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordBitArray read = (TestRecordBitArray) reader.getRecord(0);
+        TestRecordByteArray read = reader.getRecord(0);
         assertArrayEquals(read.a, write.a);
         assertArrayEquals(read.b, write.b);
     }
-
 
 }
