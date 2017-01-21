@@ -42,7 +42,7 @@ public class TestRecordBitAligned {
     @PackField(order = 2, bits = 20) // 44
     public int c;
 
-    @PackField(order = 3, bits = 1) // 45
+    @PackField(order = 3) // 45
     public boolean d;
 
     @Padding(order = 4, bits = 7) // 52

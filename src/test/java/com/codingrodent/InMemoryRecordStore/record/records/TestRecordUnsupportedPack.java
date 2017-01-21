@@ -31,7 +31,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 @PackRecord
 public class TestRecordUnsupportedPack {
 
-    @PackField(order = 0, bits = 1)
+    @PackField(order = 0)
     public Short a;
 
     @PackField(order = 1, bits = 9)

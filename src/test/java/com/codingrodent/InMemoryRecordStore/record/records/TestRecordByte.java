@@ -31,7 +31,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 @PackRecord
 public class TestRecordByte {
 
-    @PackField(order = 0, bits = 1)
+    @PackField(order = 0)
     public Byte a;
 
     public TestRecordByte() {

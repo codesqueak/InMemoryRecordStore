@@ -28,7 +28,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 @PackRecord
 public class TestRecordBadBitSize {
 
-    // Bit sise must be 1 or above
+    // Bit size must be 1 or above
     @PackField(order = 0, bits = 0)
     public Short a;
 

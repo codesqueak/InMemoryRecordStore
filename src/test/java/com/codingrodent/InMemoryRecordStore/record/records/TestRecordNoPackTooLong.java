@@ -34,28 +34,28 @@ import java.util.UUID;
 public class TestRecordNoPackTooLong {
 
     @PackField(order = 0, bits = 9)
-    public Byte a;
+    public final Byte a;
 
     @PackField(order = 1, bits = 17)
-    public Short b;
+    public final Short b;
 
     @PackField(order = 2, bits = 33)
-    public int c;
+    public final int c;
 
     @PackField(order = 3, bits = 65)
-    public long d;
+    public final long d;
 
     @PackField(order = 4, bits = 17)
-    public char e;
+    public final char e;
 
     @Padding(order = 5, bits = 65)
     public Void v;
 
     @PackField(order = 6, bits = 9)
-    public Boolean f;
+    public final Boolean f;
 
     @PackField(order = 7, bits = 150)
-    public UUID g;
+    public final UUID g;
 
     public TestRecordNoPackTooLong(byte a, short b, int c, long d, char e, boolean f, UUID g) {
         this.a = a;

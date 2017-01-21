@@ -45,12 +45,4 @@ public class TestRecordBitArray {
         this.b = b;
     }
 
-    public boolean[] getA() {
-        return a;
-    }
-
-    public Boolean[] getB() {
-        return b;
-    }
-
 }

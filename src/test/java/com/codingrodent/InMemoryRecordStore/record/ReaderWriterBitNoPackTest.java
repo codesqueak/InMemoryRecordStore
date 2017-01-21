@@ -29,12 +29,8 @@ import org.junit.*;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
+
 public class ReaderWriterBitNoPackTest {
-    private Reader reader;
-    private Writer writer;
     private IMemoryStore memory;
 
     @Before
@@ -43,15 +39,11 @@ public class ReaderWriterBitNoPackTest {
 
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
-
     @Test
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordNoPack.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        Writer writer = new Writer(memory, descriptor);
+        Reader reader = new Reader(memory, descriptor);
         //
         TestRecordNoPack write = new TestRecordNoPack((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A');
         writer.putRecord(0, write);

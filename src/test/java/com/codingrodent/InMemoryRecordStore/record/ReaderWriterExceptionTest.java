@@ -36,27 +36,19 @@ import static org.junit.Assert.assertEquals;
  *
  */
 public class ReaderWriterExceptionTest {
-    private Reader reader;
-    private Writer writer;
     private IMemoryStore memory;
-    private Boolean[] booleanArray = {true, false, true, true, false};
-    ;
+    private final Boolean[] booleanArray = {true, false, true, true, false};
 
     @Before
     public void setUp() throws Exception {
         memory = new ArrayMemoryStore(1024);
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
     public void writeReadExceptions() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        Writer writer = new Writer(memory, descriptor);
+        Reader reader = new Reader(memory, descriptor);
         //
         // Record type
         try {

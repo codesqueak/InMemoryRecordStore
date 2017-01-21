@@ -37,8 +37,7 @@ public class PackedListTest {
     private List<TestRecordBytePack> list;
     private Deque<TestRecordBytePack> deque;
     private TestRecordBytePack record;
-    private Boolean[] booleanArray = {true, false, true, true, false};
-    ;
+    private final Boolean[] booleanArray = {true, false, true, true, false};
 
     @Before
     public void setUp() throws Exception {
@@ -47,9 +46,6 @@ public class PackedListTest {
         record = new TestRecordBytePack(1, 2, -3, true, -4, false, UUID.randomUUID(), new boolean[10], booleanArray);
     }
 
-    @After
-    public void tearDown() throws Exception {
-    }
 
     @Test
     public void addFirst() {
@@ -401,7 +397,7 @@ public class PackedListTest {
 
     @Test(expected = UnsupportedOperationException.class)
     public void sort() throws Exception {
-        list.sort((a, b) -> a.getA().compareTo(b.getA()));
+        list.sort(Comparator.comparing(TestRecordBytePack::getA));
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -427,31 +423,31 @@ public class PackedListTest {
         record.setA(3);
         deque.addLast(record);
         //
-        Iterator<TestRecordBytePack> iter = list.iterator();
+        Iterator<TestRecordBytePack> it = list.iterator();
         int i = 1;
-        while (iter.hasNext()) {
-            record = iter.next();
+        while (it.hasNext()) {
+            record = it.next();
             assertEquals(record.getA().intValue(), i++);
         }
     }
 
     @Test
     public void iterator2() throws Exception {
-        Iterator<TestRecordBytePack> iter = list.iterator();
-        assertFalse(iter.hasNext());
+        Iterator<TestRecordBytePack> it = list.iterator();
+        assertFalse(it.hasNext());
     }
 
     @Test(expected = NoSuchElementException.class)
     public void iterator3() throws Exception {
-        Iterator<TestRecordBytePack> iter = list.iterator();
-        iter.next();
+        Iterator<TestRecordBytePack> it = list.iterator();
+        it.next();
     }
 
     @Test(expected = ConcurrentModificationException.class)
     public void iterator4() throws Exception {
-        Iterator<TestRecordBytePack> iter = list.iterator();
+        Iterator<TestRecordBytePack> it = list.iterator();
         deque.addLast(record);
-        iter.next();
+        it.next();
     }
 
     @Test
@@ -462,18 +458,18 @@ public class PackedListTest {
         record.setA(3);
         deque.addLast(record);
         //
-        Iterator<TestRecordBytePack> iter = deque.descendingIterator();
+        Iterator<TestRecordBytePack> it = deque.descendingIterator();
         int i = 3;
-        while (iter.hasNext()) {
-            record = iter.next();
+        while (it.hasNext()) {
+            record = it.next();
             assertEquals(record.getA().intValue(), i--);
         }
     }
 
     @Test
     public void descendingIterator2() throws Exception {
-        Iterator<TestRecordBytePack> iter = deque.descendingIterator();
-        assertFalse(iter.hasNext());
+        Iterator<TestRecordBytePack> it = deque.descendingIterator();
+        assertFalse(it.hasNext());
     }
 
     @Test
@@ -484,80 +480,80 @@ public class PackedListTest {
         record.setA(3);
         deque.addLast(record);
         // setup conditions
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        assertTrue(iter.hasNext());
-        assertFalse(iter.hasPrevious());
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        assertTrue(it.hasNext());
+        assertFalse(it.hasPrevious());
         // walk up the list
         int i = 1;
-        while (iter.hasNext()) {
-            record = iter.next();
+        while (it.hasNext()) {
+            record = it.next();
             assertEquals(record.getA().intValue(), i++);
         }
         assertEquals(i, 4);
         // check conditions
-        assertFalse(iter.hasNext());
-        assertTrue(iter.hasPrevious());
+        assertFalse(it.hasNext());
+        assertTrue(it.hasPrevious());
         // walk back
         i = 3;
-        while (iter.hasPrevious()) {
-            record = iter.previous();
+        while (it.hasPrevious()) {
+            record = it.previous();
             assertEquals(record.getA().intValue(), i--);
         }
         assertEquals(i, 0);
         // check conditions
-        assertTrue(iter.hasNext());
-        assertFalse(iter.hasPrevious());
+        assertTrue(it.hasNext());
+        assertFalse(it.hasPrevious());
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void listIterator2() throws Exception {
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        iter.nextIndex();
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        it.nextIndex();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void listIterator3() throws Exception {
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        iter.previousIndex();
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        it.previousIndex();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void listIterator4() throws Exception {
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        iter.remove();
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        it.remove();
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void listIterator5() throws Exception {
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        iter.set(record);
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        it.set(record);
     }
 
     @Test(expected = UnsupportedOperationException.class)
     public void listIterator6() throws Exception {
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        iter.add(record);
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        it.add(record);
     }
 
     @Test(expected = NoSuchElementException.class)
     public void listIterator7() throws Exception {
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        iter.previous();
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        it.previous();
     }
 
     @Test
     public void listIterator8() throws Exception {
         // Check single item list works as expected
         deque.addLast(record);
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        assertTrue(iter.hasNext());
-        record = iter.next();
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        assertTrue(it.hasNext());
+        record = it.next();
         assertEquals(record.getA().intValue(), 1);
-        record = iter.previous();
+        record = it.previous();
         assertEquals(record.getA().intValue(), 1);
-        record = iter.next();
+        record = it.next();
         assertEquals(record.getA().intValue(), 1);
-        record = iter.previous();
+        record = it.previous();
         assertEquals(record.getA().intValue(), 1);
     }
 
@@ -567,11 +563,11 @@ public class PackedListTest {
         deque.addLast(record);
         record.setA(2);
         deque.addLast(record);
-        ListIterator<TestRecordBytePack> iter = list.listIterator();
-        assertTrue(iter.hasNext());
-        record = iter.next();
+        ListIterator<TestRecordBytePack> it = list.listIterator();
+        assertTrue(it.hasNext());
+        record = it.next();
         assertEquals(record.getA().intValue(), 1);
-        record = iter.previous();
+        record = it.previous();
     }
 
     @Test
@@ -596,8 +592,9 @@ public class PackedListTest {
             deque.addLast(record);
         }
         //
-        list.parallelStream().mapToInt(TestRecordBytePack::getA).sum();
-        int total = list.stream().mapToInt(TestRecordBytePack::getA).sum();
+        int total = list.parallelStream().mapToInt(TestRecordBytePack::getA).sum();
+        assertEquals(sum, total);
+        total = list.stream().mapToInt(TestRecordBytePack::getA).sum();
         assertEquals(sum, total);
     }
 
@@ -635,12 +632,14 @@ public class PackedListTest {
     public void classCastException1() throws Exception {
         Deque deque = new PackedList<>(TestRecordBytePack.class, RECORDS);
         deque.addFirst(0);
+        assertEquals(deque.size(), 1);
     }
 
     @Test(expected = ClassCastException.class)
     public void classCastException2() throws Exception {
         Deque deque = new PackedList<>(TestRecordBytePack.class, RECORDS);
         deque.addLast(0);
+        assertEquals(deque.size(), 1);
     }
 
 }

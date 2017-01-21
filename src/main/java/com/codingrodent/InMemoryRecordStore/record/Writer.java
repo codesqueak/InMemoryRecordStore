@@ -313,6 +313,28 @@ public class Writer<T> {
                 bitWriter.insertBits(longValue, buffer, pos + 64, 64);
                 break;
             }
+            case booleanArray: {
+                boolean[] v = (boolean[]) value;
+                byte[] zero = {0};
+                byte[] one = {1};
+                for (boolean b : v) {
+                    bitWriter.insertBits(b ? one : zero, buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                break;
+            }
+            case BooleanArray: {
+                Boolean[] v = (Boolean[]) value;
+                byte[] zero = {0};
+                byte[] one = {1};
+                for (boolean b : v) {
+                    bitWriter.insertBits(b ? one : zero, buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                break;
+            }
         }
         return pos + bitLength;
     }

@@ -77,14 +77,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
      */
     @Override
     public void addFirst(final E e) {
-        if (records == size)
-            throw new IllegalStateException("Predefined storage full");
-        if (null == e)
-            throw new NullPointerException("Deque does not permit null elements");
-        if (clazz != e.getClass())
-            throw new ClassCastException("Incorrect class type");
-        modCount.incrementAndGet();
-        packedArray.putRecord(next, e);
+        makeNode(e);
         if (0 == size) {
             // set up initial conditions
             forward[next] = END_MARKER;
@@ -102,8 +95,12 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
         size++;
     }
 
-    @Override
-    public void addLast(final E e) {
+    /**
+     * Element to store
+     *
+     * @param e Packed record
+     */
+    private void makeNode(final E e) {
         if (records == size)
             throw new IllegalStateException("Predefined storage full");
         if (null == e)
@@ -112,6 +109,11 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
             throw new ClassCastException("Incorrect class type");
         modCount.incrementAndGet();
         packedArray.putRecord(next, e);
+    }
+
+    @Override
+    public void addLast(final E e) {
+        makeNode(e);
         if (0 == size) {
             // set up initial conditions
             backward[next] = END_MARKER;
@@ -152,10 +154,7 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
      */
     @Override
     public E removeFirst() {
-        if (size == 0)
-            throw new NoSuchElementException();
-        modCount.incrementAndGet();
-        E result = packedArray.getRecord(first);
+        E result = getNode(first);
         // Add to free list
         free[first] = next;
         next = first;
@@ -172,14 +171,24 @@ public class PackedList<E> extends AbstractSequentialList<E> implements List<E>,
     }
 
     /**
+     * Get a record element at a selected place
+     *
+     * @param position Position of element
+     * @return Element
+     */
+    private E getNode(int position) {
+        if (size == 0)
+            throw new NoSuchElementException();
+        modCount.incrementAndGet();
+        return packedArray.getRecord(position);
+    }
+
+    /**
      * {@inheritDoc}
      */
     @Override
     public E removeLast() {
-        if (size == 0)
-            throw new NoSuchElementException();
-        modCount.incrementAndGet();
-        E result = packedArray.getRecord(last);
+        E result = getNode(last);
         // Add to free list
         free[last] = next;
         next = last;

@@ -43,11 +43,6 @@ public class RecordDescriptorTest {
         recordDescriptor = new RecordDescriptor(TestRecordBytePack.class);
     }
 
-    @After
-    public void tearDown() throws Exception {
-
-    }
-
     @Test
     public void isFieldByteAligned() throws Exception {
         assertTrue(recordDescriptor.isFieldByteAligned());

@@ -243,6 +243,26 @@ public class Reader<T> {
                 field.set(target, new UUID(raw0, raw1));
                 break;
             }
+            case booleanArray: {
+                boolean[] v = new boolean[fieldDetails.getElements()];
+                for (int i = 0; i < v.length; i++) {
+                    v[i] = 0 != bitReader.unpack(buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                field.set(target, v);
+                break;
+            }
+            case BooleanArray: {
+                Boolean[] v = new Boolean[fieldDetails.getElements()];
+                for (int i = 0; i < v.length; i++) {
+                    v[i] = 0 != bitReader.unpack(buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                field.set(target, v);
+                break;
+            }
         }
         return pos + bitLength;
     }

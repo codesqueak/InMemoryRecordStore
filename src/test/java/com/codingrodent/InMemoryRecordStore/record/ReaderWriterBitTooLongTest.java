@@ -35,25 +35,18 @@ import static org.junit.Assert.assertEquals;
  *
  */
 public class ReaderWriterBitTooLongTest {
-    private Reader reader;
-    private Writer writer;
     private IMemoryStore memory;
 
     @Before
     public void setUp() throws Exception {
         memory = new ArrayMemoryStore(1024);
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
     public void writeReadRecord() throws Exception {
         RecordDescriptor descriptor = new RecordDescriptor(TestRecordNoPackTooLong.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        Writer writer = new Writer(memory, descriptor);
+        Reader reader = new Reader(memory, descriptor);
         //
         TestRecordNoPackTooLong write = new TestRecordNoPackTooLong((byte) 0x12, (short) 0x3456, 0x789ABCDE, 0x1234_5678_9ABC_DEF0L, 'A', true, new UUID(0xFFEE_DDCC_BBAA_9988L, 0x7766_5544_3322_1100L));
         writer.putRecord(0, write);

@@ -24,29 +24,18 @@
 package com.codingrodent.InMemoryRecordStore.collections;
 
 import com.codingrodent.InMemoryRecordStore.record.records.*;
-import org.junit.*;
+import org.junit.Test;
 
 import java.util.*;
 
 import static junit.framework.TestCase.fail;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class PackedArrayTest {
 
     private final static int RECORDS = 2000;
-    private Boolean[] booleanArray = {true, false, true, true, false};
-    ;
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
+    private final Boolean[] booleanArray = {true, false, true, true, false};
+    private final boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
 
     @Test
     public void negativeSize() {
@@ -106,7 +95,7 @@ public class PackedArrayTest {
         PackedArray<TestRecordBitPack> array = new PackedArray<>(TestRecordBitPack.class, RECORDS);
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), bitArray, booleanArray);
             array.putRecord(i, testRecordbitPack);
             TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
             //
@@ -120,7 +109,7 @@ public class PackedArrayTest {
         }
         // Make sure no record overwrite has happened by re-reading all records
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), bitArray, booleanArray);
             TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
             //
             assertEquals(testRecordbitPack.getA(), testRecordBitPackGet.getA());
@@ -138,7 +127,7 @@ public class PackedArrayTest {
         PackedArray<TestRecordBitPack> array = new PackedArray<>(TestRecordBitPack.class, RECORDS);
         // Check each record read & write
         for (int i = 0; i < RECORDS; i++) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1));
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(i, 456, -123, true, -12345, false, new UUID(i, i + 1), bitArray, booleanArray);
             array.putRecord(i, testRecordbitPack);
             TestRecordBitPack testRecordBitPackGet = array.getRecord(i);
             //
@@ -153,7 +142,7 @@ public class PackedArrayTest {
         // Make sure no record overwrite has happened by re-reading all records
         int pos = 0;
         for (TestRecordBitPack testRecordBitPackGet : array) {
-            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(pos, 456, -123, true, -12345, false, new UUID(pos++, pos));
+            TestRecordBitPack testRecordbitPack = new TestRecordBitPack(pos, 456, -123, true, -12345, false, new UUID(pos++, pos), bitArray, booleanArray);
             //
             assertEquals(testRecordbitPack.getA(), testRecordBitPackGet.getA());
             assertEquals(testRecordbitPack.getB(), testRecordBitPackGet.getB());
@@ -164,13 +153,12 @@ public class PackedArrayTest {
             assertEquals(testRecordbitPack.getG(), testRecordBitPackGet.getG());
             //
             // Check fail states
-            Iterator<TestRecordBitPack> iter = array.iterator();
+            Iterator<TestRecordBitPack> it = array.iterator();
             try {
-                iter.remove();
-                ;
+                it.remove();
             } catch (Exception e) {
                 for (int i = 0; i <= array.getSize(); i++) {
-                    iter.next();
+                    it.next();
                 }
                 fail("NoSuchElementException expected");
             }

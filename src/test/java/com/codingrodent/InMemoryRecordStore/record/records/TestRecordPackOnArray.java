@@ -29,7 +29,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 public class TestRecordPackOnArray {
 
     // Can't use @PackField on array
-    @PackField(order = 0, bits = 1)
+    @PackField(order = 0)
     public boolean[] a = new boolean[10];
 
 }

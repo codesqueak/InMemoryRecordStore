@@ -42,7 +42,7 @@ public class TestRecordBytePack {
     @PackField(order = 3, bits = 32)
     public int c;
 
-    @PackField(order = 100, bits = 1)
+    @PackField(order = 100)
     public boolean d;
 
     @Padding(order = 4, bits = 8)

@@ -35,12 +35,12 @@ import static org.junit.Assert.*;
 /**
  *
  */
-public class ReaderWriterArrayTest {
+public class ReaderWriterByteArrayTest {
     private Reader reader;
     private Writer writer;
     private IMemoryStore memory;
-    private boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
-    private Boolean[] booleanArray = {true, false, true, true, false};
+    private final boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
+    private final Boolean[] booleanArray = {true, false, true, true, false};
 
     @Before
     public void setUp() throws Exception {
@@ -53,7 +53,7 @@ public class ReaderWriterArrayTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
+        UUID uuid = new UUID(0x8000_7000_6000_5000L, 0x4000_3000_2000_1000L);
         TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, bitArray, booleanArray);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
@@ -91,7 +91,7 @@ public class ReaderWriterArrayTest {
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
-        UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
+        UUID uuid = new UUID(0x8000_7000_6000_5000L, 0x4000_3000_2000_1000L);
         boolean[] badArray = {true, true, false, false, true, true, false, false, true}; // only 9 elements
         TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, badArray, booleanArray);
         writer.putRecord(0, write);
