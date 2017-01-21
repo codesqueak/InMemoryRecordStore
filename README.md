@@ -104,7 +104,7 @@ A bidirectional linked list. For example, to create a list capable of storing up
     list.stream().map(...).forEach(...); // process records
 ```
 
-## Array Elements
+# Array Elements
 
 Limited support exists for handling fields which are arrays. For example:
 
