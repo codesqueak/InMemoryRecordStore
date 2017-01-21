@@ -46,7 +46,7 @@ public class ReaderWriterExceptionTest {
 
     @Test
     public void writeReadExceptions() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
+        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
         Writer writer = new Writer(memory, descriptor);
         Reader reader = new Reader(memory, descriptor);
         //

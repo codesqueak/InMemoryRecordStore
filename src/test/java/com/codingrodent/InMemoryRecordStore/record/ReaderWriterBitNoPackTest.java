@@ -41,7 +41,7 @@ public class ReaderWriterBitNoPackTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordNoPack.class);
+        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordNoPack.class);
         Writer writer = new Writer(memory, descriptor);
         Reader reader = new Reader(memory, descriptor);
         //

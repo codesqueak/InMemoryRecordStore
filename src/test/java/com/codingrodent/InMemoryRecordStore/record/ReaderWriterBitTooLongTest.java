@@ -44,7 +44,7 @@ public class ReaderWriterBitTooLongTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordNoPackTooLong.class);
+        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordNoPackTooLong.class);
         Writer writer = new Writer(memory, descriptor);
         Reader reader = new Reader(memory, descriptor);
         //

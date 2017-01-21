@@ -36,11 +36,11 @@ import static org.junit.Assert.*;
  */
 public class RecordDescriptorTest {
 
-    private RecordDescriptor recordDescriptor;
+    private RecordDescriptor<TestRecordBytePack> recordDescriptor;
 
     @Before
     public void setUp() throws Exception {
-        recordDescriptor = new RecordDescriptor(TestRecordBytePack.class);
+        recordDescriptor = new RecordDescriptor<>(TestRecordBytePack.class);
     }
 
     @Test
@@ -83,49 +83,49 @@ public class RecordDescriptorTest {
     public void exceptions() throws Exception {
         // Wrong record type
         try {
-            recordDescriptor = new RecordDescriptor(Integer.class);
+            new RecordDescriptor<>(Integer.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "The record must contain a PackRecord annotation");
         }
         // Padding annotation in wrong place
         try {
-            recordDescriptor = new RecordDescriptor(TestRecordBadPadding.class);
+            new RecordDescriptor<>(TestRecordBadPadding.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "@Padding can only be used on Void fields");
         }
         // Pack annotation in wrong place
         try {
-            recordDescriptor = new RecordDescriptor(TestRecordBadPack.class);
+            new RecordDescriptor<>(TestRecordBadPack.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "@Pack cannot be used on Void fields");
         }
         // Pack annotation on unsupported type
         try {
-            recordDescriptor = new RecordDescriptor(TestRecordUnsupportedPack.class);
+            new RecordDescriptor<>(TestRecordUnsupportedPack.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Unsupported packing type. java.lang.String");
         }
         // Bit size set to less than 1
         try {
-            recordDescriptor = new RecordDescriptor(TestRecordBadBitSize.class);
+            new RecordDescriptor<>(TestRecordBadBitSize.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Bit packing target length must be at least 1");
         }
         // Wrong annotation on array
         try {
-            recordDescriptor = new RecordDescriptor(TestRecordPackOnArray.class);
+            new RecordDescriptor<>(TestRecordPackOnArray.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "@Pack cannot be used on arrays");
         }
         // Pack array annotation on non-array type
         try {
-            recordDescriptor = new RecordDescriptor(TestRecordArrayPackNotOnArray.class);
+            new RecordDescriptor<>(TestRecordArrayPackNotOnArray.class);
             fail("Expecting IllegalArgumentException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "@PackArray must be used on arrays only");

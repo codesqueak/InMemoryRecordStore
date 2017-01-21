@@ -53,12 +53,12 @@ public class RecordManagerTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void validationSize() throws Exception {
-        new RecordManager(memoryStore, 1, recordDescriptor);
+        new RecordManager<>(memoryStore, 1, recordDescriptor);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void validationMemory() throws Exception {
-        new RecordManager(memoryStore, Integer.MAX_VALUE, recordDescriptor);
+        new RecordManager<>(memoryStore, Integer.MAX_VALUE, recordDescriptor);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -95,7 +95,7 @@ public class RecordManagerTest {
 
     @Test
     public void getLength() {
-        RecordManager recordManager = new RecordManager(memoryStore, RECORDS, recordDescriptor);
+        RecordManager recordManager = new RecordManager<>(memoryStore, RECORDS, recordDescriptor);
         //
         assertEquals(recordManager.getLengthInBytes(), RECORDS * BYTES_PER_RECORD);
         assertEquals(recordManager.getLengthInWords(), (((RECORDS * BYTES_PER_RECORD) - 1) >> 2) + 1);

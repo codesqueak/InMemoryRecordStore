@@ -49,7 +49,7 @@ public class ReaderWriterByteArrayTest {
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
+        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
@@ -87,7 +87,7 @@ public class ReaderWriterByteArrayTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void badSize() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
+        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
@@ -100,7 +100,7 @@ public class ReaderWriterByteArrayTest {
 
     @Test
     public void tooManyBitsSpecified() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitArray.class);
+        RecordDescriptor descriptor = new RecordDescriptor<>(TestRecordBitArray.class);
         writer = new Writer(memory, descriptor);
         reader = new Reader(memory, descriptor);
         //
