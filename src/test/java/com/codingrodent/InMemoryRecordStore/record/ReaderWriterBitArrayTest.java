@@ -32,9 +32,6 @@ import java.util.UUID;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.*;
 
-/**
- *
- */
 public class ReaderWriterBitArrayTest {
     private IMemoryStore memory;
     private final boolean[] bitArray = {true, true, false, false, true, true, false, false, true, true};
@@ -144,6 +141,30 @@ public class ReaderWriterBitArrayTest {
         //
         // Ok, see if we can get it back
         TestRecordByteArray read = reader.getRecord(0);
+        assertArrayEquals(read.a, write.a);
+        assertArrayEquals(read.b, write.b);
+    }
+
+    @Test
+    public void singleBitPacking() throws Exception {
+        RecordDescriptor<TestRecordBitArray> descriptor = new RecordDescriptor<>(TestRecordBitArray.class);
+        assertEquals(descriptor.getBitLength(), TestRecordBitArray.ELEMENTS * 2);
+        assertEquals(descriptor.getByteLength(), (((TestRecordBitArray.ELEMENTS * 2) - 1) / 8) + 1);
+        //
+        Writer<TestRecordBitArray> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordBitArray> reader = new Reader<>(memory, descriptor);
+        //
+        boolean[] singleBitArray = new boolean[TestRecordBitArray.ELEMENTS];
+        Boolean[] singleBooleanArray = new Boolean[TestRecordBitArray.ELEMENTS];
+        for (int i = 0; i < TestRecordBitArray.ELEMENTS; i++) {
+            singleBitArray[i] = (Math.random() < 0.5);
+            singleBooleanArray[i] = (Math.random() < 0.5);
+        }
+        // write
+        TestRecordBitArray write = new TestRecordBitArray(singleBitArray, singleBooleanArray);
+        writer.putRecord(0, write);
+        // Ok, see if we can get it back
+        TestRecordBitArray read = reader.getRecord(0);
         assertArrayEquals(read.a, write.a);
         assertArrayEquals(read.b, write.b);
     }
