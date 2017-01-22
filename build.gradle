@@ -108,6 +108,7 @@ test
                 append = false
                 destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
                 classDumpFile = file("$buildDir/jacoco/classpathdumps")
+                excludes = ['com/codingrodent/InMemoryRecordStore/record/records/**','com/codingrodent/InMemoryRecordStore/**/*Test.class']
             }
         }
 
@@ -121,7 +122,7 @@ jacocoTestReport {
         classDirectories = files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
                     'com/codingrodent/InMemoryRecordStore/record/records/**',
-                    'com/codingrodent/InMemoryRecordStore/**/*Test.*'
+                    'com/codingrodent/InMemoryRecordStore/**/*Test.class'
             ])
         })
     }
