@@ -32,7 +32,7 @@ def findbugsreport() {
 
 def jacocoreport() {
     stage('Jacoco report') {
-        step([$class: 'JacocoPublisher', execPattern: 'build/jacoco/jacocoTest.exec', excludes: ['**/InMemoryRecordStore/record/records/**','**/InMemoryRecordStore/**/*Test*.*'], pattern: 'build/jacoco/classpathdumps/net/codingrodent/**/*.class'])
+        step([$class: 'JacocoPublisher', execPattern: 'build/jacoco/jacocoTest.exec', excludes: ['com.codingrodent.InMemoryStore.record.records/**'], pattern: 'build/jacoco/classpathdumps/net/codingrodent/**/*.class'])
     }
 }
 
