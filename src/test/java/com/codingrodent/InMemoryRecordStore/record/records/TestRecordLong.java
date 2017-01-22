@@ -31,7 +31,7 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 @PackRecord
 public class TestRecordLong {
 
-    @PackField(order = 0, bits = 1)
+    @PackField(order = 0)
     public Long a;
 
     @PackField(order = 1, bits = 9)

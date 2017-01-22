@@ -29,18 +29,18 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
  * Test data record
  */
 @PackRecord
-public class TestRecordUnsupportedPack {
+public class TestRecordByteArray {
 
-    @PackField(order = 0)
-    public Short a;
+    @PackArray(order = 0, bits = 9, elements = 10)
+    public boolean[] a;
 
-    @PackField(order = 1, bits = 9)
-    public String b;
+    @PackArray(order = 1, bits = 11, elements = 5)
+    public Boolean[] b;
 
-    public TestRecordUnsupportedPack() {
+    public TestRecordByteArray() {
     }
 
-    public TestRecordUnsupportedPack(short a, String b) {
+    public TestRecordByteArray(boolean[] a, Boolean[] b) {
         this.a = a;
         this.b = b;
     }

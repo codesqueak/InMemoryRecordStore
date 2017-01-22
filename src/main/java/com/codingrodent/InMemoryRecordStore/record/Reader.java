@@ -93,7 +93,8 @@ public class Reader<T> {
      * @return Next position in byte buffer
      * @throws IllegalAccessException If introspection write fails
      */
-    private int unpackFieldIntoObjectBytes(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws IllegalAccessException {
+    private int unpackFieldIntoObjectBytes(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws
+            IllegalAccessException {
         IMemoryStore.Type type = fieldDetails.getType();
         int byteLength = fieldDetails.getByteLength();
         switch (type) {
@@ -159,6 +160,20 @@ public class Reader<T> {
                 field.set(target, new UUID(raw0, raw1));
                 break;
             }
+            case booleanArray: {
+                boolean[] v = new boolean[fieldDetails.getElements()];
+                for (int i = 0; i < v.length; i++)
+                    v[i] = 0 != getUnsignedByte(buffer, pos++);
+                field.set(target, v);
+                break;
+            }
+            case BooleanArray: {
+                Boolean[] v = new Boolean[fieldDetails.getElements()];
+                for (int i = 0; i < v.length; i++)
+                    v[i] = 0 != getUnsignedByte(buffer, pos++) ? Boolean.TRUE : Boolean.FALSE;
+                field.set(target, v);
+                break;
+            }
         }
         return pos;
     }
@@ -174,7 +189,8 @@ public class Reader<T> {
      * @return Next position in byte buffer
      * @throws IllegalAccessException If introspection write fails
      */
-    private int unpackFieldIntoObjectBits(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws IllegalAccessException {
+    private int unpackFieldIntoObjectBits(Object target, final Field field, int pos, final byte[] buffer, final RecordDescriptor.FieldDetails fieldDetails) throws
+            IllegalAccessException {
         IMemoryStore.Type type = fieldDetails.getType();
         int bitLength = fieldDetails.getBitLength();
         switch (type) {
@@ -225,6 +241,26 @@ public class Reader<T> {
                 long raw0 = bitReader.unpack64(buffer, pos);
                 long raw1 = bitReader.unpack64(buffer, pos + 64);
                 field.set(target, new UUID(raw0, raw1));
+                break;
+            }
+            case booleanArray: {
+                boolean[] v = new boolean[fieldDetails.getElements()];
+                for (int i = 0; i < v.length; i++) {
+                    v[i] = 0 != bitReader.unpack(buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                field.set(target, v);
+                break;
+            }
+            case BooleanArray: {
+                Boolean[] v = new Boolean[fieldDetails.getElements()];
+                for (int i = 0; i < v.length; i++) {
+                    v[i] = 0 != bitReader.unpack(buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                field.set(target, v);
                 break;
             }
         }

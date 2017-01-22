@@ -57,6 +57,9 @@ public class Record {
 
     @PackField(order = 300, bits = 16)
     public int f = -32768;
+    
+    @PackArray(order = 0, bits = 2, elements = 10)
+    public boolean[] lotsOfBits = new boolean[100];
 }
 
 ```
@@ -104,18 +107,36 @@ A bidirectional linked list. For example, to create a list capable of storing up
     list.stream().map(...).forEach(...); // process records
 ```
 
+# Array Elements
+
+Limited support exists for handling fields which are arrays. For example:
+
+```
+@PackArray(order = 0, bits = 2, elements = 10)
+public boolean[] lotsOfBits = new boolean[100];
+```
+
+This allows support of a 100 element boolean array with each element packed into two bits. 
+The default packing density is one bit, allowing for maximumj packing using boolean types.
+
+The following array types are supported at present:
+
+* boolean
+* Boolean
+
+Note: The arrays size specified in the annotation is fixed.  If an array of a different size is supplied in an object, an error will result.
 
 # Restrictions
 
-The following features are not yet available but will included shortly:
+The following features are not yet available but will included when I have time:
 
 * Use of custom memory stores
 * use of custom object reader / writer
 
 # Things to add
 
-* Bit record packing
-* Support arrays
+* ~~Bit record packing~~
+* Support arrays (Partly Implementation)
 * Support fixed size strings
 * Collection classes (partly implemented)
 * Binary file I/O

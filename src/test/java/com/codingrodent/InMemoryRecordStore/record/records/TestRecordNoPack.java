@@ -32,19 +32,19 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 public class TestRecordNoPack {
 
     @PackField(order = 0, bits = 8)
-    public Byte a;
+    public final Byte a;
 
     @PackField(order = 1, bits = 16)
-    public Short b;
+    public final Short b;
 
     @PackField(order = 2, bits = 32)
-    public int c;
+    public final int c;
 
     @PackField(order = 3, bits = 64)
-    public long d;
+    public final long d;
 
     @PackField(order = 4, bits = 16)
-    public char e;
+    public final char e;
 
     public TestRecordNoPack(byte a, short b, int c, long d, char e) {
         this.a = a;

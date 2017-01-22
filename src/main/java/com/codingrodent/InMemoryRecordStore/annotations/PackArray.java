@@ -21,28 +21,21 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.record.records;
+package com.codingrodent.InMemoryRecordStore.annotations;
 
-import com.codingrodent.InMemoryRecordStore.annotations.*;
+import java.lang.annotation.*;
 
 /**
- * Test data record
+ * Annotation to mark an array as packable
  */
-@PackRecord
-public class TestRecordUnsupportedPack {
+@Target({ElementType.FIELD})
+@Inherited
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PackArray {
+    int order();
 
-    @PackField(order = 0)
-    public Short a;
+    int bits() default 1;
 
-    @PackField(order = 1, bits = 9)
-    public String b;
-
-    public TestRecordUnsupportedPack() {
-    }
-
-    public TestRecordUnsupportedPack(short a, String b) {
-        this.a = a;
-        this.b = b;
-    }
-
+    int elements();
 }

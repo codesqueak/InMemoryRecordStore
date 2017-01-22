@@ -1,7 +1,7 @@
 /*
 * MIT License
 *
-*         Copyright (c) 2016
+*         Copyright (c) 2017
 *
 *         Permission is hereby granted, free of charge, to any person obtaining a copy
 *         of this software and associated documentation files (the "Software"), to deal
@@ -28,19 +28,21 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 /**
  * Test data record
  */
-@PackRecord
-public class TestRecordUnsupportedPack {
+@PackRecord(fieldByteAligned = false)
+public class TestRecordBitArray {
 
-    @PackField(order = 0)
-    public Short a;
+    public final static int ELEMENTS = 1023;
 
-    @PackField(order = 1, bits = 9)
-    public String b;
+    @PackArray(order = 0, elements = ELEMENTS)
+    public boolean[] a;
 
-    public TestRecordUnsupportedPack() {
+    @PackArray(order = 1, elements = ELEMENTS)
+    public Boolean[] b;
+
+    public TestRecordBitArray() {
     }
 
-    public TestRecordUnsupportedPack(short a, String b) {
+    public TestRecordBitArray(boolean[] a, Boolean[] b) {
         this.a = a;
         this.b = b;
     }

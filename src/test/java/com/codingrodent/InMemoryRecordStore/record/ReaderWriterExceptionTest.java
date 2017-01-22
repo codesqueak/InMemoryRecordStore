@@ -32,40 +32,31 @@ import java.util.UUID;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
 public class ReaderWriterExceptionTest {
-    private Reader reader;
-    private Writer writer;
     private IMemoryStore memory;
+    private final Boolean[] booleanArray = {true, false, true, true, false};
 
     @Before
     public void setUp() throws Exception {
         memory = new ArrayMemoryStore(1024);
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
     public void writeReadExceptions() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBytePack> descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        Writer wrongWriter = new Writer<>(memory, descriptor);
         //
         // Record type
         try {
-            writer.putRecord(0, new TestRecordLong());
+            wrongWriter.putRecord(0, new TestRecordLong());
             fail("Expecting RecordStoreException to be thrown");
         } catch (Exception e) {
             assertEquals(e.getMessage(), "Object supplied to writer is of the wrong type");
         }
         //
         // Storage limits
-        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID());
+        Writer<TestRecordBytePack> writer = new Writer<>(memory, descriptor);
+        TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID(), new boolean[10], booleanArray);
         writer.putRecord(0, testRecordBytePack);
         int maxRecords = 1024 * 4 / descriptor.getByteLength();
         writer.putRecord(maxRecords - 1, testRecordBytePack);

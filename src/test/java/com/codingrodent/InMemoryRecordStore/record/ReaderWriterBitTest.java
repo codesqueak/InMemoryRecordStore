@@ -31,32 +31,22 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- *
- */
 public class ReaderWriterBitTest {
-    private Reader reader;
-    private Writer writer;
     private IMemoryStore memory;
 
     @Before
     public void setUp() throws Exception {
         memory = new ArrayMemoryStore(1024);
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBitAligned> descriptor = new RecordDescriptor<>(TestRecordBitAligned.class);
+        Writer<TestRecordBitAligned> writer = new Writer<>(memory, descriptor);
         //
         TestRecordBitAligned write = new TestRecordBitAligned(1, -1, -32768, true, 0x0000_0234L, (short) -307,//
-                (short) 0x15, (byte) -11, (char) 65, (char) 1089, 0x0000789A_BCDEF012L, new UUID(0xFFEE_DDCC_BBAA_9988L, 0x7766_5544_3322_1100l));
+                                                              (short) 0x15, (byte) -11, (char) 65, (char) 1089, 0x0000789A_BCDEF012L, new UUID(0xFFEE_DDCC_BBAA_9988L,
+                                                                                                                                               0x7766_5544_3322_1100L));
         writer.putRecord(0, write);
 
         byte[] packed = { //
@@ -94,8 +84,7 @@ public class ReaderWriterBitTest {
                 (byte) 0b11001100,//
                 (byte) 0b10001000,//
                 (byte) 0b01000100,//
-                (byte) 0b00000000
-        };
+                (byte) 0b00000000};
         assertEquals(packed.length, descriptor.getByteLength());
         // Did record pack correctly ?
         for (int i = 0; i < packed.length; i++) {

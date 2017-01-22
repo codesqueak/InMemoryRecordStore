@@ -1,7 +1,7 @@
 /*
 * MIT License
 *
-*         Copyright (c) 2016
+*         Copyright (c) 2017
 *
 *         Permission is hereby granted, free of charge, to any person obtaining a copy
 *         of this software and associated documentation files (the "Software"), to deal
@@ -25,24 +25,11 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
-/**
- * Test data record
- */
 @PackRecord
-public class TestRecordUnsupportedPack {
+public class TestRecordPackOnArray {
 
+    // Can't use @PackField on array
     @PackField(order = 0)
-    public Short a;
-
-    @PackField(order = 1, bits = 9)
-    public String b;
-
-    public TestRecordUnsupportedPack() {
-    }
-
-    public TestRecordUnsupportedPack(short a, String b) {
-        this.a = a;
-        this.b = b;
-    }
+    public boolean[] a = new boolean[10];
 
 }

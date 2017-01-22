@@ -29,6 +29,8 @@ import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 import java.lang.reflect.Field;
 import java.util.*;
 
+import static com.codingrodent.InMemoryRecordStore.core.IMemoryStore.Type.*;
+
 /**
  * This class holds the basic type information for an in memory allocation record.
  */
@@ -55,33 +57,43 @@ public class RecordDescriptor<T> {
         }
         this.fieldByteAligned = annotation.fieldByteAligned();
         //
-        // Recover any field annotations
+        // Recover any field annotations and store in field list
         List<FieldDetails> fieldList = new LinkedList<>();
         Field[] fields = clazz.getFields();
         for (Field field : fields) {
             // Pack annotation
             PackField packFieldAnnotation = field.getAnnotation(PackField.class);
             if (null != packFieldAnnotation) {
-                Class packClass = field.getType();
-                if (!packClass.getTypeName().equals(Void.class.getTypeName())) {
-                    FieldDetails fieldDetails = new FieldDetails(field.getType(), field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits());
-                    fieldList.add(fieldDetails);
-                } else {
+                String packClass = field.getType().getTypeName();
+                if (packClass.equals(Void.class.getTypeName()))
                     throw new IllegalArgumentException("@Pack cannot be used on Void fields");
-                }
+                String typeName = field.getType().getName();
+                if (typeName.startsWith("["))
+                    throw new IllegalArgumentException("@Pack cannot be used on arrays");
+                FieldDetails fieldDetails = new FieldDetails(typeName, field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits(), 1);
+                fieldList.add(fieldDetails);
             }
             // Padding annotation
             Padding paddingFieldAnnotation = field.getAnnotation(Padding.class);
             if (null != paddingFieldAnnotation) {
-                Class<?> paddingClass = field.getType();
-                if (paddingClass.getTypeName().equals(Void.class.getTypeName())) {
-                    FieldDetails fieldDetails = new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits());
-                    fieldList.add(fieldDetails);
-                } else {
+                String paddingClass = field.getType().getTypeName();
+                if (!paddingClass.equals(Void.class.getTypeName()))
                     throw new IllegalArgumentException("@Padding can only be used on Void fields");
-                }
+                FieldDetails fieldDetails = new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits(), 1);
+                fieldList.add(fieldDetails);
+            }
+            // Array annotation
+            PackArray arrayFieldAnnotation = field.getAnnotation(PackArray.class);
+            if (null != arrayFieldAnnotation) {
+                String arrayClass = field.getType().getName();
+                if (!arrayClass.startsWith("["))
+                    throw new IllegalArgumentException("@PackArray must be used on arrays only");
+                FieldDetails fieldDetails = new FieldDetails(arrayClass, field.getName(), arrayFieldAnnotation.order(), arrayFieldAnnotation.bits(), arrayFieldAnnotation
+                        .elements());
+                fieldList.add(fieldDetails);
             }
         }
+
         // Pull out annotation data and sort into layout order
         FieldDetails[] fieldDetails = fieldList.toArray(new FieldDetails[0]);
         // Sort
@@ -95,10 +107,10 @@ public class RecordDescriptor<T> {
             fieldNames.add(field.getFieldName());
             if (fieldByteAligned) {
                 // pack at byte level
-                lengthInBits = lengthInBits + field.getByteLength() * 8;
+                lengthInBits = lengthInBits + field.getByteLength() * 8 * field.elements;
             } else {
                 // pack at bit level
-                lengthInBits = lengthInBits + field.getBitLength();
+                lengthInBits = lengthInBits + field.getBitLength() * field.elements;
             }
             fieldDetailsMap.put(field.getFieldName(), field);
         }
@@ -139,17 +151,21 @@ public class RecordDescriptor<T> {
         private int order;
         private int bitLength;
         private int byteLength;
+        private int elements;
 
         /**
          * Create details for one annotated field
          *
-         * @param clazz     Class of field
+         * @param typeName  Class of field
          * @param fieldName Name of field
          * @param order     Position in packing order
-         * @param length    Length in bits
+         * @param length    Length in bits the field
+         * @param elements  Array size (if applicable)
          */
-        FieldDetails(Class<?> clazz, String fieldName, int order, int length) {
-            switch (clazz.getName()) {
+        FieldDetails(String typeName, String fieldName, int order, int length, int elements) {
+            if (length < 1)
+                throw new IllegalArgumentException("Bit packing target length must be at least 1");
+            switch (typeName) {
                 case "boolean":
                 case "java.lang.Boolean":
                     type = IMemoryStore.Type.Bit;
@@ -188,17 +204,26 @@ public class RecordDescriptor<T> {
                     type = IMemoryStore.Type.UUID;
                     length = 128;
                     break;
+                case "[Z":
+                    type = booleanArray;
+                    length = length > 8 ? 8 : length; // element length
+                    break;
+                case "[Ljava.lang.Boolean;":
+                    type = BooleanArray;
+                    length = length > 8 ? 8 : length; // element length
+                    break;
                 case "java.lang.Double":
                 case "double":
                 case "java.lang.Float":
                 case "float":
                 default:
-                    throw new IllegalArgumentException("Unsupported packing type. " + clazz.getName());
+                    throw new IllegalArgumentException("Unsupported packing type. " + typeName);
             }
             this.fieldName = fieldName;
             this.order = order;
             this.bitLength = length;
             this.byteLength = ((length - 1) >> 3) + 1;
+            this.elements = elements;
         }
 
         IMemoryStore.Type getType() {
@@ -215,6 +240,10 @@ public class RecordDescriptor<T> {
 
         int getByteLength() {
             return byteLength;
+        }
+
+        int getElements() {
+            return elements;
         }
 
         String getFieldName() {

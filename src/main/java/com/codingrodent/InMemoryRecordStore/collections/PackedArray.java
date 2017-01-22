@@ -26,9 +26,12 @@ package com.codingrodent.InMemoryRecordStore.collections;
 import com.codingrodent.InMemoryRecordStore.core.*;
 import com.codingrodent.InMemoryRecordStore.record.RecordDescriptor;
 
-public class PackedArray<E> {
+import java.util.*;
+
+public class PackedArray<E> implements Iterable<E> {
 
     private final RecordManager<E> recordManager;
+    private final int records;
 
     /**
      * Simple constructor using default storage
@@ -39,6 +42,7 @@ public class PackedArray<E> {
     public PackedArray(final Class<E> clazz, final int records) {
         RecordDescriptor<E> descriptor = new RecordDescriptor<>(clazz);
         this.recordManager = new RecordManager<>(new ArrayMemoryStore(), records, descriptor);
+        this.records = records;
     }
 
     /**
@@ -60,5 +64,43 @@ public class PackedArray<E> {
      */
     public void putRecord(final int location, final E record) {
         recordManager.putRecord(location, record);
+    }
+
+    /**
+     * Get the array size
+     *
+     * @return Size
+     */
+    public int getSize() {
+        return records;
+    }
+
+    @Override
+    public Iterator<E> iterator() {
+        return new ArrayIterator();
+    }
+
+    // Iterator inner class
+    private class ArrayIterator implements Iterator<E> {
+        private int pos;
+
+        public ArrayIterator() {
+            pos = 0;
+        }
+
+        public boolean hasNext() {
+            return pos < records;
+        }
+
+        public E next() {
+            if (this.hasNext())
+                return getRecord(pos++);
+            else
+                throw new NoSuchElementException();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
     }
 }

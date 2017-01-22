@@ -25,15 +25,13 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
-/**
- * Test data record
- */
 @PackRecord
 public class TestRecordBadPack {
 
-    @PackField(order = 0, bits = 1)
+    @PackField(order = 0)
     public Short a;
 
+    // Incorrect annotation
     @PackField(order = 1, bits = 9)
     @Padding(bits = 8, order = 2)
     public Void b;

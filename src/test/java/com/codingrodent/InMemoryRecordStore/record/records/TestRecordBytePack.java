@@ -42,7 +42,7 @@ public class TestRecordBytePack {
     @PackField(order = 3, bits = 32)
     public int c;
 
-    @PackField(order = 100, bits = 1)
+    @PackField(order = 100)
     public boolean d;
 
     @Padding(order = 4, bits = 8)
@@ -57,10 +57,16 @@ public class TestRecordBytePack {
     @PackField(order = 202, bits = 40)
     public UUID g;
 
+    @PackArray(order = 301, elements = 10)
+    public boolean[] h;
+
+    @PackArray(order = 302, elements = 5)
+    public Boolean[] i;
+
     public TestRecordBytePack() {
     }
 
-    public TestRecordBytePack(Integer a, int b, int c, boolean d, long e, Boolean f, UUID g) {
+    public TestRecordBytePack(Integer a, int b, int c, boolean d, long e, Boolean f, UUID g, boolean[] h, Boolean[] i) {
         this.a = a;
         this.b = b;
         this.c = c;
@@ -68,6 +74,8 @@ public class TestRecordBytePack {
         this.e = e;
         this.f = f;
         this.g = g;
+        this.h = h;
+        this.i = i;
     }
 
     public Integer getA() {
@@ -100,6 +108,14 @@ public class TestRecordBytePack {
 
     public UUID getG() {
         return g;
+    }
+
+    public boolean[] getH() {
+        return h;
+    }
+
+    public Boolean[] getI() {
+        return i;
     }
 
 }

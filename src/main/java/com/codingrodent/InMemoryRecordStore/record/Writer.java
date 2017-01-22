@@ -27,6 +27,7 @@ import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 import com.codingrodent.InMemoryRecordStore.exception.RecordStoreException;
 import com.codingrodent.InMemoryRecordStore.utility.BitTwiddling;
 
+import java.lang.reflect.*;
 import java.util.UUID;
 
 /**
@@ -72,15 +73,25 @@ public class Writer<T> {
         }
         // Find all fields and build byte buffer
         Class clazz = record.getClass();
-        int pos = 0;
-        byte[] buffer = new byte[recordDescriptor.getByteLength()];
+        int bufferPosition = 0;
+        byte[] buffer = new byte[byteLength];
         for (String fieldName : recordDescriptor.getFieldNames()) {
             try {
                 RecordDescriptor.FieldDetails fieldDetails = recordDescriptor.getFieldDetails(fieldName);
+                IMemoryStore.Type type = fieldDetails.getType();
+                Field field = clazz.getDeclaredField(fieldName);
+                Object value = field.get(record);
+                // If the field is an array, check its size
+                if (field.getType().isArray() && (Array.getLength(value) != fieldDetails.getElements())) {
+                    throw new IllegalArgumentException("Array size does not match. Should be " + fieldDetails.getElements());
+                }
+                //  Alignment ?
                 if (recordDescriptor.isFieldByteAligned()) {
-                    pos = packFieldIntoBytes(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getByteLength(), fieldDetails.getType());
+                    // Byte aligned
+                    bufferPosition = packFieldIntoBytes(bufferPosition, buffer, value, fieldDetails.getByteLength(), type);
                 } else {
-                    pos = packFieldIntoBits(pos, buffer, clazz.getDeclaredField(fieldName).get(record), fieldDetails.getBitLength(), fieldDetails.getType());
+                    // Bit aligned
+                    bufferPosition = packFieldIntoBits(bufferPosition, buffer, value, fieldDetails.getBitLength(), type);
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RecordStoreException(e);
@@ -177,6 +188,18 @@ public class Writer<T> {
                 pos = pos + 8;
                 break;
             }
+            case booleanArray: {
+                boolean[] v = (boolean[]) value;
+                for (boolean b : v)
+                    buffer[pos++] = (byte) (b ? 1 : 0);
+                break;
+            }
+            case BooleanArray: {
+                Boolean[] v = (Boolean[]) value;
+                for (boolean b : v)
+                    buffer[pos++] = (byte) (b ? 1 : 0);
+                break;
+            }
         }
         return pos;
     }
@@ -191,6 +214,7 @@ public class Writer<T> {
      * @param type      Object type
      * @return Next free bit in the buffer
      */
+
     private int packFieldIntoBits(int pos, byte[] buffer, Object value, int bitLength, IMemoryStore.Type type) {
         //
         // Don't forget - you can't make things longer !
@@ -289,7 +313,30 @@ public class Writer<T> {
                 bitWriter.insertBits(longValue, buffer, pos + 64, 64);
                 break;
             }
+            case booleanArray: {
+                boolean[] v = (boolean[]) value;
+                byte[] zero = {0};
+                byte[] one = {1};
+                for (boolean b : v) {
+                    bitWriter.insertBits(b ? one : zero, buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                break;
+            }
+            case BooleanArray: {
+                Boolean[] v = (Boolean[]) value;
+                byte[] zero = {0};
+                byte[] one = {1};
+                for (boolean b : v) {
+                    bitWriter.insertBits(b ? one : zero, buffer, pos, bitLength);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                break;
+            }
         }
         return pos + bitLength;
     }
+
 }

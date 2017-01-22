@@ -35,28 +35,22 @@ import static org.junit.Assert.assertEquals;
  *
  */
 public class ReaderWriterTest {
-    private Reader reader;
-    private Writer writer;
     private IMemoryStore memory;
+    private final Boolean[] booleanArray = {true, false, true, true, false};
 
     @Before
     public void setUp() throws Exception {
         memory = new ArrayMemoryStore(1024);
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
     public void writeReadRecord() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBytePack.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBytePack> descriptor = new RecordDescriptor<>(TestRecordBytePack.class);
+        Writer<TestRecordBytePack> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordBytePack> reader = new Reader<>(memory, descriptor);
         //
-        UUID uuid = new UUID(0x8000_7000_6000_5000l, 0x4000_3000_2000_1000l);
-        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid);
+        UUID uuid = new UUID(0x8000_7000_6000_5000L, 0x4000_3000_2000_1000L);
+        TestRecordBytePack write = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, uuid, new boolean[10], booleanArray);
         writer.putRecord(0, write);
         byte[] packed = {0x00, 0x00, 0x00, 0x01, // a
                 -1, -1, -128, 0x00,// c
@@ -72,7 +66,7 @@ public class ReaderWriterTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordBytePack read = (TestRecordBytePack) reader.getRecord(0);
+        TestRecordBytePack read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
         assertEquals(read.c, write.c);
@@ -82,9 +76,9 @@ public class ReaderWriterTest {
 
     @Test
     public void writeReadRecordLongPos() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordLong> descriptor = new RecordDescriptor<>(TestRecordLong.class);
+        Writer<TestRecordLong> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordLong> reader = new Reader<>(memory, descriptor);
         //
         TestRecordLong write = new TestRecordLong(1, 0x00_FFL, 0x0000_FFFFL, 0x1122_3344_5566_7700L);
         writer.putRecord(0, write);
@@ -99,7 +93,7 @@ public class ReaderWriterTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordLong read = (TestRecordLong) reader.getRecord(0);
+        TestRecordLong read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
         assertEquals(read.c, write.c);
@@ -108,9 +102,9 @@ public class ReaderWriterTest {
 
     @Test
     public void writeReadRecordLongNeg() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordLong.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordLong> descriptor = new RecordDescriptor<>(TestRecordLong.class);
+        Writer<TestRecordLong> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordLong> reader = new Reader<>(memory, descriptor);
         //
         TestRecordLong write = new TestRecordLong(-1, -2, -3, -4);
         writer.putRecord(0, write);
@@ -125,7 +119,7 @@ public class ReaderWriterTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordLong read = (TestRecordLong) reader.getRecord(0);
+        TestRecordLong read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
         assertEquals(read.c, write.c);
@@ -134,9 +128,9 @@ public class ReaderWriterTest {
 
     @Test
     public void writeReadRecordShortPos() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordShort> descriptor = new RecordDescriptor<>(TestRecordShort.class);
+        Writer<TestRecordShort> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordShort> reader = new Reader<>(memory, descriptor);
         //
         TestRecordShort write = new TestRecordShort((short) 1, (short) 0x00_FFL);
         writer.putRecord(0, write);
@@ -149,16 +143,16 @@ public class ReaderWriterTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordShort read = (TestRecordShort) reader.getRecord(0);
+        TestRecordShort read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
     }
 
     @Test
     public void writeReadRecordShortNeg() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordShort.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordShort> descriptor = new RecordDescriptor<>(TestRecordShort.class);
+        Writer<TestRecordShort> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordShort> reader = new Reader<>(memory, descriptor);
         //
         TestRecordShort write = new TestRecordShort((short) -1, (short) -2);
         writer.putRecord(0, write);
@@ -171,46 +165,46 @@ public class ReaderWriterTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordShort read = (TestRecordShort) reader.getRecord(0);
+        TestRecordShort read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
     }
 
     @Test
     public void writeReadRecordBytePos() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordByte> descriptor = new RecordDescriptor<>(TestRecordByte.class);
+        Writer<TestRecordByte> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordByte> reader = new Reader<>(memory, descriptor);
         //
         TestRecordByte write = new TestRecordByte((byte) 1);
         writer.putRecord(0, write);
         assertEquals(1, memory.getByte(0));
         //
         // Ok, see if we can get it back
-        TestRecordByte read = (TestRecordByte) reader.getRecord(0);
+        TestRecordByte read = reader.getRecord(0);
         assertEquals(read.a, write.a);
     }
 
     @Test
     public void writeReadRecordByteNeg() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordByte.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordByte> descriptor = new RecordDescriptor<>(TestRecordByte.class);
+        Writer<TestRecordByte> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordByte> reader = new Reader<>(memory, descriptor);
         //
         TestRecordByte write = new TestRecordByte((byte) -1);
         writer.putRecord(0, write);
         assertEquals(-1, memory.getByte(0));
         //
         // Ok, see if we can get it back
-        TestRecordByte read = (TestRecordByte) reader.getRecord(0);
+        TestRecordByte read = reader.getRecord(0);
         assertEquals(read.a, write.a);
     }
 
     @Test
     public void writeReadRecordChar() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordChar.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordChar> descriptor = new RecordDescriptor<>(TestRecordChar.class);
+        Writer<TestRecordChar> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordChar> reader = new Reader<>(memory, descriptor);
         //
         TestRecordChar write = new TestRecordChar((char) 65, (char) 0x1234);
         writer.putRecord(0, write);
@@ -223,22 +217,22 @@ public class ReaderWriterTest {
         }
         //
         // Ok, see if we can get it back
-        TestRecordChar read = (TestRecordChar) reader.getRecord(0);
+        TestRecordChar read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
     }
 
     @Test
     public void writeReadRecordBitAligned() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBitAligned> descriptor = new RecordDescriptor<>(TestRecordBitAligned.class);
+        Writer<TestRecordBitAligned> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordBitAligned> reader = new Reader<>(memory, descriptor);
         //
         TestRecordBitAligned write = new TestRecordBitAligned(123, 45, 6, true, 789L, (short) 12, (short) 3, (byte) 4, 'A', 'Z', 0x0000789A_BCDEF012L, UUID.randomUUID());
         writer.putRecord(0, write);
         //
         // Ok, see if we can get it back
-        TestRecordBitAligned read = (TestRecordBitAligned) reader.getRecord(0);
+        TestRecordBitAligned read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
         assertEquals(read.c, write.c);
@@ -255,15 +249,15 @@ public class ReaderWriterTest {
 
     @Test
     public void writeReadRecordBitAlignedNegative() throws Exception {
-        RecordDescriptor descriptor = new RecordDescriptor(TestRecordBitAligned.class);
-        writer = new Writer(memory, descriptor);
-        reader = new Reader(memory, descriptor);
+        RecordDescriptor<TestRecordBitAligned> descriptor = new RecordDescriptor<>(TestRecordBitAligned.class);
+        Writer<TestRecordBitAligned> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordBitAligned> reader = new Reader<>(memory, descriptor);
         //
         TestRecordBitAligned write = new TestRecordBitAligned(-123, -45, -6, false, -789L, (short) -12, (short) -3, (byte) -4, 'A', (char) 0x07FF, 0xFFFF_F89A_BCDE_F012L, UUID.randomUUID());
         writer.putRecord(0, write);
         //
         // Ok, see if we can get it back
-        TestRecordBitAligned read = (TestRecordBitAligned) reader.getRecord(0);
+        TestRecordBitAligned read = reader.getRecord(0);
         assertEquals(read.a, write.a);
         assertEquals(read.b, write.b);
         assertEquals(read.c, write.c);
@@ -277,4 +271,5 @@ public class ReaderWriterTest {
         assertEquals(read.k, write.k);
         assertEquals(read.l, write.l);
     }
+
 }
