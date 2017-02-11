@@ -46,7 +46,7 @@ public class TestRecordLong {
     public TestRecordLong() {
     }
 
-    public TestRecordLong(long a, long b, long c, long d) {
+    public TestRecordLong(Long a, long b, long c, long d) {
         this.a = a;
         this.b = b;
         this.c = c;

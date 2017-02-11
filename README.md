@@ -126,6 +126,19 @@ The following array types are supported at present:
 
 Note: The arrays size specified in the annotation is fixed.  If an array of a different size is supplied in an object, an error will result.
 
+# String
+
+Support is included for strings.  These are held as fixed length entries up to a specified maximum. For example:
+
+```
+@PackSpring(order = 0, bits = 7, elements = 50)
+public String message ="Packed string";
+```
+
+This allows support of a string of up to 50 characters, each character packed to 7 bits. Zero length strings are allowed but nulls will result in an exception.
+
+Note: Each string has a four byte overhead which is used to hold the actual length of the stored string as opposed to its maximum (elements) length.
+
 # Restrictions
 
 The following features are not yet available but will included when I have time:
@@ -137,7 +150,7 @@ The following features are not yet available but will included when I have time:
 
 * ~~Bit record packing~~
 * Support arrays (Partly Implementation)
-* Support fixed size strings
+* ~~Support fixed size strings~~
 * Collection classes (partly implemented)
 * Binary file I/O
 

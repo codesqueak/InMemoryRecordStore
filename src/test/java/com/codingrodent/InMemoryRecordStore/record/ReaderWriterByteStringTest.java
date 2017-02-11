@@ -71,4 +71,37 @@ public class ReaderWriterByteStringTest {
         assertEquals(read.c, write.c);
     }
 
+    @Test
+    public void basicPackingWithBlank() throws Exception {
+        RecordDescriptor<TestRecordString> recordDescriptor = new RecordDescriptor<>(TestRecordString.class);
+        assertEquals(recordDescriptor.getByteLength(), (3 * 4) + SIZE_A + SIZE_B + SIZE_C * 2);
+        Writer<TestRecordString> writer = new Writer<>(memory, recordDescriptor);
+        Reader<TestRecordString> reader = new Reader<>(memory, recordDescriptor);
+        //
+        TestRecordString write = new TestRecordString("A", "", "CCC");
+        writer.putRecord(0, write);
+        byte[] packed = new byte[]{//
+                0x00, 0x00, 0x00, 0x01, // header
+                0x41, 0x00, 0x00, 0x00, 0x00, // String
+                0x00, 0x00, 0x00, 0x00, // header
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // String
+                0x00, 0x00, 0x00, 0x03, // header
+                0x00, 0x43, 0x00, 0x43, 0x00, 0x43, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // String
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // String
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // String
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, // String
+                0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00// String
+        };
+        // Did record pack correctly ?
+        for (int i = 0; i < packed.length; i++) {
+            assertEquals(packed[i], memory.getByte(i));
+        }
+        //
+        // Ok, see if we can get it back
+        TestRecordString read = reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b);
+        assertEquals(read.c, write.c);
+    }
+
 }

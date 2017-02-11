@@ -81,6 +81,8 @@ public class Writer<T> {
                 IMemoryStore.Type type = fieldDetails.getType();
                 Field field = clazz.getDeclaredField(fieldName);
                 Object value = field.get(record);
+                if ((null == value) && !(type == IMemoryStore.Type.Void))
+                    throw new IllegalArgumentException("Field (" + field.getName() + ") is null. Unable to pack");
                 // If the field is an array, check its size
                 if (field.getType().isArray() && (Array.getLength(value) != fieldDetails.getElements())) {
                     throw new IllegalArgumentException("Array size does not match. Should be " + fieldDetails.getElements());
@@ -397,7 +399,6 @@ public class Writer<T> {
      * @param buffer    Byte buffer
      * @param bitLength Length of target field in bits
      * @param c         Character to pack
-     * @return Updated position in byte buffer
      */
     private void packBitAlignedChar(final int pos, final byte[] buffer, final int bitLength, final char c) {
         byte[] charValue;
