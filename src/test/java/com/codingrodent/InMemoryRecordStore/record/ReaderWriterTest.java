@@ -80,7 +80,7 @@ public class ReaderWriterTest {
         Writer<TestRecordLong> writer = new Writer<>(memory, descriptor);
         Reader<TestRecordLong> reader = new Reader<>(memory, descriptor);
         //
-        TestRecordLong write = new TestRecordLong(1, 0x00_FFL, 0x0000_FFFFL, 0x1122_3344_5566_7700L);
+        TestRecordLong write = new TestRecordLong(1L, 0x00_FFL, 0x0000_FFFFL, 0x1122_3344_5566_7700L);
         writer.putRecord(0, write);
         byte[] packed = {0x01, // a
                 0x00, -1, // b
@@ -106,7 +106,7 @@ public class ReaderWriterTest {
         Writer<TestRecordLong> writer = new Writer<>(memory, descriptor);
         Reader<TestRecordLong> reader = new Reader<>(memory, descriptor);
         //
-        TestRecordLong write = new TestRecordLong(-1, -2, -3, -4);
+        TestRecordLong write = new TestRecordLong(-1L, -2, -3, -4);
         writer.putRecord(0, write);
         byte[] packed = {-1, // a
                 -1, -2, // b

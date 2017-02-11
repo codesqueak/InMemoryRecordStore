@@ -1,7 +1,7 @@
 /*
 * MIT License
 *
-*         Copyright (c) 2016
+*         Copyright (c) 2017
 *
 *         Permission is hereby granted, free of charge, to any person obtaining a copy
 *         of this software and associated documentation files (the "Software"), to deal
@@ -28,29 +28,29 @@ import com.codingrodent.InMemoryRecordStore.annotations.*;
 /**
  * Test data record
  */
-@PackRecord
-public class TestRecordLong {
+@PackRecord(fieldByteAligned = false)
+public class TestRecordBitString {
 
-    @PackField(order = 0)
-    public Long a;
+    public final static int SIZE_A = 5;
+    public final static int SIZE_B = 11;
+    public final static int SIZE_C = 29;
 
-    @PackField(order = 1, bits = 9)
-    public Long b;
+    @PackString(order = 0, elements = SIZE_A)
+    public String a;
 
-    @PackField(order = 32, bits = 31)
-    public long c;
+    @PackString(order = 0, elements = SIZE_B, bits = 7)
+    public String b;
 
-    @PackField(order = 33, bits = 63)
-    public long d;
+    @PackString(order = 0, elements = SIZE_C, bits = 9)
+    public String c;
 
-    public TestRecordLong() {
+    public TestRecordBitString() {
     }
 
-    public TestRecordLong(Long a, long b, long c, long d) {
+    public TestRecordBitString(String a, String b, String c) {
         this.a = a;
         this.b = b;
         this.c = c;
-        this.d = d;
     }
 
 }

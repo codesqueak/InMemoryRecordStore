@@ -54,6 +54,14 @@ public class ReaderWriterExceptionTest {
             assertEquals(e.getMessage(), "Object supplied to writer is of the wrong type");
         }
         //
+        // Null value
+        try {
+            wrongWriter.putRecord(0, new TestRecordBytePack(null, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID(), new boolean[10], booleanArray));
+            fail("Expecting RecordStoreException to be thrown");
+        } catch (Exception e) {
+            assertEquals(e.getMessage(), "Field (a) is null. Unable to pack");
+        }
+        //
         // Storage limits
         Writer<TestRecordBytePack> writer = new Writer<>(memory, descriptor);
         TestRecordBytePack testRecordBytePack = new TestRecordBytePack(1, -1, -32768, true, 0x0000_1234_5678_9ABCL, false, UUID.randomUUID(), new boolean[10], booleanArray);

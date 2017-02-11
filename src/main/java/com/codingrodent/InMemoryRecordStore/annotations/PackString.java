@@ -21,36 +21,21 @@
 *         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 *         SOFTWARE.
 */
-package com.codingrodent.InMemoryRecordStore.record.records;
+package com.codingrodent.InMemoryRecordStore.annotations;
 
-import com.codingrodent.InMemoryRecordStore.annotations.*;
+import java.lang.annotation.*;
 
 /**
- * Test data record
+ * Annotation to mark an array as packable
  */
-@PackRecord
-public class TestRecordLong {
+@Target({ElementType.FIELD})
+@Inherited
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface PackString {
+    int order();
 
-    @PackField(order = 0)
-    public Long a;
+    int bits() default 8; // Bits per character
 
-    @PackField(order = 1, bits = 9)
-    public Long b;
-
-    @PackField(order = 32, bits = 31)
-    public long c;
-
-    @PackField(order = 33, bits = 63)
-    public long d;
-
-    public TestRecordLong() {
-    }
-
-    public TestRecordLong(Long a, long b, long c, long d) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-    }
-
+    int elements(); // Maximum number of characters
 }

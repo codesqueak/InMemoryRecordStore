@@ -29,7 +29,7 @@ import com.codingrodent.InMemoryRecordStore.core.IMemoryStore;
 import java.lang.reflect.Field;
 import java.util.*;
 
-import static com.codingrodent.InMemoryRecordStore.core.IMemoryStore.Type.*;
+import static com.codingrodent.InMemoryRecordStore.core.IMemoryStore.Type.FixedString;
 
 /**
  * This class holds the basic type information for an in memory allocation record.
@@ -70,6 +70,8 @@ public class RecordDescriptor<T> {
                 String typeName = field.getType().getName();
                 if (typeName.startsWith("["))
                     throw new IllegalArgumentException("@Pack cannot be used on arrays");
+                if (typeName.equals(String.class.getTypeName()))
+                    throw new IllegalArgumentException("@Pack cannot be used on Strings. Use @PackString");
                 FieldDetails fieldDetails = new FieldDetails(typeName, field.getName(), packFieldAnnotation.order(), packFieldAnnotation.bits(), 1);
                 fieldList.add(fieldDetails);
             }
@@ -80,6 +82,16 @@ public class RecordDescriptor<T> {
                 if (!paddingClass.equals(Void.class.getTypeName()))
                     throw new IllegalArgumentException("@Padding can only be used on Void fields");
                 FieldDetails fieldDetails = new FieldDetails(paddingClass, field.getName(), paddingFieldAnnotation.order(), paddingFieldAnnotation.bits(), 1);
+                fieldList.add(fieldDetails);
+            }
+            // Fixed String annotation
+            PackString stringFieldAnnotation = field.getAnnotation(PackString.class);
+            if (null != stringFieldAnnotation) {
+                String stringClass = field.getType().getName();
+                if (!stringClass.equals(String.class.getTypeName()))
+                    throw new IllegalArgumentException("@PackString must be used on Strings only");
+                FieldDetails fieldDetails = new FieldDetails(stringClass, field.getName(), stringFieldAnnotation.order(), stringFieldAnnotation.bits(), stringFieldAnnotation
+                        .elements());
                 fieldList.add(fieldDetails);
             }
             // Array annotation
@@ -111,6 +123,9 @@ public class RecordDescriptor<T> {
             } else {
                 // pack at bit level
                 lengthInBits = lengthInBits + field.getBitLength() * field.elements;
+            }
+            if (field.getType() == FixedString) {
+                lengthInBits = lengthInBits + 32; // Element count for stored strings held as int32 at start
             }
             fieldDetailsMap.put(field.getFieldName(), field);
         }
@@ -159,58 +174,64 @@ public class RecordDescriptor<T> {
          * @param typeName  Class of field
          * @param fieldName Name of field
          * @param order     Position in packing order
-         * @param length    Length in bits the field
+         * @param bits    Length in bits the field
          * @param elements  Array size (if applicable)
          */
-        FieldDetails(String typeName, String fieldName, int order, int length, int elements) {
-            if (length < 1)
+        FieldDetails(final String typeName, final String fieldName, final int order, int bits, final int elements) {
+            if (bits < 1)
                 throw new IllegalArgumentException("Bit packing target length must be at least 1");
+            if (elements < 1)
+                throw new IllegalArgumentException("@PackArray / @PackString Number of elements must be at least 1");
             switch (typeName) {
                 case "boolean":
                 case "java.lang.Boolean":
                     type = IMemoryStore.Type.Bit;
-                    length = length > 8 ? 8 : length;
+                    bits = bits > 8 ? 8 : bits;
                     break;
                 case "byte":
                 case "java.lang.Byte":
                     type = IMemoryStore.Type.Byte8;
-                    length = length > 8 ? 8 : length;
+                    bits = bits > 8 ? 8 : bits;
                     break;
                 case "short":
                 case "java.lang.Short":
                     type = IMemoryStore.Type.Short16;
-                    length = length > 16 ? 16 : length;
+                    bits = bits > 16 ? 16 : bits;
                     break;
                 case "int":
                 case "java.lang.Integer":
                     type = IMemoryStore.Type.Word32;
-                    length = length > 32 ? 32 : length;
+                    bits = bits > 32 ? 32 : bits;
                     break;
                 case "long":
                 case "java.lang.Long":
                     type = IMemoryStore.Type.Word64;
-                    length = length > 64 ? 64 : length;
+                    bits = bits > 64 ? 64 : bits;
                     break;
                 case "char":
                 case "java.lang.Character":
                     type = IMemoryStore.Type.Char16;
-                    length = length > 16 ? 16 : length;
+                    bits = bits > 16 ? 16 : bits;
                     break;
                 case "java.lang.Void":
                     type = IMemoryStore.Type.Void;
-                    length = length > 64 ? 64 : length;
+                    bits = bits > 64 ? 64 : bits;
                     break;
                 case "java.util.UUID":
                     type = IMemoryStore.Type.UUID;
-                    length = 128;
+                    bits = 128;
                     break;
                 case "[Z":
-                    type = booleanArray;
-                    length = length > 8 ? 8 : length; // element length
+                    type = IMemoryStore.Type.booleanArray;
+                    bits = bits > 8 ? 8 : bits; // element length
                     break;
                 case "[Ljava.lang.Boolean;":
-                    type = BooleanArray;
-                    length = length > 8 ? 8 : length; // element length
+                    type = IMemoryStore.Type.BooleanArray;
+                    bits = bits > 8 ? 8 : bits; // element length
+                    break;
+                case "java.lang.String":
+                    type = IMemoryStore.Type.FixedString;
+                    bits = bits > 16 ? 16 : bits; // element length
                     break;
                 case "java.lang.Double":
                 case "double":
@@ -221,8 +242,8 @@ public class RecordDescriptor<T> {
             }
             this.fieldName = fieldName;
             this.order = order;
-            this.bitLength = length;
-            this.byteLength = ((length - 1) >> 3) + 1;
+            this.bitLength = bits;
+            this.byteLength = ((bits - 1) >> 3) + 1;
             this.elements = elements;
         }
 

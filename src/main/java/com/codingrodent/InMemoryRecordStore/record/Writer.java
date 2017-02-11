@@ -81,6 +81,8 @@ public class Writer<T> {
                 IMemoryStore.Type type = fieldDetails.getType();
                 Field field = clazz.getDeclaredField(fieldName);
                 Object value = field.get(record);
+                if ((null == value) && !(type == IMemoryStore.Type.Void))
+                    throw new IllegalArgumentException("Field (" + field.getName() + ") is null. Unable to pack");
                 // If the field is an array, check its size
                 if (field.getType().isArray() && (Array.getLength(value) != fieldDetails.getElements())) {
                     throw new IllegalArgumentException("Array size does not match. Should be " + fieldDetails.getElements());
@@ -88,10 +90,10 @@ public class Writer<T> {
                 //  Alignment ?
                 if (recordDescriptor.isFieldByteAligned()) {
                     // Byte aligned
-                    bufferPosition = packFieldIntoBytes(bufferPosition, buffer, value, fieldDetails.getByteLength(), type);
+                    bufferPosition = packFieldIntoBytes(bufferPosition, buffer, value, fieldDetails.getByteLength(), type, fieldDetails.getElements());
                 } else {
                     // Bit aligned
-                    bufferPosition = packFieldIntoBits(bufferPosition, buffer, value, fieldDetails.getBitLength(), type);
+                    bufferPosition = packFieldIntoBits(bufferPosition, buffer, value, fieldDetails.getBitLength(), type, fieldDetails.getElements());
                 }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 throw new RecordStoreException(e);
@@ -104,14 +106,15 @@ public class Writer<T> {
     /**
      * Pack an annotated field into the byte storage for a record
      *
-     * @param pos        Write position (byte)
-     * @param buffer     Byte buffer
-     * @param value      Object to be written. Actual type from record.
-     * @param byteLength Length of target field in bytes
-     * @param type       Object type
+     * @param pos               Write position (byte)
+     * @param buffer            Byte buffer
+     * @param value             Object to be written. Actual type from record.
+     * @param byteLength        Length of target field in bytes
+     * @param type              Object type
+     * @param maxVariableLength Maximuj length for varibale length objects, e.g. Strings
      * @return Next free byte in the buffer
      */
-    private int packFieldIntoBytes(int pos, byte[] buffer, Object value, int byteLength, IMemoryStore.Type type) {
+    private int packFieldIntoBytes(int pos, final byte[] buffer, final Object value, final int byteLength, final IMemoryStore.Type type, final int maxVariableLength) {
         //
         // Don't forget - you can't make things longer !
         switch (type) {
@@ -137,13 +140,7 @@ public class Writer<T> {
             }
             case Char16: {
                 char v = (Character) value;
-                if (1 == byteLength) {
-                    buffer[pos++] = (byte) (v & 0x00FF);
-                } else {
-                    buffer[pos++] = (byte) (v >>> 8);
-                    buffer[pos++] = (byte) (v & 0x00FF);
-                    pos++;
-                }
+                pos = packByteAlignedChar(pos, buffer, byteLength, v);
                 break;
             }
             case Word32: {
@@ -200,6 +197,45 @@ public class Writer<T> {
                     buffer[pos++] = (byte) (b ? 1 : 0);
                 break;
             }
+            case FixedString: {
+                String v = (String) value;
+                // Insert length header value
+                int length = v.length();
+                for (int i = 3; i >= 0; i--) {
+                    buffer[pos + i] = (byte) (length & 0x00FF);
+                    length = length >>> 8;
+                }
+                pos = pos + 4;
+                // Add characters
+                for (int i = 0; i < v.length(); i++) {
+                    char c = v.charAt(i);
+                    pos = packByteAlignedChar(pos, buffer, byteLength, c);
+                }
+                // Zero out any unused space
+                for (int i = v.length(); i < maxVariableLength; i++) {
+                    pos = packByteAlignedChar(pos, buffer, byteLength, (char) 0);
+                }
+                break;
+            }
+        }
+        return pos;
+    }
+
+    /**
+     * Pack away a character (byte aligned)
+     *
+     * @param pos        Write position (byte)
+     * @param buffer     Byte buffer
+     * @param byteLength Length of target field in bytes
+     * @param c          Character to pack
+     * @return Updated position in byte buffer
+     */
+    private int packByteAlignedChar(int pos, final byte[] buffer, final int byteLength, final char c) {
+        if (1 == byteLength) {
+            buffer[pos++] = (byte) (c & 0x00FF);
+        } else {
+            buffer[pos++] = (byte) (c >>> 8);
+            buffer[pos++] = (byte) (c & 0x00FF);
         }
         return pos;
     }
@@ -207,15 +243,16 @@ public class Writer<T> {
     /**
      * Pack an annotated field into the bit storage for a record
      *
-     * @param pos       Write position (bit)
-     * @param buffer    Byte buffer
-     * @param value     Object to be written. Actual type from record.
-     * @param bitLength Length of target field in bits
-     * @param type      Object type
+     * @param pos               Write position (bit)
+     * @param buffer            Byte buffer
+     * @param value             Object to be written. Actual type from record.
+     * @param bitLength         Length of target field in bits
+     * @param type              Object type
+     * @param maxVariableLength Maximuj length for varibale length objects, e.g. Strings
      * @return Next free bit in the buffer
      */
 
-    private int packFieldIntoBits(int pos, byte[] buffer, Object value, int bitLength, IMemoryStore.Type type) {
+    private int packFieldIntoBits(int pos, final byte[] buffer, final Object value, final int bitLength, final IMemoryStore.Type type, final int maxVariableLength) {
         //
         // Don't forget - you can't make things longer !
         switch (type) {
@@ -250,16 +287,7 @@ public class Writer<T> {
             }
             case Char16: {
                 char c = (Character) value;
-                byte[] charValue;
-                if (bitLength <= 8) {
-                    charValue = new byte[1];
-                    charValue[0] = (byte) (c & 0x00FF);
-                } else {
-                    charValue = new byte[2];
-                    charValue[0] = (byte) ((c & 0xFF00) >>> 8);
-                    charValue[1] = (byte) (c & 0x00FF);
-                }
-                bitWriter.insertBits(charValue, buffer, pos, bitLength);
+                packBitAlignedChar(pos, buffer, bitLength, c);
                 break;
             }
             case Word32: {
@@ -335,8 +363,54 @@ public class Writer<T> {
                 pos = pos - bitLength;
                 break;
             }
+            case FixedString: {
+                String v = (String) value;
+                int length = v.length();
+                // Insert length header value
+                byte[] integerValue = new byte[4];
+                for (int i = 1; i <= 4; i++) {
+                    integerValue[4 - i] = (byte) (length & 0x00FF);
+                    length = length >>> 8;
+                }
+                bitWriter.insertBits(integerValue, buffer, pos, 32);
+                pos = pos + 32;
+                // Add characters
+                for (int i = 0; i < v.length(); i++) {
+                    char c = v.charAt(i);
+                    packBitAlignedChar(pos, buffer, bitLength, c);
+                    pos = pos + bitLength;
+                }
+                // Zero out any unused space
+                for (int i = v.length(); i < maxVariableLength; i++) {
+                    packBitAlignedChar(pos, buffer, bitLength, (char) 0);
+                    pos = pos + bitLength;
+                }
+                pos = pos - bitLength;
+                break;
+            }
         }
         return pos + bitLength;
+    }
+
+    /**
+     * Pack away a character (bit aligned)
+     *
+     * @param pos       Write position (byte)
+     * @param buffer    Byte buffer
+     * @param bitLength Length of target field in bits
+     * @param c         Character to pack
+     */
+    private void packBitAlignedChar(final int pos, final byte[] buffer, final int bitLength, final char c) {
+        byte[] charValue;
+        if (bitLength <= 8) {
+            charValue = new byte[1];
+            charValue[0] = (byte) (c & 0x00FF);
+        } else {
+            charValue = new byte[2];
+            charValue[0] = (byte) ((c & 0xFF00) >>> 8);
+            charValue[1] = (byte) (c & 0x00FF);
+        }
+        bitWriter.insertBits(charValue, buffer, pos, bitLength);
     }
 
 }

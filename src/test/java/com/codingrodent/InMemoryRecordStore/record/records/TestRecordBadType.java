@@ -1,7 +1,7 @@
 /*
 * MIT License
 *
-*         Copyright (c) 2016
+*         Copyright (c) 2017
 *
 *         Permission is hereby granted, free of charge, to any person obtaining a copy
 *         of this software and associated documentation files (the "Software"), to deal
@@ -25,32 +25,10 @@ package com.codingrodent.InMemoryRecordStore.record.records;
 
 import com.codingrodent.InMemoryRecordStore.annotations.*;
 
-/**
- * Test data record
- */
 @PackRecord
-public class TestRecordLong {
+public class TestRecordBadType {
 
-    @PackField(order = 0)
-    public Long a;
-
-    @PackField(order = 1, bits = 9)
-    public Long b;
-
-    @PackField(order = 32, bits = 31)
-    public long c;
-
-    @PackField(order = 33, bits = 63)
-    public long d;
-
-    public TestRecordLong() {
-    }
-
-    public TestRecordLong(Long a, long b, long c, long d) {
-        this.a = a;
-        this.b = b;
-        this.c = c;
-        this.d = d;
-    }
+    @PackField(order = 0, bits = 16)
+    public TestRecordBadType a;
 
 }
