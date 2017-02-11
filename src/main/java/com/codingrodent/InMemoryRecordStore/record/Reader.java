@@ -174,6 +174,29 @@ public class Reader<T> {
                 field.set(target, v);
                 break;
             }
+            case FixedString: {
+                // Get length header
+                int stringLen = 0;
+                for (int i = 0; i < 4; i++) {
+                    stringLen = (stringLen << 8) | getUnsignedByte(buffer, pos++);
+                }
+                String ans = "";
+                int startPos = pos;
+                if (stringLen > 0) {
+                    StringBuilder sb = new StringBuilder(stringLen);
+                    for (int i = 0; i < stringLen; i++) {
+                        if (1 == byteLength) {
+                            sb.append((char) (buffer[pos++] & 0x00FF));
+                        } else {
+                            sb.append((char) ((getUnsignedByte(buffer, pos++) << 8) | getUnsignedByte(buffer, pos++)));
+                        }
+                    }
+                    ans = sb.toString();
+                }
+                pos = startPos + fieldDetails.getElements() * byteLength; // String may be shorter than reserved space so skip
+                field.set(target, ans);
+                break;
+            }
         }
         return pos;
     }
@@ -261,6 +284,25 @@ public class Reader<T> {
                 }
                 pos = pos - bitLength;
                 field.set(target, v);
+                break;
+            }
+            case FixedString: {
+                // Get length header
+                int v = bitReader.unpack(buffer, pos, 32);
+                pos = pos + 32;
+                int startPos = pos;
+                String ans = "";
+                if (v > 0) {
+                    StringBuilder sb = new StringBuilder(v);
+                    for (int i = 0; i < v; i++) {
+                        int raw = bitReader.unpack(buffer, pos, bitLength);
+                        sb.append((char) (raw & 0x0000_FFFF));
+                        pos = pos + bitLength;
+                    }
+                    ans = sb.toString();
+                }
+                pos = startPos + ((fieldDetails.getElements() - 1) * bitLength);// String may be shorter than reserved space so skip
+                field.set(target, ans);
                 break;
             }
         }
