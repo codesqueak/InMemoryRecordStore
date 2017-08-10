@@ -7,14 +7,14 @@ In Memory Record Storage is a library to allow object data defined as records to
 Each record field may be either bit or byte aligned, with each record being in turn byte aligned.
 The types supported are:
 
-* Boolean / boolean
-* Byte / byte
-* Short / Short
-* Integer / Integer
-* Long / Long
-* Character / char
-* Float / float
-* Double / double
+* Boolean
+* Byte
+* Short
+* Integer
+* Long
+* Character
+* Float
+* Double
 * Void (Special case, used for packing only)
 * Array - Boolean / boolean
 * UUID
@@ -31,6 +31,8 @@ To define a field in a record, the field must be annotated with a *@PackField* a
 
 This signified that a field is to be packed into 9 bits (if bit aligned) or 2 bytes (if byte aligned). Note that types can be defined to occupy less space (e.g. Integer into 9 bits)
 but cannot be more space (e.g. Integer into 33 bits). The maximum bit size is the natural primitive type length.
+
+Note that Float and Double values ignore packing size and will be held in 32 and 64 bits respectively
 
 The order argument of the annotation states in which order the field is to be packed.  Fields are sorted before packing.  Two fields with the same order value will cause an exception to be thrown.
 
@@ -151,7 +153,7 @@ The following features are not yet available but will included when time allows:
 # Things to add
 
 * ~~Bit record packing~~
-* Float & Double
+* ~~Float & Double~~
 * Support arrays (Partly Implementation - booleans only)
 * ~~Support fixed size strings~~
 * Collection classes (partly implemented)
