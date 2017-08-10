@@ -235,8 +235,15 @@ public class RecordDescriptor<T> {
                     break;
                 case "java.lang.Double":
                 case "double":
+                    type = IMemoryStore.Type.Double;
+                    bits = 64;
+                    break;
                 case "java.lang.Float":
                 case "float":
+                    type = IMemoryStore.Type.Float;
+                    bits = 32;
+                    break;
+
                 default:
                     throw new IllegalArgumentException("Unsupported packing type. " + typeName);
             }

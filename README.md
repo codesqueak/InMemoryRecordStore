@@ -7,15 +7,17 @@ In Memory Record Storage is a library to allow object data defined as records to
 Each record field may be either bit or byte aligned, with each record being in turn byte aligned.
 The types supported are:
 
-* Boolean
-* Byte
-* Short
-* Integer
-* Long
-* Character
+* Boolean / boolean
+* Byte / byte
+* Short / Short
+* Integer / Integer
+* Long / Long
+* Character / char
+* Float / float
+* Double / double
 * Void (Special case, used for packing only)
-
-Both primitive and object types may be used interchangeably.
+* Array - Boolean / boolean
+* UUID
 
 To define a record, the owning class must be annotated with a *@PackRecord* annotation.  For example,
  
@@ -72,7 +74,7 @@ The records are held in a data structure complying with the *IMemoryStore* inter
 The simplest way to use this is to define an empty store and let the RecordManager handle allocation.  For example the following defines storage for 
 up to 1000 copies of the Record class.  Read & write operations can now be performed via the record manager which treats storage as an array of records.
 
-```
+```java
     RecordDescriptor descriptor = new RecordDescriptor(Record.class);
     RecordManager rm = new RecordManager(new ArrayMemoryStore(), 1000, descriptor);
     //
@@ -88,7 +90,7 @@ Various collections are available.  It is intended to enlarge this list in futur
 
 A simple array store. For example, to store up to 1000 records use:
 
-```
+```java
     PackedArray<Record> array = new PackedArray<>(Record.class, 1000);
     Record record = new Record(...); // create
     array.putRecord(1, record); // save it
@@ -99,7 +101,7 @@ A simple array store. For example, to store up to 1000 records use:
 
 A bidirectional linked list. For example, to create a list capable of storing up to 1000 elements use:
 
-```
+```java
     List<Record> list = list = new PackedList<>(Record.class, 1000); // create
     deque.addFirst(record1); // add some data
     deque.addFirst(record2);
@@ -111,13 +113,13 @@ A bidirectional linked list. For example, to create a list capable of storing up
 
 Limited support exists for handling fields which are arrays. For example:
 
-```
+```java
 @PackArray(order = 0, bits = 2, elements = 10)
 public boolean[] lotsOfBits = new boolean[100];
 ```
 
 This allows support of a 100 element boolean array with each element packed into two bits. 
-The default packing density is one bit, allowing for maximumj packing using boolean types.
+The default packing density is one bit, allowing for maximum packing using boolean types.
 
 The following array types are supported at present:
 
@@ -141,7 +143,7 @@ Note: Each string has a four byte overhead which is used to hold the actual leng
 
 # Restrictions
 
-The following features are not yet available but will included when I have time:
+The following features are not yet available but will included when time allows:
 
 * Use of custom memory stores
 * use of custom object reader / writer
@@ -149,7 +151,8 @@ The following features are not yet available but will included when I have time:
 # Things to add
 
 * ~~Bit record packing~~
-* Support arrays (Partly Implementation)
+* Float & Double
+* Support arrays (Partly Implementation - booleans only)
 * ~~Support fixed size strings~~
 * Collection classes (partly implemented)
 * Binary file I/O
@@ -157,10 +160,12 @@ The following features are not yet available but will included when I have time:
 # Build
 
 (Windows)
-gradlew clean build test
+
+*gradlew clean build test*
 
 (Linux)
-./gradlew clean build test
+
+*./gradlew clean build test*
 
 
 # Using Jenkins

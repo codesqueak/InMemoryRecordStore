@@ -171,18 +171,8 @@ public class Writer<T> {
             }
             case UUID: {
                 UUID v = (UUID) value;
-                long p = v.getMostSignificantBits();
-                for (int i = 7; i >= 0; i--) {
-                    buffer[pos + i] = (byte) (p & 0x00FF);
-                    p = p >>> 8;
-                }
-                pos = pos + 8;
-                p = v.getLeastSignificantBits();
-                for (int i = 7; i >= 0; i--) {
-                    buffer[pos + i] = (byte) (p & 0x00FF);
-                    p = p >>> 8;
-                }
-                pos = pos + 8;
+                pos = longToBuffer(pos, buffer, v.getMostSignificantBits());
+                pos = longToBuffer(pos, buffer, v.getLeastSignificantBits());
                 break;
             }
             case booleanArray: {
@@ -201,11 +191,7 @@ public class Writer<T> {
                 String v = (String) value;
                 // Insert length header value
                 int length = v.length();
-                for (int i = 3; i >= 0; i--) {
-                    buffer[pos + i] = (byte) (length & 0x00FF);
-                    length = length >>> 8;
-                }
-                pos = pos + 4;
+                pos = intToBuffer(pos, buffer, length);
                 // Add characters
                 for (int i = 0; i < v.length(); i++) {
                     char c = v.charAt(i);
@@ -217,25 +203,16 @@ public class Writer<T> {
                 }
                 break;
             }
-        }
-        return pos;
-    }
-
-    /**
-     * Pack away a character (byte aligned)
-     *
-     * @param pos        Write position (byte)
-     * @param buffer     Byte buffer
-     * @param byteLength Length of target field in bytes
-     * @param c          Character to pack
-     * @return Updated position in byte buffer
-     */
-    private int packByteAlignedChar(int pos, final byte[] buffer, final int byteLength, final char c) {
-        if (1 == byteLength) {
-            buffer[pos++] = (byte) (c & 0x00FF);
-        } else {
-            buffer[pos++] = (byte) (c >>> 8);
-            buffer[pos++] = (byte) (c & 0x00FF);
+            case Double: {
+                long p = Double.doubleToRawLongBits((Double) value);
+                pos = longToBuffer(pos, buffer, p);
+                break;
+            }
+            case Float: {
+                int p = Float.floatToRawIntBits((Float) value);
+                pos = intToBuffer(pos, buffer, p);
+                break;
+            }
         }
         return pos;
     }
@@ -326,18 +303,9 @@ public class Writer<T> {
             case UUID: {
                 UUID v = (UUID) value;
                 byte[] longValue = new byte[8];
-                long p = v.getMostSignificantBits();
-                for (int i = 7; i >= 0; i--) {
-                    longValue[i] = (byte) (p & 0x00FF);
-                    p = p >>> 8;
-                }
+                longToBuffer(0, longValue, v.getMostSignificantBits());
                 bitWriter.insertBits(longValue, buffer, pos, 64);
-                //
-                p = v.getLeastSignificantBits();
-                for (int i = 7; i >= 0; i--) {
-                    longValue[i] = (byte) (p & 0x00FF);
-                    p = p >>> 8;
-                }
+                longToBuffer(0, longValue, v.getLeastSignificantBits());
                 bitWriter.insertBits(longValue, buffer, pos + 64, 64);
                 break;
             }
@@ -388,6 +356,18 @@ public class Writer<T> {
                 pos = pos - bitLength;
                 break;
             }
+            case Double: {
+                byte[] longValue = new byte[8];
+                longToBuffer(0, longValue, Double.doubleToRawLongBits((Double) value));
+                bitWriter.insertBits(longValue, buffer, pos, 64);
+                break;
+            }
+            case Float: {
+                byte[] integerValue = new byte[4];
+                intToBuffer(0, integerValue, Float.floatToRawIntBits((Float) value));
+                bitWriter.insertBits(integerValue, buffer, pos, 32);
+                break;
+            }
         }
         return pos + bitLength;
     }
@@ -411,6 +391,57 @@ public class Writer<T> {
             charValue[1] = (byte) (c & 0x00FF);
         }
         bitWriter.insertBits(charValue, buffer, pos, bitLength);
+    }
+
+    /**
+     * Write an int into the record buffer
+     *
+     * @param pos    Start position in buffer
+     * @param buffer Buffer
+     * @param p      Value to write
+     * @return End position in buffer
+     */
+    private int intToBuffer(final int pos, final byte[] buffer, int p) {
+        for (int i = 3; i >= 0; i--) {
+            buffer[pos + i] = (byte) (p & 0x00FF);
+            p = p >>> 8;
+        }
+        return pos + 4;
+    }
+
+    /**
+     * Write a long into the record buffer
+     *
+     * @param pos    Start position in buffer
+     * @param buffer Buffer
+     * @param p      Value to write
+     * @return End position in buffer
+     */
+    private int longToBuffer(final int pos, final byte[] buffer, long p) {
+        for (int i = 7; i >= 0; i--) {
+            buffer[pos + i] = (byte) (p & 0x00FF);
+            p = p >>> 8;
+        }
+        return pos + 8;
+    }
+
+    /**
+     * Pack away a character (byte aligned)
+     *
+     * @param pos        Write position (byte)
+     * @param buffer     Byte buffer
+     * @param byteLength Length of target field in bytes
+     * @param c          Character to pack
+     * @return Updated position in byte buffer
+     */
+    private int packByteAlignedChar(int pos, final byte[] buffer, final int byteLength, final char c) {
+        if (1 == byteLength) {
+            buffer[pos++] = (byte) (c & 0x00FF);
+        } else {
+            buffer[pos++] = (byte) (c >>> 8);
+            buffer[pos++] = (byte) (c & 0x00FF);
+        }
+        return pos;
     }
 
 }

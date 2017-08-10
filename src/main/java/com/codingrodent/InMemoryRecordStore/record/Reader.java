@@ -197,6 +197,20 @@ public class Reader<T> {
                 field.set(target, ans);
                 break;
             }
+            case Double: {
+                long raw0 = 0;
+                for (int i = 0; i < 8; i++)
+                    raw0 = (raw0 << 8) | getUnsignedByte(buffer, pos++);
+                field.set(target, Double.longBitsToDouble(raw0));
+                break;
+            }
+            case Float: {
+                int raw0 = 0;
+                for (int i = 0; i < 4; i++)
+                    raw0 = (raw0 << 8) | getUnsignedByte(buffer, pos++);
+                field.set(target, Float.intBitsToFloat(raw0));
+                break;
+            }
         }
         return pos;
     }
@@ -303,6 +317,16 @@ public class Reader<T> {
                 }
                 pos = startPos + ((fieldDetails.getElements() - 1) * bitLength);// String may be shorter than reserved space so skip
                 field.set(target, ans);
+                break;
+            }
+            case Double: {
+                long raw0 = bitReader.unpack64(buffer, pos);
+                field.set(target, Double.longBitsToDouble(raw0));
+                break;
+            }
+            case Float: {
+                int raw0 = bitReader.unpack32(buffer, pos);
+                field.set(target, Float.intBitsToFloat(raw0));
                 break;
             }
         }
