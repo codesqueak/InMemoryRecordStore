@@ -50,38 +50,40 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-task createPom << {
-    pom
-    {
-        project {
-            name 'InMemoryStorage'
-            groupId 'com.codingrodent'
-            description 'In Memory Record Storage'
-            url 'https://github.com/codesqueak/InMemoryRecordStore.git'
-            scm {
-                url 'https://github.com/codesqueak/InMemoryRecordStore'
-                connection 'scm:git:git://github.com/codesqueak/InMemoryRecordStore.git'
-                developerConnection 'scm:git:ssh://github.com:codesqueak/InMemoryRecordStore.git'
-            }
+task createPom {
+    doLast {
+        pom
+        {
+            project {
+                name 'InMemoryStorage'
+                groupId 'com.codingrodent'
+                description 'In Memory Record Storage'
+                url 'https://github.com/codesqueak/InMemoryRecordStore.git'
+                scm {
+                    url 'https://github.com/codesqueak/InMemoryRecordStore'
+                    connection 'scm:git:git://github.com/codesqueak/InMemoryRecordStore.git'
+                    developerConnection 'scm:git:ssh://github.com:codesqueak/InMemoryRecordStore.git'
+                }
 
-            licenses {
-                license {
-                    name 'MIT License'
-                    url 'http://www.mit.edu'
-                    distribution 'repo'
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'http://www.mit.edu'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'codesqueak'
+                        name 'codesqueak'
+                        email 'codesqueak@gmail.com'
+                        organizationUrl 'http://www.codingrodent.com'
+                        //  organization 'codesqueak'
+                    }
                 }
             }
-            developers {
-                developer {
-                    id 'codesqueak'
-                    name 'codesqueak'
-                    email 'codesqueak@gmail.com'
-                    organizationUrl 'http://www.codingrodent.com'
-                    //  organization 'codesqueak'
-                }
-            }
-        }
-    }.writeTo("$buildDir/libs/" + projectName + "-" + version + ".pom")
+        }.writeTo("$buildDir/libs/" + projectName + "-" + version + ".pom")
+    }
 }
 
 artifacts {
@@ -107,8 +109,8 @@ test
             jacoco {
                 append = false
                 destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
-                classDumpFile = file("$buildDir/jacoco/classpathdumps")
-                excludes = ['**/InMemoryRecordStore/record/records/**','**/InMemoryRecordStore/**/*Test.*']
+                setClassDumpDir(file("$buildDir/jacoco/classpathdumps"))
+                excludes = ['**/InMemoryRecordStore/record/records/**', '**/InMemoryRecordStore/**/*Test.*']
             }
         }
 
@@ -159,6 +161,8 @@ task wrapper(type: Wrapper) {
     gradleVersion = '4.1'
 }
 
-task listJars << {
-    configurations.compile.each { File file -> println file.name }
+task listJars {
+    doLast {
+        configurations.compile.each { File file -> println file.name }
+    }
 }
