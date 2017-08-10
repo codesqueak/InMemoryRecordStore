@@ -253,7 +253,8 @@ public class ReaderWriterTest {
         Writer<TestRecordBitAligned> writer = new Writer<>(memory, descriptor);
         Reader<TestRecordBitAligned> reader = new Reader<>(memory, descriptor);
         //
-        TestRecordBitAligned write = new TestRecordBitAligned(-123, -45, -6, false, -789L, (short) -12, (short) -3, (byte) -4, 'A', (char) 0x07FF, 0xFFFF_F89A_BCDE_F012L, UUID.randomUUID());
+        TestRecordBitAligned write = new TestRecordBitAligned(-123, -45, -6, false, -789L, (short) -12, (short) -3, (byte) -4, 'A', (char) 0x07FF, 0xFFFF_F89A_BCDE_F012L, UUID
+                .randomUUID());
         writer.putRecord(0, write);
         //
         // Ok, see if we can get it back
@@ -270,6 +271,76 @@ public class ReaderWriterTest {
         assertEquals(read.j, write.j);
         assertEquals(read.k, write.k);
         assertEquals(read.l, write.l);
+    }
+
+    @Test
+    public void writeReadFloatBitRecord() throws Exception {
+        RecordDescriptor<TestRecordFloatBitPack> descriptor = new RecordDescriptor<>(TestRecordFloatBitPack.class);
+        assertEquals(descriptor.getBitLength(), 89);
+        //
+        Writer<TestRecordFloatBitPack> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordFloatBitPack> reader = new Reader<>(memory, descriptor);
+        //
+        TestRecordFloatBitPack write = new TestRecordFloatBitPack(1, 0.12345f, -32768);
+        writer.putRecord(0, write);
+        //
+        // Ok, see if we can get it back
+        TestRecordFloatBitPack read = reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b, 0.00001);
+        assertEquals(read.c, write.c);
+    }
+
+    @Test
+    public void writeReadFloatByteRecord() throws Exception {
+        RecordDescriptor<TestRecordFloatBytePack> descriptor = new RecordDescriptor<>(TestRecordFloatBytePack.class);
+        assertEquals(descriptor.getByteLength(), 12);
+        //
+        Writer<TestRecordFloatBytePack> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordFloatBytePack> reader = new Reader<>(memory, descriptor);
+        TestRecordFloatBytePack write = new TestRecordFloatBytePack(123, 0.678901f, -3210);
+        writer.putRecord(0, write);
+        //
+        // Ok, see if we can get it back
+        TestRecordFloatBytePack read = reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b, 0.00001);
+        assertEquals(read.c, write.c);
+    }
+
+    @Test
+    public void writeReadDoubleBitRecord() throws Exception {
+        RecordDescriptor<TestRecordDoubleBitPack> descriptor = new RecordDescriptor<>(TestRecordDoubleBitPack.class);
+        assertEquals(descriptor.getBitLength(), 121);
+        //
+        Writer<TestRecordDoubleBitPack> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordDoubleBitPack> reader = new Reader<>(memory, descriptor);
+        //
+        TestRecordDoubleBitPack write = new TestRecordDoubleBitPack(1, 0.12345, -32768);
+        writer.putRecord(0, write);
+        //
+        // Ok, see if we can get it back
+        TestRecordDoubleBitPack read = reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b, 0.00001);
+        assertEquals(read.c, write.c);
+    }
+
+    @Test
+    public void writeReadDoubleByteRecord() throws Exception {
+        RecordDescriptor<TestRecordDoubleBytePack> descriptor = new RecordDescriptor<>(TestRecordDoubleBytePack.class);
+        assertEquals(descriptor.getByteLength(), 16);
+        //
+        Writer<TestRecordDoubleBytePack> writer = new Writer<>(memory, descriptor);
+        Reader<TestRecordDoubleBytePack> reader = new Reader<>(memory, descriptor);
+        TestRecordDoubleBytePack write = new TestRecordDoubleBytePack(123, 0.678901, -3210);
+        writer.putRecord(0, write);
+        //
+        // Ok, see if we can get it back
+        TestRecordDoubleBytePack read = reader.getRecord(0);
+        assertEquals(read.a, write.a);
+        assertEquals(read.b, write.b, 0.00001);
+        assertEquals(read.c, write.c);
     }
 
 }
